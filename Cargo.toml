@@ -1,0 +1,14 @@
+[package]
+name    = 'stockfish-rs'
+license = 'GPL-3.0-only'
+version = '0.1.0'
+edition = '2021'
+
+description = 'Rust reimplementation of the Stockfish chess engine'
+categories  = ['games']
+keywords    = ['chess', 'chess-engine']
+
+readme        = 'README.md'
+homepage      = 'https://crates.io/crates/stockfish-rs'
+repository    = 'https://github.com/stouset/stockfish-rs'
+documentation = 'https://docs.rs/stockfish-rs'

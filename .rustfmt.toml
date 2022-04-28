@@ -1,0 +1,5 @@
+edition           = "2021"
+unstable_features = true
+
+blank_lines_upper_bound = 1
+max_width               = 78
