@@ -12,3 +12,6 @@ readme        = 'README.md'
 homepage      = 'https://crates.io/crates/stockfish-rs'
 repository    = 'https://github.com/stouset/stockfish-rs'
 documentation = 'https://docs.rs/stockfish-rs'
+
+[dependencies]
+color-eyre = '0.6'

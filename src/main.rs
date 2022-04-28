@@ -47,6 +47,14 @@
 // Lint Exceptions
 #![allow(rustdoc::missing_doc_code_examples)]
 
-fn main() -> Result<(), ()> {
+pub mod command_line;
+
+use command_line::CommandLine;
+
+use color_eyre::Report;
+
+fn main() -> Result<(), Report> {
+    let _command_line = CommandLine::init()?;
+
     Ok(())
 }
