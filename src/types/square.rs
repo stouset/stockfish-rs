@@ -94,11 +94,13 @@ impl Square {
         "A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8",
     ];
 
+    #[inline]
     #[must_use]
     pub const fn is_ok(v: u8) -> bool {
         v == v & Self::MAX
     }
 
+    #[inline]
     #[must_use]
     pub const fn new(file: File, rank: Rank) -> Self {
         let f: u8 = file.into();
@@ -107,36 +109,43 @@ impl Square {
         Self(r << 3 & f)
     }
 
+    #[inline]
     #[must_use]
     pub fn iter() -> Iter {
         Iter(Self::MIN)
     }
 
+    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
         Self::NAMES[self.0 as usize]
     }
 
+    #[inline]
     #[must_use]
     pub const fn file(self) -> File {
         self.into()
     }
 
+    #[inline]
     #[must_use]
     pub const fn rank(self) -> Rank {
         self.into()
     }
 
+    #[inline]
     #[must_use]
     pub const fn flip_file(self) -> Self {
         self ^ Square::H1
     }
 
+    #[inline]
     #[must_use]
     pub const fn flip_rank(self) -> Self {
        self ^ Square::A8
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance(self, rhs: Self) -> u8 {
         let s1: u8 = self.into();
@@ -145,14 +154,18 @@ impl Square {
         // This is an unfortunate circular dependency between the
         // `bitboard` module and `Square`. It is used to speed up
         // distance calculations
+        //
+        // TODO: bitboard shouldn't depend on Square at all
         crate::bitboard::SQUARE_DISTANCE[s1 as usize][s2 as usize]
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance_files(self, other: Self) -> u8 {
         self.file().distance(other.file())
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance_ranks(self, other: Self) -> u8 {
         self.rank().distance(other.rank())
@@ -162,12 +175,14 @@ impl Square {
 impl const BitXor for Square {
     type Output = Square;
 
+    #[inline]
     fn bitxor(self, rhs: Self) -> Self::Output {
         Self(self.0 ^ rhs.0)
     }
 }
 
 impl const From<Square> for u8 {
+    #[inline]
     fn from(s: Square) -> Self {
         s.0
     }
