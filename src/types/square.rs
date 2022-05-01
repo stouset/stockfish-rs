@@ -1,5 +1,3 @@
-use crate::bitboard;
-
 use std::iter::FusedIterator;
 use std::ops::BitXor;
 
@@ -144,7 +142,10 @@ impl Square {
         let s1: u8 = self.into();
         let s2: u8 = rhs .into();
 
-        bitboard::SQUARE_DISTANCE[s1 as usize][s2 as usize]
+        // This is an unfortunate circular dependency between the
+        // `bitboard` module and `Square`. It is used to speed up
+        // distance calculations
+        crate::bitboard::SQUARE_DISTANCE[s1 as usize][s2 as usize]
     }
 
     #[must_use]

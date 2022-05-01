@@ -47,6 +47,7 @@
 #![allow(rustdoc::missing_doc_code_examples)]
 
 #![feature(const_convert)]
+#![feature(const_ops)]
 #![feature(const_trait_impl)]
 #![feature(generic_arg_infer)]
 #![feature(once_cell)]
