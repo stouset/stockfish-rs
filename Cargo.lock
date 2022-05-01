@@ -33,6 +33,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "bytemuck"
+version = "1.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cdead85bdec19c194affaeeb670c0e41fe23de31459efd1c174d049269cf02cc"
+
+[[package]]
 name = "cc"
 version = "1.0.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -69,6 +75,25 @@ dependencies = [
  "owo-colors",
  "tracing-core",
  "tracing-error",
+]
+
+[[package]]
+name = "constmuck"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ad4b060dafbb567d2043377b1f24e492f2578d2c2a6c83c91498ac622dd0833"
+dependencies = [
+ "bytemuck",
+ "constmuck_internal",
+]
+
+[[package]]
+name = "constmuck_internal"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0dcbe70379c2c8b73c6b31cefc7518fa9337c86cc6705cc812772666d870ba13"
+dependencies = [
+ "bytemuck",
 ]
 
 [[package]]
@@ -166,7 +191,9 @@ dependencies = [
 name = "stockfish-rs"
 version = "0.1.0"
 dependencies = [
+ "bytemuck",
  "color-eyre",
+ "constmuck",
 ]
 
 [[package]]

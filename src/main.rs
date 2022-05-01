@@ -26,8 +26,6 @@
 #![warn(trivial_numeric_casts)]
 #![warn(unreachable_pub)]
 #![warn(unsafe_code)]
-#![warn(unsafe_op_in_unsafe_fn)]
-#![warn(unstable_features)]
 #![warn(unused_crate_dependencies)]
 #![warn(unused_import_braces)]
 #![warn(unused_lifetimes)]
@@ -45,9 +43,17 @@
 #![warn(clippy::style)]
 //
 // Lint Exceptions
+#![allow(unstable_features)]
 #![allow(rustdoc::missing_doc_code_examples)]
 
+#![feature(const_convert)]
+#![feature(const_trait_impl)]
+#![feature(generic_arg_infer)]
+#![feature(once_cell)]
+
+pub mod bitboard;
 pub mod command_line;
+pub mod types;
 
 use command_line::CommandLine;
 

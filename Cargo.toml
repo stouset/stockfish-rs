@@ -15,3 +15,7 @@ documentation = 'https://docs.rs/stockfish-rs'
 
 [dependencies]
 color-eyre = '0.6'
+constmuck  = '0'
+
+[build-dependencies]
+bytemuck = { version = '1', features = ["min_const_generics"] }
