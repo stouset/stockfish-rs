@@ -60,7 +60,9 @@ impl PieceType {
     #[inline]
     #[must_use]
     pub const fn is_sliding(self) -> bool {
-        self.0 == Self::BISHOP.0 || self.0 == Self::ROOK.0 || self.0 == Self::QUEEN.0
+        self.0 == Self::BISHOP.0
+            || self.0 == Self::ROOK.0
+            || self.0 == Self::QUEEN.0
     }
 
     pub const fn sliding_directions(self) -> &'static [Direction] {
@@ -73,7 +75,11 @@ impl PieceType {
     }
 
     #[must_use]
-    pub fn sliding_attacks(self, square: Square, occupied: Bitboard) -> Bitboard {
+    pub fn sliding_attacks(
+        self,
+        square:   Square,
+        occupied: Bitboard
+    ) -> Bitboard {
         debug_assert!(self.is_sliding(),
             "{:?} is not capable of sliding attacks", self);
 

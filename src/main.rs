@@ -7,7 +7,7 @@
 #![warn(rust_2018_compatibility)]
 #![warn(rust_2018_idioms)]
 #![warn(unused)]
-//
+
 // Individual Lints
 #![warn(box_pointers)]
 #![warn(deprecated_in_future)]
@@ -32,7 +32,7 @@
 #![warn(unused_qualifications)]
 #![warn(unused_results)]
 #![warn(variant_size_differences)]
-//
+
 // Lint Extensions
 #![warn(rustdoc::all)]
 #![warn(clippy::cargo)]
@@ -41,10 +41,11 @@
 #![warn(clippy::pedantic)]
 #![warn(clippy::perf)]
 #![warn(clippy::style)]
-//
+
 // Lint Exceptions
 #![allow(unstable_features)]
 
+// Unstable Features
 #![feature(const_convert)]
 #![feature(const_for)]
 #![feature(const_intoiterator_identity)]

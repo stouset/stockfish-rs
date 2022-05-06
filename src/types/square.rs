@@ -138,7 +138,7 @@ impl Square {
 
     #[inline]
     pub const fn flip_rank(self) -> Self {
-       self ^ Square::A8
+        self ^ Square::A8
     }
 
     #[inline]

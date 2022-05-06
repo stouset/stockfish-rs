@@ -146,13 +146,13 @@ impl<const N: usize> Magic<N> {
     }
 }
 
-impl Magic::<0x1480> {
+impl Magic<0x1480> {
     pub fn new_bishop() -> Self {
         Self::new(PieceType::BISHOP)
     }
 }
 
-impl Magic::<0x19000> {
+impl Magic<0x19000> {
     pub fn new_rook() -> Self {
         Self::new(PieceType::ROOK)
     }
@@ -189,7 +189,7 @@ impl MagicSquare {
         // we have explicitly opted into 64-bit platforms, where a
         // u64 should be the same size as a usize
         #[allow(clippy::cast_possible_truncation)] {
-            ((occupied & self.mask).0.wrapping_mul(self.magic) >> self.shift) as usize
+            ((occupied & self.mask).0.wrapping_mul(self.magic) >> self.shift) as _
         }
     }
 
