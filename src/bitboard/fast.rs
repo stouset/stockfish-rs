@@ -1,19 +1,24 @@
 use crate::types::Square;
 use super::{Bitboard, Magic};
 
-pub(crate) const fn bb<T: bytemuck::Pod, U: bytemuck::Pod>(from: T) -> U {
-    constmuck::cast(from, constmuck::infer!())
+macro_rules! bb {
+    ( $env:tt ) => {
+        constmuck::cast(
+            *include_bytes!(env!(concat!("STOCKFISH_RS_BB_", $env))),
+            constmuck::infer!()
+        )
+    }
 }
 
 /// The number of bits set for any given 16-bit value.
-const POPCNT16: [u8; 1 << 16] = bb(*include_bytes!(env!("STOCKFISH_RS_BB_POPCNT_16")));
+const POPCNT16: [u8; 1 << 16] = bb!("POPCNT_16");
 
 /// The number of moves necessary to walk a King from one square to the other.
-const SQUARE_DISTANCE: [[u8; Square::COUNT]; Square::COUNT] = bb(*include_bytes!(env!("STOCKFISH_RS_BB_SQUARE_DISTANCE")));
+const SQUARE_DISTANCE: [[u8; Square::COUNT]; Square::COUNT] = bb!("SQUARE_DISTANCE");
 
 /// Conversion from a [`Square`] index to a [`Bitboard`] with only that
 /// square set.
-const SQUARE: [Bitboard; Square::COUNT] = bb(*include_bytes!(env!("STOCKFISH_RS_BB_SQUARE")));
+const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 
 // pub const BB_BETWEEN: [[Bitboard; SQUARES]; SQUARES] = cast(*include_bytes!(env!("STOCKFISH_RS_BB_BETWEEN")));
 // extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
@@ -21,14 +26,14 @@ const SQUARE: [Bitboard; Square::COUNT] = bb(*include_bytes!(env!("STOCKFISH_RS_
 // extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 // extern Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
 
-const BISHOP_MAGICS: Magic::<0x1480> = Magic {
-    magics:  bb(*include_bytes!(env!("STOCKFISH_RS_BB_BISHOP_MAGIC_MAGICS"))),
-    attacks: bb(*include_bytes!(env!("STOCKFISH_RS_BB_BISHOP_MAGIC_ATTACKS"))),
+const BISHOP_MAGICS: Magic<0x1480> = Magic {
+    magics:  bb!("BISHOP_MAGIC_MAGICS"),
+    attacks: bb!("BISHOP_MAGIC_ATTACKS"),
 };
 
-const ROOK_MAGICS: Magic::<0x19000> = Magic {
-    magics:  bb(*include_bytes!(env!("STOCKFISH_RS_BB_ROOK_MAGIC_MAGICS"))),
-    attacks: bb(*include_bytes!(env!("STOCKFISH_RS_BB_ROOK_MAGIC_ATTACKS"))),
+const ROOK_MAGICS: Magic<0x19000> = Magic {
+    magics:  bb!("ROOK_MAGIC_MAGICS"),
+    attacks: bb!("ROOK_MAGIC_ATTACKS")
 };
 
 #[inline]
