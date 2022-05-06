@@ -36,11 +36,12 @@ impl<const N: usize> Magic<N> {
     /// bitboards](https://www.chessprogramming.org/Magic_Bitboards/) are used
     /// to look up attacks of sliding pieces. In particular, here we use the so-
     /// called "fancy" approach.
-    pub fn new(pt: PieceType) -> Self {
+    #[must_use]
+    pub fn new(pt: PieceType) -> Box<Self> {
         debug_assert!(pt == PieceType::BISHOP || pt == PieceType::ROOK,
             "unable to generate a magic bitboard for {:?}", pt);
 
-        let mut attacks = [Bitboard::EMPTY; N];
+        let mut attacks = bytemuck::allocation::zeroed_box::<[Bitboard; N]>();
         let mut magics  = [MagicSquare::new(); 64];
 
         let mut occupancy = [Bitboard::EMPTY; 4096];
@@ -146,7 +147,25 @@ impl<const N: usize> Magic<N> {
             }
         }
 
-        Magic { magics, attacks }
+        // TODO: enforce `Magic` is bytemuck::zeroable at compile-time
+        // so we can `Box::new_zeroable().assume_init()` the entire
+        // thing instead of fucking around with pointers
+        #[allow(unsafe_code)]
+        unsafe {
+            use std::mem::MaybeUninit;
+            use std::ptr;
+
+            let mut magic: Box<MaybeUninit<Magic<N>>> = Box::new_uninit();
+            let     ptr                               = magic.as_mut_ptr();
+
+            let magics_ptr:  *mut MagicSquare = ptr::addr_of_mut!((*ptr).magics) .cast();
+            let attacks_ptr: *mut Bitboard    = ptr::addr_of_mut!((*ptr).attacks).cast();
+
+            magics_ptr .copy_from_nonoverlapping(magics .as_ptr(), 64);
+            attacks_ptr.copy_from_nonoverlapping(attacks.as_ptr(), N);
+
+            magic.assume_init()
+        }
     }
 
     #[inline]
@@ -161,13 +180,15 @@ impl<const N: usize> Magic<N> {
 }
 
 impl Magic<0x1480> {
-    pub fn new_bishop() -> Self {
+    #[must_use]
+    pub fn new_bishop() -> Box<Self> {
         Self::new(PieceType::BISHOP)
     }
 }
 
 impl Magic<0x19000> {
-    pub fn new_rook() -> Self {
+    #[must_use]
+    pub fn new_rook() -> Box<Self> {
         Self::new(PieceType::ROOK)
     }
 }

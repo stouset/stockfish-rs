@@ -9,7 +9,6 @@
 #![warn(unused)]
 
 // Individual Lints
-#![warn(box_pointers)]
 #![warn(deprecated_in_future)]
 #![warn(fuzzy_provenance_casts)]
 #![warn(lossy_provenance_casts)]
@@ -57,6 +56,7 @@
 #![feature(generic_arg_infer)]
 #![feature(mixed_integer_ops)]
 #![feature(once_cell)]
+#![feature(new_uninit)]
 #![feature(strict_provenance)]
 
 pub mod bitboard;
