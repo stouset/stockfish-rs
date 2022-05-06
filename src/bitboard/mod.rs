@@ -226,7 +226,7 @@ impl const BitAnd<Option<Square>> for Bitboard {
     }
 }
 
-impl BitAndAssign<Square> for Bitboard {
+impl const BitAndAssign<Square> for Bitboard {
     #[inline]
     fn bitand_assign(&mut self, rhs: Square) {
         *self = (*self).bitand(rhs);
@@ -253,7 +253,7 @@ impl const BitOr<Square> for Bitboard {
     }
 }
 
-impl BitOrAssign<Square> for Bitboard {
+impl const BitOrAssign<Square> for Bitboard {
     #[inline]
     fn bitor_assign(&mut self, rhs: Square) {
         *self = (*self).bitor(rhs);
@@ -300,7 +300,7 @@ impl const BitXor<Option<Square>> for Bitboard {
     }
 }
 
-impl BitXorAssign<Square> for Bitboard {
+impl const BitXorAssign<Square> for Bitboard {
     #[inline]
     fn bitxor_assign(&mut self, rhs: Square) {
         *self = (*self).bitxor(rhs);
