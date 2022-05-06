@@ -10,6 +10,7 @@
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
 #![feature(mixed_integer_ops)]
+#![feature(new_uninit)]
 #![feature(strict_provenance)]
 
 use std::env;
@@ -109,11 +110,11 @@ mod computed {
         square
     }
 
-    pub fn bishop_magics() -> bitboard::Magic<0x1480> {
+    pub fn bishop_magics() -> Box<bitboard::Magic<0x1480>> {
         Magic::new_bishop()
     }
 
-    pub fn rook_magics() -> bitboard::Magic<0x19000> {
+    pub fn rook_magics() -> Box<bitboard::Magic<0x19000>> {
         Magic::new_rook()
     }
 }

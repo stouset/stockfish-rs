@@ -14,9 +14,9 @@ repository    = 'https://github.com/stouset/stockfish-rs'
 documentation = 'https://docs.rs/stockfish-rs'
 
 [dependencies]
-bytemuck = { version = '1', features = ["derive", "min_const_generics"] }
+bytemuck = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
 color-eyre = '0.6'
 constmuck  = '0'
 
 [build-dependencies]
-bytemuck = { version = '1', features = ["derive", "min_const_generics"] }
+bytemuck = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
