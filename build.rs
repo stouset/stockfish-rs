@@ -7,6 +7,7 @@
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
 #![feature(mixed_integer_ops)]
+#![feature(strict_provenance)]
 
 use std::env;
 use std::path::{Path, PathBuf};

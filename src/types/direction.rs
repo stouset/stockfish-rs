@@ -2,6 +2,7 @@ use super::Square;
 
 use std::ops::{Add, Neg};
 
+#[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Direction(i8);
 
@@ -22,7 +23,6 @@ impl Direction {
     // TODO: safe implementations of bitwise operations, in a way that
     // the set of operations is closed over only legal directions
 
-    #[inline]
     #[must_use]
     const fn name(self) -> &'static str {
         match self {
@@ -48,6 +48,7 @@ impl Direction {
 impl const Add<Direction> for Square {
     type Output = Option<Self>;
 
+    #[must_use]
     fn add(self, rhs: Direction) -> Self::Output {
         let from = self.as_u8();
         let out   = Self::from_u8(from.wrapping_add_signed(rhs.as_i8()));

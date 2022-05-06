@@ -2,11 +2,14 @@ use super::{File, Rank};
 
 use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
+
+#[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Square(u8);
 
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
+#[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Iter(u8);
 
@@ -94,7 +97,6 @@ impl Square {
     ];
 
     #[inline]
-    #[must_use]
     pub const fn new(file: File, rank: Rank) -> Self {
         let f: u8 = file.into();
         let r: u8 = rank.into();
@@ -110,37 +112,31 @@ impl Square {
     }
 
     #[inline]
-    #[must_use]
     pub fn iter() -> Iter {
         Iter(Self::MIN)
     }
 
-    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
         Self::NAMES[self.0 as usize]
     }
 
     #[inline]
-    #[must_use]
     pub const fn file(self) -> File {
         self.into()
     }
 
     #[inline]
-    #[must_use]
     pub const fn rank(self) -> Rank {
         self.into()
     }
 
     #[inline]
-    #[must_use]
     pub const fn flip_file(self) -> Self {
         self ^ Square::H1
     }
 
     #[inline]
-    #[must_use]
     pub const fn flip_rank(self) -> Self {
        self ^ Square::A8
     }
@@ -174,6 +170,7 @@ impl const std::ops::BitXor for Square {
     type Output = Square;
 
     #[inline]
+    #[must_use]
     fn bitxor(self, rhs: Self) -> Self::Output {
         Self(self.as_u8() ^ rhs.as_u8())
     }
@@ -181,6 +178,7 @@ impl const std::ops::BitXor for Square {
 
 impl const From<Square> for u8 {
     #[inline]
+    #[must_use]
     fn from(s: Square) -> Self {
         s.as_u8()
     }
@@ -188,6 +186,7 @@ impl const From<Square> for u8 {
 
 impl const From<Square> for usize {
     #[inline]
+    #[must_use]
     fn from(s: Square) -> Self {
         s.as_u8().into()
     }
@@ -196,12 +195,16 @@ impl const From<Square> for usize {
 impl<T> const Index<Square> for [T; 64] {
     type Output = T;
 
+    #[inline]
+    #[must_use]
     fn index(&self, index: Square) -> &Self::Output {
         self.index(usize::from(index))
     }
 }
 
 impl<T> const IndexMut<Square> for [T; 64] {
+    #[inline]
+    #[must_use]
     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
         self.index_mut(usize::from(index))
     }
@@ -222,6 +225,7 @@ impl std::fmt::Debug for Square {
 impl Iterator for Iter {
     type Item = Square;
 
+    #[must_use]
     fn next(&mut self) -> Option<Self::Item> {
         let next = Self::Item::from_u8(self.0);
         self.0  += 1;
@@ -229,6 +233,7 @@ impl Iterator for Iter {
         next
     }
 
+    #[must_use]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let size = (Self::Item::MAX - self.0 + 1) as usize;
 

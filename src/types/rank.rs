@@ -3,11 +3,13 @@ use super::Square;
 use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
+#[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Rank(u8);
 
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
+#[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Iter(u8, u8);
 
@@ -34,12 +36,10 @@ impl Rank {
     }
 
     #[inline]
-    #[must_use]
     pub fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
-    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
@@ -70,6 +70,7 @@ impl Rank {
 
 impl const From<Rank> for u8 {
     #[inline]
+    #[must_use]
     fn from(r: Rank) -> Self {
         r.as_u8()
     }
@@ -77,6 +78,7 @@ impl const From<Rank> for u8 {
 
 impl const From<Rank> for usize {
     #[inline]
+    #[must_use]
     fn from(r: Rank) -> Self {
         r.as_u8().into()
     }
@@ -93,6 +95,7 @@ impl<T> const Index<Rank> for [T; 8] {
     type Output = T;
 
     #[inline]
+    #[must_use]
     fn index(&self, index: Rank) -> &Self::Output {
         self.index(usize::from(index))
     }
@@ -100,6 +103,7 @@ impl<T> const Index<Rank> for [T; 8] {
 
 impl<T> const IndexMut<Rank> for [T; 8] {
     #[inline]
+    #[must_use]
     fn index_mut(&mut self, index: Rank) -> &mut Self::Output {
         self.index_mut(usize::from(index))
     }
@@ -120,6 +124,7 @@ impl std::fmt::Debug for Rank {
 impl Iterator for Iter {
     type Item = Rank;
 
+    #[must_use]
     fn next(&mut self) -> Option<Self::Item> {
         if self.0 == self.1 {
             return None;
@@ -131,6 +136,7 @@ impl Iterator for Iter {
         next
     }
 
+    #[must_use]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let size = (self.1 - self.0) as usize;
 
@@ -139,6 +145,7 @@ impl Iterator for Iter {
 }
 
 impl DoubleEndedIterator for Iter {
+    #[must_use]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.0 == self.1 {
             return None;

@@ -2,6 +2,7 @@ use super::Bitboard;
 use crate::misc::Prng;
 use crate::types::{PieceType, Square};
 
+#[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Magic<const N: usize> {
     pub(crate) magics:  [MagicSquare; Square::COUNT],
@@ -9,6 +10,7 @@ pub struct Magic<const N: usize> {
 }
 
 #[allow(clippy::module_name_repetitions)]
+#[must_use]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct MagicSquare {
@@ -30,7 +32,6 @@ impl<const N: usize> Magic<N> {
     /// bitboards](https://www.chessprogramming.org/Magic_Bitboards/) are used
     /// to look up attacks of sliding pieces. In particular, here we use the so-
     /// called "fancy" approach.
-    #[must_use]
     pub fn new(pt: PieceType) -> Self {
         debug_assert!(pt == PieceType::BISHOP || pt == PieceType::ROOK,
             "unable to generate a magic bitboard for {:?}", pt);
@@ -146,14 +147,12 @@ impl<const N: usize> Magic<N> {
 }
 
 impl Magic::<0x1480> {
-    #[must_use]
     pub fn new_bishop() -> Self {
         Self::new(PieceType::BISHOP)
     }
 }
 
 impl Magic::<0x19000> {
-    #[must_use]
     pub fn new_rook() -> Self {
         Self::new(PieceType::ROOK)
     }
@@ -161,7 +160,6 @@ impl Magic::<0x19000> {
 
 impl MagicSquare {
     #[inline]
-    #[must_use]
     pub const fn new() -> Self {
         MagicSquare {
             mask:   Bitboard::EMPTY,

@@ -11,8 +11,8 @@
 // Individual Lints
 #![warn(box_pointers)]
 #![warn(deprecated_in_future)]
-// #![warn(fuzzy_provenance_casts)]
-// #![warn(lossy_provenance_casts)]
+#![warn(fuzzy_provenance_casts)]
+#![warn(lossy_provenance_casts)]
 #![warn(macro_use_extern_crate)]
 #![warn(meta_variable_misuse)]
 #![warn(missing_abi)]
@@ -57,6 +57,7 @@
 #![feature(generic_arg_infer)]
 #![feature(mixed_integer_ops)]
 #![feature(once_cell)]
+#![feature(strict_provenance)]
 
 pub mod bitboard;
 pub mod command_line;

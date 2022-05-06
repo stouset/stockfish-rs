@@ -12,6 +12,7 @@
 ///
 /// For further analysis see
 ///   <http://vigna.di.unimi.it/ftp/papers/xorshift.pdf>
+#[must_use]
 pub(crate) struct Prng {
     seed: u64,
 }
@@ -23,6 +24,7 @@ impl Prng {
         Self { seed }
     }
 
+    #[must_use]
     pub(crate) fn next_u64(&mut self) -> u64 {
         self.seed ^= self.seed >> 12;
         self.seed ^= self.seed << 25;
@@ -33,6 +35,7 @@ impl Prng {
 
     /// Special generator used to fast init magic numbers. Output values
     /// only have 1/8th of their bits set on average.
+    #[must_use]
     pub(crate) fn next_sparse_u64(&mut self) -> u64 {
         self.next_u64() & self.next_u64() & self.next_u64()
     }

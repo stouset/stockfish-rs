@@ -4,11 +4,13 @@ use super::Square;
 use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
+#[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct File(u8);
 
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
+#[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Iter(u8, u8);
 
@@ -35,12 +37,10 @@ impl File {
     }
 
     #[inline]
-    #[must_use]
     pub fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
-    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
@@ -71,6 +71,7 @@ impl File {
 
 impl const From<File> for u8 {
     #[inline]
+    #[must_use]
     fn from(s: File) -> Self {
         s.as_u8()
     }
@@ -78,6 +79,7 @@ impl const From<File> for u8 {
 
 impl const From<File> for usize {
     #[inline]
+    #[must_use]
     fn from(s: File) -> Self {
         s.as_u8().into()
     }
@@ -94,6 +96,7 @@ impl<T> const Index<File> for [T; 8] {
     type Output = T;
 
     #[inline]
+    #[must_use]
     fn index(&self, index: File) -> &Self::Output {
         self.index(usize::from(index))
     }
@@ -101,6 +104,7 @@ impl<T> const Index<File> for [T; 8] {
 
 impl<T> const IndexMut<File> for [T; 8] {
     #[inline]
+    #[must_use]
     fn index_mut(&mut self, index: File) -> &mut Self::Output {
         self.index_mut(usize::from(index))
     }
@@ -121,6 +125,7 @@ impl std::fmt::Debug for File {
 impl Iterator for Iter {
     type Item = File;
 
+    #[must_use]
     fn next(&mut self) -> Option<Self::Item> {
         if self.0 == self.1 {
             return None;
@@ -132,6 +137,7 @@ impl Iterator for Iter {
         next
     }
 
+    #[must_use]
     fn size_hint(&self) -> (usize, Option<usize>) {
         let size = (self.1 - self.0) as usize;
 
@@ -140,6 +146,7 @@ impl Iterator for Iter {
 }
 
 impl DoubleEndedIterator for Iter {
+    #[must_use]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.0 == self.1 {
             return None;

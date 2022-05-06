@@ -1,6 +1,7 @@
 use super::{Direction, Square};
 use crate::bitboard::{self, Bitboard};
 
+#[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PieceType(u8);
 
@@ -43,7 +44,6 @@ impl PieceType {
         Direction::NORTH_WEST,
     ];
 
-    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
@@ -63,8 +63,6 @@ impl PieceType {
         self.0 == Self::BISHOP.0 || self.0 == Self::ROOK.0 || self.0 == Self::QUEEN.0
     }
 
-    #[inline]
-    #[must_use]
     pub const fn sliding_directions(self) -> &'static [Direction] {
         match self {
             Self::ROOK   => Self::ROOK_DIRECTIONS  .as_slice(),
@@ -74,7 +72,6 @@ impl PieceType {
         }
     }
 
-    #[inline]
     #[must_use]
     pub fn sliding_attacks(self, square: Square, occupied: Bitboard) -> Bitboard {
         debug_assert!(self.is_sliding(), "{:?} is not capable of sliding attacks", self);
