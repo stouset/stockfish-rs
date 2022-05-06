@@ -186,7 +186,8 @@ impl MagicSquare {
     #[inline]
     #[must_use]
     const fn index_relative(&self, occupied: Bitboard) -> usize {
-        // this is explicitly only for 64-bit platforms
+        // we have explicitly opted into 64-bit platforms, where a
+        // u64 should be the same size as a usize
         #[allow(clippy::cast_possible_truncation)] {
             ((occupied & self.mask).0.wrapping_mul(self.magic) >> self.shift) as usize
         }

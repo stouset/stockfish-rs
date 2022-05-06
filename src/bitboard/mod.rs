@@ -1,8 +1,5 @@
 //! Bitboards for fast lookups.
 
-#![allow(missing_docs)]
-#![allow(clippy::identity_op)]
-
 use crate::types::{File, Rank, Square};
 
 use std::ops::{
@@ -50,7 +47,7 @@ impl Bitboard {
     pub const FILE_H: Bitboard = Self::FILE_A << 7;
 
     pub const RANK_1: Bitboard = 0xFF.into();
-    pub const RANK_2: Bitboard = Self::RANK_1 << (8 * 1);
+    pub const RANK_2: Bitboard = Self::RANK_1 << (8);
     pub const RANK_3: Bitboard = Self::RANK_1 << (8 * 2);
     pub const RANK_4: Bitboard = Self::RANK_1 << (8 * 3);
     pub const RANK_5: Bitboard = Self::RANK_1 << (8 * 4);

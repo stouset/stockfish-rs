@@ -46,8 +46,9 @@ pub const fn popcnt64(i: u64) -> u8 {
     if cfg!(use_popcnt) {
         // This cannot truncate as a u64 cannot possible contain more
         // than 255 enabled bits.
-        #[allow(clippy::cast_possible_truncation)]
-        { i.count_ones() as u8 }
+        #[allow(clippy::cast_possible_truncation)] {
+            i.count_ones() as _
+        }
     } else {
         let chunks: [u16; 4] =
             constmuck::cast(i, constmuck::infer!());

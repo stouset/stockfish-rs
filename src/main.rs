@@ -44,7 +44,6 @@
 //
 // Lint Exceptions
 #![allow(unstable_features)]
-#![allow(rustdoc::missing_doc_code_examples)]
 
 #![feature(const_convert)]
 #![feature(const_for)]
