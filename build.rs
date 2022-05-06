@@ -2,11 +2,8 @@
 #![allow(dead_code)]
 
 #![feature(const_convert)]
-#![feature(const_for)]
-#![feature(const_intoiterator_identity)]
 #![feature(const_mut_refs)]
 #![feature(const_ops)]
-#![feature(const_option_ext)]
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
 #![feature(mixed_integer_ops)]
