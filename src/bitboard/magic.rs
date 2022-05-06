@@ -92,17 +92,14 @@ impl<const N: usize> Magic<N> {
                 size += 1;
 
                 // Iterate over every possible bit pattern in the mask.
-                //
-                // TODO: decide whether or not to implement subtraction as an
-                // operator on bitboards
-                b    = Bitboard(b.0.wrapping_sub(magic.mask.0)) & magic.mask;
+                b = Bitboard(b.0.wrapping_sub(magic.mask.0)) & magic.mask;
 
                 if b.is_empty() {
                     break;
                 }
             }
 
-            #[cfg(use_pext)] {
+            if cfg!(use_pext) {
                 continue;
             }
 
@@ -211,7 +208,7 @@ impl MagicSquare {
         std::arch::x86_64::_pext_u64(occupied.0, self.mask.0)
     }
 
-    #[cfg(target_pointer_width = "64")]
+    #[cfg(all(not(use_pext), target_pointer_width = "64"))]
     #[inline]
     #[must_use]
     const fn index(&self, occupied: Bitboard) -> usize {
@@ -222,7 +219,7 @@ impl MagicSquare {
         }
     }
 
-    #[cfg(target_pointer_width = "32")]
+    #[cfg(all(not(use_pext), target_pointer_width = "32"))]
     #[inline]
     #[must_use]
     const fn index(&self, occupied: Bitboard) -> usize {
