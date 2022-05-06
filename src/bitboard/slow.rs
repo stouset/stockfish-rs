@@ -1,5 +1,5 @@
 use super::Bitboard;
-use crate::types::{PieceType, Square};
+use crate::types::{Color, Direction, PieceType, Square};
 
 #[must_use]
 pub(crate) const fn popcnt16(i: u16) -> u8 {
@@ -33,6 +33,19 @@ pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
     let rank_diff = s1_rank.abs_diff(s2_rank);
 
     if file_diff > rank_diff { file_diff } else { rank_diff }
+}
+
+#[must_use]
+pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
+    let board: Bitboard = square.into();
+
+    match color {
+        Color::WHITE => board.shift(Direction::NORTH_WEST)
+                      | board.shift(Direction::NORTH_EAST),
+        Color::BLACK => board.shift(Direction::SOUTH_WEST)
+                      | board.shift(Direction::SOUTH_EAST),
+        _            => unreachable!(),
+    }
 }
 
 #[must_use]

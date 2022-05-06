@@ -1,6 +1,6 @@
 //! Bitboards for fast lookups.
 
-use crate::types::{File, Rank, Square};
+use crate::types::{Direction, File, Rank, Square};
 
 use std::ops::{
     BitAnd, BitAndAssign,
@@ -105,6 +105,22 @@ impl Bitboard {
     #[must_use]
     pub const fn count(self) -> usize {
         popcnt64(self.0) as _
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn shift(self, direction: Direction) -> Self {
+        match direction {
+            Direction::NORTH      => Self(self.0 << 8),
+            Direction::SOUTH      => Self(self.0 >> 8),
+            Direction::EAST       => Self((self & !Self::FILE_H).0 << 1),
+            Direction::WEST       => Self((self & !Self::FILE_A).0 >> 1),
+            Direction::NORTH_EAST => Self((self & !Self::FILE_H).0 << 9),
+            Direction::NORTH_WEST => Self((self & !Self::FILE_A).0 << 7),
+            Direction::SOUTH_EAST => Self((self & !Self::FILE_H).0 >> 7),
+            Direction::SOUTH_WEST => Self((self & !Self::FILE_A).0 >> 9),
+            _                     => unimplemented!(), // TODO: 2-step shifts
+        }
     }
 
     // Returns the underlying integer representation of the bitboard.
@@ -348,7 +364,7 @@ mod tests {
 
     use super::*;
     use crate::misc::Prng;
-    use crate::types::Square;
+    use crate::types::{Color, Square};
 
     impl Bitboard {
         /// Returns a pseudorandom bitboard with ~1/8th of its spaces filled
@@ -408,6 +424,18 @@ mod tests {
                 fast::square(s),
                 slow::square(s),
             );
+        }
+    }
+
+    #[test]
+    fn pawn_attacks_are_correct() {
+        for c in Color::iter() {
+            for s in Square::iter() {
+                assert_eq!(
+                    fast::pawn_attacks(c, s),
+                    slow::pawn_attacks(c, s),
+                );
+            }
         }
     }
 

@@ -50,6 +50,8 @@ fn generate_bitboards() {
     let rook_magics = computed::rook_magics();
     generate("BB_ROOK_MAGIC_MAGICS",  &dir, &rook_magics.magics);
     generate("BB_ROOK_MAGIC_ATTACKS", &dir, &rook_magics.attacks);
+
+    generate("BB_PAWN_ATTACKS", &dir, &computed::pawn_attacks());
 }
 
 fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
@@ -75,7 +77,7 @@ fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
 
 mod computed {
     use crate::bitboard::{self, Bitboard, Magic};
-    use crate::types::Square;
+    use crate::types::{Color, Square};
 
     pub fn popcnt16() -> [u8; 1 << 16] {
         let mut popcnt16 = [0; 1 << 16];
@@ -115,5 +117,17 @@ mod computed {
 
     pub fn rook_magics() -> Box<bitboard::Magic<0x19000>> {
         Magic::new_rook()
+    }
+
+    pub fn pawn_attacks() -> [[Bitboard; Square::COUNT]; Color::COUNT] {
+        let mut pawn_attacks = [[Bitboard::EMPTY; 64]; 2];
+
+        for c in Color::iter() {
+            for s in Square::iter() {
+                pawn_attacks[c][s] = bitboard::pawn_attacks(c, s);
+            }
+        }
+
+        pawn_attacks
     }
 }

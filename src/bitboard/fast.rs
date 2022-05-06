@@ -1,4 +1,4 @@
-use crate::types::Square;
+use crate::types::{Color, Square};
 use super::{Bitboard, Magic};
 
 macro_rules! bb {
@@ -24,7 +24,8 @@ const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 // extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 // extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 // extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
-// extern Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
+
+const PAWN_ATTACKS: [[Bitboard; Square::COUNT]; Color::COUNT] = bb!("PAWN_ATTACKS");
 
 const BISHOP_MAGICS: Magic<0x1480> = Magic {
     magics:  bb!("BISHOP_MAGIC_MAGICS"),
@@ -92,4 +93,10 @@ pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
 #[must_use]
 pub const fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
     ROOK_MAGICS.attacks(square, occupied)
+}
+
+#[inline]
+#[must_use]
+pub const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
+    PAWN_ATTACKS[color][square]
 }
