@@ -1,6 +1,7 @@
-use super::{Square, TryFromPrimitiveError};
+use super::Square;
 
 use std::iter::FusedIterator;
+use std::ops::{Index, IndexMut};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Rank(u8);
@@ -8,7 +9,7 @@ pub struct Rank(u8);
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Iter(u8);
+pub struct Iter(u8, u8);
 
 impl Rank {
     pub const _1: Self = Self(0o0);
@@ -26,58 +27,81 @@ impl Rank {
     pub const MAX:   u8    = Self::LAST.0;
     pub const COUNT: usize = Self::MAX as usize + 1;
 
+    #[inline]
     #[must_use]
-    pub const fn is_ok(v: u8) -> bool {
-        v == v & Self::MAX
+    pub const fn from_u8(v: u8) -> Option<Self> {
+        if v == v & Self::MAX { Some(Self(v)) } else { None }
     }
 
+    #[inline]
     #[must_use]
     pub fn iter() -> Iter {
-        Iter(Self::MIN)
+        Iter(Self::MIN, Self::MAX + 1)
     }
 
+    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
-        match self.0 {
-            0 => "0",
-            1 => "1",
-            2 => "2",
-            3 => "3",
-            4 => "4",
-            5 => "5",
-            6 => "6",
-            7 => "7",
+        match self {
+            Self::_1 => "1",
+            Self::_2 => "2",
+            Self::_3 => "3",
+            Self::_4 => "4",
+            Self::_5 => "5",
+            Self::_6 => "6",
+            Self::_7 => "7",
+            Self::_8 => "8",
             _ => unreachable!(),
         }
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
-        u8::from(self).abs_diff(other.into())
+        self.as_u8().abs_diff(other.into())
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn as_u8(self) -> u8 {
+        self.0
     }
 }
 
 impl const From<Rank> for u8 {
+    #[inline]
     fn from(r: Rank) -> Self {
-        r.0
+        r.as_u8()
+    }
+}
+
+impl const From<Rank> for usize {
+    #[inline]
+    fn from(r: Rank) -> Self {
+        r.as_u8().into()
     }
 }
 
 impl const From<Square> for Rank {
+    #[inline]
     fn from(s: Square) -> Self {
-        Self(u8::from(s) >> 3)
+        Self(s.as_u8() >> 3)
     }
 }
 
-impl const TryFrom<u8> for Rank {
-    type Error = TryFromPrimitiveError<Self, u8>;
+impl<T> const Index<Rank> for [T; 8] {
+    type Output = T;
 
-    fn try_from(v: u8) -> Result<Self, Self::Error> {
-        if !Self::is_ok(v) {
-            return Err(TryFromPrimitiveError::new(v));
-        }
+    #[inline]
+    fn index(&self, index: Rank) -> &Self::Output {
+        self.index(usize::from(index))
+    }
+}
 
-        Ok(Self(v))
+impl<T> const IndexMut<Rank> for [T; 8] {
+    #[inline]
+    fn index_mut(&mut self, index: Rank) -> &mut Self::Output {
+        self.index_mut(usize::from(index))
     }
 }
 
@@ -97,20 +121,31 @@ impl Iterator for Iter {
     type Item = Rank;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if !Self::Item::is_ok(self.0) {
+        if self.0 == self.1 {
             return None;
         }
 
-        let next = Rank(self.0);
+        let next = Self::Item::from_u8(self.0);
         self.0  += 1;
 
-        Some(next)
+        next
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = (Self::Item::MAX - self.0 + 1) as usize;
+        let size = (self.1 - self.0) as usize;
 
         (size, Some(size))
+    }
+}
+
+impl DoubleEndedIterator for Iter {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.0 == self.1 {
+            return None;
+        }
+
+        self.1 -= 1;
+        Self::Item::from_u8(self.1)
     }
 }
 

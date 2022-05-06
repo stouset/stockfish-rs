@@ -1,30 +1,64 @@
+#![feature(const_convert)]
+#![feature(const_for)]
+#![feature(const_intoiterator_identity)]
+#![feature(const_mut_refs)]
+#![feature(const_ops)]
+#![feature(const_option_ext)]
+#![feature(const_slice_index)]
+#![feature(const_trait_impl)]
+#![feature(mixed_integer_ops)]
+
 use std::env;
 use std::path::{Path, PathBuf};
 
+#[path = "src/bitboard/mod.rs"]
+mod bitboard;
+
+#[path = "src/misc/mod.rs"]
+mod misc;
+
+#[path = "src/types/mod.rs"]
+mod types;
+
 fn main() {
-    let bitboard_dir = PathBuf::from(env::var("OUT_DIR").unwrap())
-        .join("bitboards");
+    println!("cargo:rustc-cfg=use_computed_bitboards");
 
-    generate_bitboards(&bitboard_dir);
+    detect_hardware_features();
+    generate_bitboards();
 }
 
-fn generate_bitboards(dir: &Path) {
-    generate("BB_POPCNT_16",       dir, &bitboard::popcnt16()[..]);
-    generate("BB_SQUARE_DISTANCE", dir, &bitboard::square_distance()[..]);
-    generate("BB_SQUARE",          dir, &bitboard::square());
+fn detect_hardware_features() {
+    println!("cargo:rustc-cfg=use_popcnt");
 }
 
-fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &[T]) {
+fn generate_bitboards() {
+    let dir = PathBuf::from(env::var("OUT_DIR").unwrap())
+    .join("bitboards");
+
+    generate("BB_POPCNT_16",       &dir, &computed::popcnt16());
+    generate("BB_SQUARE_DISTANCE", &dir, &computed::square_distance());
+    generate("BB_SQUARE",          &dir, &computed::square());
+
+    let bishop_magics = computed::bishop_magics();
+    generate("BB_BISHOP_MAGIC_MAGICS",  &dir, &bishop_magics.magics);
+    generate("BB_BISHOP_MAGIC_ATTACKS", &dir, &bishop_magics.attacks);
+
+    let rook_magics = computed::rook_magics();
+    generate("BB_ROOK_MAGIC_MAGICS",  &dir, &rook_magics.magics);
+    generate("BB_ROOK_MAGIC_ATTACKS", &dir, &rook_magics.attacks);
+}
+
+fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
     use std::fs::{self, File};
     use std::io::prelude::Write;
 
     let _ = fs::create_dir_all(dir).unwrap();
 
-    let mut path : PathBuf = dir.to_path_buf();
+    let mut path: PathBuf = dir.to_path_buf();
     path.push(name.to_lowercase());
     path.set_extension("bin");
 
-    let bytes = bytemuck::cast_slice(data);
+    let bytes = bytemuck::bytes_of(data);
 
     File::options()
         .create(true)
@@ -35,12 +69,15 @@ fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &[T]) {
     println!("cargo:rustc-env=STOCKFISH_RS_{}={}", name, &path.display());
 }
 
-mod bitboard {
+mod computed {
+    use crate::bitboard::{self, Magic};
+    use crate::types::Square;
+
     pub fn popcnt16() -> [u8; 1 << 16] {
         let mut popcnt16 = [0; 1 << 16];
 
-        for (i, v) in popcnt16.iter_mut().enumerate() {
-            *v = i.count_ones().try_into().unwrap();
+        for i in 0..u16::MAX {
+            popcnt16[i as usize] = bitboard::popcnt16(i);
         }
 
         popcnt16
@@ -49,17 +86,9 @@ mod bitboard {
     pub fn square_distance() -> [[u8; 64]; 64] {
         let mut square_distance = [[0; 64]; 64];
 
-        for i in 0..64 {
-            for j in 0..64 {
-                let i_file: u8 = i &  7;
-                let i_rank: u8 = i >> 3;
-                let j_file: u8 = j &  7;
-                let j_rank: u8 = j >> 3;
-
-                square_distance[i as usize][j as usize] = std::cmp::max(
-                    i_file.abs_diff(j_file),
-                    i_rank.abs_diff(j_rank),
-                );
+        for (i, s1) in Square::iter().enumerate() {
+            for (j, s2) in Square::iter().enumerate() {
+                square_distance[i][j] = s1.distance(s2);
             }
         }
 
@@ -74,5 +103,13 @@ mod bitboard {
         }
 
         square
+    }
+
+    pub fn bishop_magics() -> bitboard::Magic<0x1480> {
+        Magic::new_bishop()
+    }
+
+    pub fn rook_magics() -> bitboard::Magic<0x19000> {
+        Magic::new_rook()
     }
 }

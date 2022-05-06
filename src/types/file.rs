@@ -1,7 +1,8 @@
 
-use super::{Square, TryFromPrimitiveError};
+use super::Square;
 
 use std::iter::FusedIterator;
+use std::ops::{Index, IndexMut};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct File(u8);
@@ -9,7 +10,7 @@ pub struct File(u8);
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Iter(u8);
+pub struct Iter(u8, u8);
 
 impl File {
     pub const _A: Self = Self(0o0);
@@ -27,58 +28,81 @@ impl File {
     pub const MAX:   u8    = Self::LAST.0;
     pub const COUNT: usize = Self::MAX as usize + 1;
 
+    #[inline]
     #[must_use]
-    pub const fn is_ok(v: u8) -> bool {
-        v == v & Self::MAX
+    pub const fn from_u8(v: u8) -> Option<Self> {
+        if v == v & Self::MAX { Some(Self(v)) } else { None }
     }
 
+    #[inline]
     #[must_use]
     pub fn iter() -> Iter {
-        Iter(Self::MIN)
+        Iter(Self::MIN, Self::MAX + 1)
     }
 
+    #[inline]
     #[must_use]
     pub const fn name(self) -> &'static str {
-        match self.0 {
-            0 => "A",
-            1 => "B",
-            2 => "C",
-            3 => "D",
-            4 => "E",
-            5 => "F",
-            6 => "G",
-            7 => "H",
+        match self {
+            Self::_A => "A",
+            Self::_B => "B",
+            Self::_C => "C",
+            Self::_D => "D",
+            Self::_E => "E",
+            Self::_F => "F",
+            Self::_G => "G",
+            Self::_H => "H",
             _ => unreachable!(),
         }
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
-        u8::from(self).abs_diff(other.into())
+        self.as_u8().abs_diff(other.into())
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn as_u8(self) -> u8 {
+        self.0
     }
 }
 
 impl const From<File> for u8 {
+    #[inline]
     fn from(s: File) -> Self {
-        s.0
+        s.as_u8()
+    }
+}
+
+impl const From<File> for usize {
+    #[inline]
+    fn from(s: File) -> Self {
+        s.as_u8().into()
     }
 }
 
 impl const From<Square> for File {
+    #[inline]
     fn from(s: Square) -> Self {
-        Self(u8::from(s) & 7)
+        Self(s.as_u8() & 7)
     }
 }
 
-impl const TryFrom<u8> for File {
-    type Error = TryFromPrimitiveError<Self, u8>;
+impl<T> const Index<File> for [T; 8] {
+    type Output = T;
 
-    fn try_from(v: u8) -> Result<Self, Self::Error> {
-        if !Self::is_ok(v) {
-            return Err(TryFromPrimitiveError::new(v));
-        }
+    #[inline]
+    fn index(&self, index: File) -> &Self::Output {
+        self.index(usize::from(index))
+    }
+}
 
-        Ok(Self(v))
+impl<T> const IndexMut<File> for [T; 8] {
+    #[inline]
+    fn index_mut(&mut self, index: File) -> &mut Self::Output {
+        self.index_mut(usize::from(index))
     }
 }
 
@@ -98,20 +122,31 @@ impl Iterator for Iter {
     type Item = File;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if !Self::Item::is_ok(self.0) {
+        if self.0 == self.1 {
             return None;
         }
 
-        let next = File(self.0);
+        let next = Self::Item::from_u8(self.0);
         self.0  += 1;
 
-        Some(next)
+        next
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = (Self::Item::MAX - self.0 + 1) as usize;
+        let size = (self.1 - self.0) as usize;
 
         (size, Some(size))
+    }
+}
+
+impl DoubleEndedIterator for Iter {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.0 == self.1 {
+            return None;
+        }
+
+        self.1 -= 1;
+        Self::Item::from_u8(self.1)
     }
 }
 

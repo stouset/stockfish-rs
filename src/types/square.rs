@@ -1,8 +1,7 @@
+use super::{File, Rank};
+
 use std::iter::FusedIterator;
-use std::ops::BitXor;
-
-use super::{File, Rank, TryFromPrimitiveError};
-
+use std::ops::{Index, IndexMut};
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Square(u8);
 
@@ -96,17 +95,18 @@ impl Square {
 
     #[inline]
     #[must_use]
-    pub const fn is_ok(v: u8) -> bool {
-        v == v & Self::MAX
+    pub const fn new(file: File, rank: Rank) -> Self {
+        let f: u8 = file.into();
+        let r: u8 = rank.into();
+        let s: u8 = (r << 3) + f;
+
+        Self(s)
     }
 
     #[inline]
     #[must_use]
-    pub const fn new(file: File, rank: Rank) -> Self {
-        let f: u8 = file.into();
-        let r: u8 = rank.into();
-
-        Self(r << 3 & f)
+    pub const fn from_u8(v: u8) -> Option<Self> {
+        if v == v & Self::MAX { Some(Self(v)) } else { None }
     }
 
     #[inline]
@@ -147,20 +147,6 @@ impl Square {
 
     #[inline]
     #[must_use]
-    pub const fn distance(self, rhs: Self) -> u8 {
-        let s1: u8 = self.into();
-        let s2: u8 = rhs .into();
-
-        // This is an unfortunate circular dependency between the
-        // `bitboard` module and `Square`. It is used to speed up
-        // distance calculations
-        //
-        // TODO: bitboard shouldn't depend on Square at all
-        crate::bitboard::SQUARE_DISTANCE[s1 as usize][s2 as usize]
-    }
-
-    #[inline]
-    #[must_use]
     pub const fn distance_files(self, other: Self) -> u8 {
         self.file().distance(other.file())
     }
@@ -170,33 +156,54 @@ impl Square {
     pub const fn distance_ranks(self, other: Self) -> u8 {
         self.rank().distance(other.rank())
     }
+
+    #[inline]
+    #[must_use]
+    pub const fn distance(self, rhs: Self) -> u8 {
+        crate::bitboard::square_distance(self, rhs)
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn as_u8(self) -> u8 {
+        self.0
+    }
 }
 
-impl const BitXor for Square {
+impl const std::ops::BitXor for Square {
     type Output = Square;
 
     #[inline]
     fn bitxor(self, rhs: Self) -> Self::Output {
-        Self(self.0 ^ rhs.0)
+        Self(self.as_u8() ^ rhs.as_u8())
     }
 }
 
 impl const From<Square> for u8 {
     #[inline]
     fn from(s: Square) -> Self {
-        s.0
+        s.as_u8()
     }
 }
 
-impl const TryFrom<u8> for Square {
-    type Error = TryFromPrimitiveError<Self, u8>;
+impl const From<Square> for usize {
+    #[inline]
+    fn from(s: Square) -> Self {
+        s.as_u8().into()
+    }
+}
 
-    fn try_from(v: u8) -> Result<Self, Self::Error> {
-        if !Self::is_ok(v) {
-            return Err(TryFromPrimitiveError::new(v));
-        }
+impl<T> const Index<Square> for [T; 64] {
+    type Output = T;
 
-        Ok(Self(v))
+    fn index(&self, index: Square) -> &Self::Output {
+        self.index(usize::from(index))
+    }
+}
+
+impl<T> const IndexMut<Square> for [T; 64] {
+    fn index_mut(&mut self, index: Square) -> &mut Self::Output {
+        self.index_mut(usize::from(index))
     }
 }
 
@@ -216,14 +223,10 @@ impl Iterator for Iter {
     type Item = Square;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if !Self::Item::is_ok(self.0) {
-            return None;
-        }
-
-        let next = Square(self.0);
+        let next = Self::Item::from_u8(self.0);
         self.0  += 1;
 
-        Some(next)
+        next
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -241,15 +244,28 @@ mod tests {
 
     #[test]
     fn square_new() {
-        assert_eq!(Square::A1, Square::try_from(0o00).unwrap());
-        assert_eq!(Square::B3, Square::try_from(0o21).unwrap());
-        assert_eq!(Square::B4, Square::try_from(0o31).unwrap());
-        assert_eq!(Square::C7, Square::try_from(0o62).unwrap());
-        assert_eq!(Square::D2, Square::try_from(0o13).unwrap());
-        assert_eq!(Square::E6, Square::try_from(0o54).unwrap());
-        assert_eq!(Square::F5, Square::try_from(0o45).unwrap());
-        assert_eq!(Square::G8, Square::try_from(0o76).unwrap());
-        assert_eq!(Square::H8, Square::try_from(0o77).unwrap());
+        assert_eq!(Square::A1, Square::new(File::_A, Rank::_1));
+        assert_eq!(Square::B3, Square::new(File::_B, Rank::_3));
+        assert_eq!(Square::B4, Square::new(File::_B, Rank::_4));
+        assert_eq!(Square::C7, Square::new(File::_C, Rank::_7));
+        assert_eq!(Square::D2, Square::new(File::_D, Rank::_2));
+        assert_eq!(Square::E6, Square::new(File::_E, Rank::_6));
+        assert_eq!(Square::F5, Square::new(File::_F, Rank::_5));
+        assert_eq!(Square::G8, Square::new(File::_G, Rank::_8));
+        assert_eq!(Square::H8, Square::new(File::_H, Rank::_8));
+    }
+
+    #[test]
+    fn square_from_u8() {
+        assert_eq!(Square::A1, Square::from_u8(0o00).unwrap());
+        assert_eq!(Square::B3, Square::from_u8(0o21).unwrap());
+        assert_eq!(Square::B4, Square::from_u8(0o31).unwrap());
+        assert_eq!(Square::C7, Square::from_u8(0o62).unwrap());
+        assert_eq!(Square::D2, Square::from_u8(0o13).unwrap());
+        assert_eq!(Square::E6, Square::from_u8(0o54).unwrap());
+        assert_eq!(Square::F5, Square::from_u8(0o45).unwrap());
+        assert_eq!(Square::G8, Square::from_u8(0o76).unwrap());
+        assert_eq!(Square::H8, Square::from_u8(0o77).unwrap());
     }
 
     #[test]
@@ -264,8 +280,8 @@ mod tests {
     fn square_file_rank() {
         for s in 0..64 {
             let square = Square(s);
-            let file   = File::try_from(s & 7) .unwrap();
-            let rank   = Rank::try_from(s >> 3).unwrap();
+            let file   = File::from_u8(s & 7) .unwrap();
+            let rank   = Rank::from_u8(s >> 3).unwrap();
 
             assert_eq!(square.file(), file);
             assert_eq!(square.rank(), rank);
