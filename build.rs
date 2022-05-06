@@ -30,6 +30,8 @@ fn main() {
 }
 
 fn detect_hardware_features() {
+    // TODO: actually detect hardware features :(
+    // println!("cargo:rustc-cfg=use_pext");
     println!("cargo:rustc-cfg=use_popcnt");
 }
 
