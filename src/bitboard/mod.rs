@@ -336,7 +336,7 @@ impl std::fmt::Debug for Bitboard {
             writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
         }
 
-        writeln!(f, "    a   b   c   d   e   f   g   h")
+        writeln!(f, "    A   B   C   D   E   F   G   H")
     }
 }
 
