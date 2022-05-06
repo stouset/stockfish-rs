@@ -104,7 +104,6 @@ impl Bitboard {
     #[inline]
     #[must_use]
     pub const fn count(self) -> usize {
-        // TODO: use precalculated popcnt if we don't have acceleration
         popcnt64(self.0) as _
     }
 
@@ -323,7 +322,6 @@ impl std::fmt::Debug for Bitboard {
         writeln!(f)?;
         writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
 
-        // TODO: implement DoubleEndedIterator for Rank/File
         for rank in Rank::iter().rev() {
             write!(f, "{} ", rank.as_u8() + 1)?;
 

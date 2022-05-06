@@ -6,9 +6,6 @@ pub(crate) const fn bb<T: bytemuck::Pod, U: bytemuck::Pod>(from: T) -> U {
 }
 
 /// The number of bits set for any given 16-bit value.
-///
-/// TODO: detect at compile time whether or not we need to use this or
-/// if we can rely on the `popcnt` instruction.
 const POPCNT16: [u8; 1 << 16] = bb(*include_bytes!(env!("STOCKFISH_RS_BB_POPCNT_16")));
 
 /// The number of moves necessary to walk a King from one square to the other.
@@ -37,14 +34,22 @@ const ROOK_MAGICS: Magic::<0x19000> = Magic {
 #[inline]
 #[must_use]
 pub const fn popcnt16(i: u16) -> u8 {
-    POPCNT16[i as usize]
+    if cfg!(use_popcnt) {
+        // This cannot truncate as a u16 cannot possibly contain more
+        // than 255 enabled bits.
+        #[allow(clippy::cast_possible_truncation)] {
+            i.count_ones() as _
+        }
+    } else {
+        POPCNT16[i as usize]
+    }
 }
 
 #[inline]
 #[must_use]
 pub const fn popcnt64(i: u64) -> u8 {
     if cfg!(use_popcnt) {
-        // This cannot truncate as a u64 cannot possible contain more
+        // This cannot truncate as a u64 cannot possibly contain more
         // than 255 enabled bits.
         #[allow(clippy::cast_possible_truncation)] {
             i.count_ones() as _
