@@ -74,7 +74,7 @@ fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
 }
 
 mod computed {
-    use crate::bitboard::{self, Magic};
+    use crate::bitboard::{self, Bitboard, Magic};
     use crate::types::Square;
 
     pub fn popcnt16() -> [u8; 1 << 16] {
@@ -87,23 +87,23 @@ mod computed {
         popcnt16
     }
 
-    pub fn square_distance() -> [[u8; 64]; 64] {
+    pub fn square_distance() -> [[u8; Square::COUNT]; Square::COUNT] {
         let mut square_distance = [[0; 64]; 64];
 
-        for (i, s1) in Square::iter().enumerate() {
-            for (j, s2) in Square::iter().enumerate() {
-                square_distance[i][j] = bitboard::square_distance(s1, s2);
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
+                square_distance[s1][s2] = bitboard::square_distance(s1, s2);
             }
         }
 
         square_distance
     }
 
-    pub fn square() -> [u64; 64] {
-        let mut square = [0; 64];
+    pub fn square() -> [Bitboard; Square::COUNT] {
+        let mut square = [Bitboard::EMPTY; 64];
 
-        for (i, s) in Square::iter().enumerate() {
-            square[i] = bitboard::square(s).as_u64();
+        for s in Square::iter() {
+            square[s] = bitboard::square(s);
         }
 
         square
