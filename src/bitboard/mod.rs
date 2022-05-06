@@ -107,6 +107,13 @@ impl Bitboard {
         // TODO: use precalculated popcnt if we don't have acceleration
         popcnt64(self.0) as _
     }
+
+    // Returns the underlying integer representation of the bitboard.
+    #[must_use]
+    #[inline]
+    pub const fn as_u64(self) -> u64 {
+        self.0
+    }
 }
 
 impl const From<u64> for Bitboard {

@@ -1,3 +1,6 @@
+// not all code paths will be exercised by the build script
+#![allow(dead_code)]
+
 #![feature(const_convert)]
 #![feature(const_for)]
 #![feature(const_intoiterator_identity)]
@@ -89,7 +92,7 @@ mod computed {
 
         for (i, s1) in Square::iter().enumerate() {
             for (j, s2) in Square::iter().enumerate() {
-                square_distance[i][j] = s1.distance(s2);
+                square_distance[i][j] = bitboard::square_distance(s1, s2);
             }
         }
 
@@ -99,8 +102,8 @@ mod computed {
     pub fn square() -> [u64; 64] {
         let mut square = [0; 64];
 
-        for (i, v) in square.iter_mut().enumerate() {
-            *v = 1 << i;
+        for (i, s) in Square::iter().enumerate() {
+            square[i] = bitboard::square(s).as_u64();
         }
 
         square
