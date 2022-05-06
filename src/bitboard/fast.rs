@@ -84,8 +84,6 @@ pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
 #[inline]
 #[must_use]
 pub const fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-// return super::slow::rook_attacks(square, occupied);
-
     let magic = ROOK_MAGICS.magics[square];
     let index = magic.index(occupied);
 
