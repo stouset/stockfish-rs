@@ -74,7 +74,11 @@ impl PieceType {
 
     #[must_use]
     pub fn sliding_attacks(self, square: Square, occupied: Bitboard) -> Bitboard {
-        debug_assert!(self.is_sliding(), "{:?} is not capable of sliding attacks", self);
+        debug_assert!(self.is_sliding(),
+            "{:?} is not capable of sliding attacks", self);
+
+        debug_assert!((occupied & square).is_empty(),
+            "{:?} must not be in the occupancy board {:?}", self, occupied);
 
         match self {
             Self::ROOK   => bitboard::rook_attacks(square, occupied),
