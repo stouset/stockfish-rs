@@ -52,7 +52,7 @@ impl File {
             Self::_F => "F",
             Self::_G => "G",
             Self::_H => "H",
-            _ => unreachable!(),
+            _        => unreachable!(),
         }
     }
 

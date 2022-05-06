@@ -51,7 +51,7 @@ impl Rank {
             Self::_6 => "6",
             Self::_7 => "7",
             Self::_8 => "8",
-            _ => unreachable!(),
+            _        => unreachable!(),
         }
     }
 

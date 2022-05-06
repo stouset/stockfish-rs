@@ -53,7 +53,7 @@ impl PieceType {
             Self::ROOK   => "rook",
             Self::QUEEN  => "queen",
             Self::KING   => "king",
-            _ => unreachable!(),
+            _            => unreachable!(),
         }
     }
 
