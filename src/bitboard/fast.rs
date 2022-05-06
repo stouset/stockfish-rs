@@ -80,17 +80,11 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
 #[inline]
 #[must_use]
 pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-    let magic = BISHOP_MAGICS.magics[square];
-    let index = magic.index(occupied);
-
-    BISHOP_MAGICS.attacks[index]
+    BISHOP_MAGICS.attacks(square, occupied)
 }
 
 #[inline]
 #[must_use]
 pub const fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-    let magic = ROOK_MAGICS.magics[square];
-    let index = magic.index(occupied);
-
-    ROOK_MAGICS.attacks[index]
+    ROOK_MAGICS.attacks(square, occupied)
 }

@@ -5,6 +5,9 @@ use crate::types::{PieceType, Square};
 #[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Magic<const N: usize> {
+    // TODO: magics and attacks should be private, but they're
+    // exposed right now so they can be serialized as bytes during
+    // build
     pub(crate) magics:  [MagicSquare; Square::COUNT],
     pub(crate) attacks: [Bitboard; N],
 }
@@ -128,8 +131,8 @@ impl<const N: usize> Magic<N> {
                 // attempt count and save it in epoch[], little speed-up trick
                 // to avoid resetting m.attacks[] after every failed attempt.
                 while i < size {
-                    let index_rel = magic.index_relative(occupancy[i]);
-                    let index     = magic.index(occupancy[i]);
+                    let index_rel = magic.index(occupancy[i]);
+                    let index     = magic.offset + index_rel;
 
                     if epoch[index_rel] < count {
                         epoch[index_rel] = count;
@@ -144,6 +147,16 @@ impl<const N: usize> Magic<N> {
         }
 
         Magic { magics, attacks }
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn attacks(&self, square: Square, occupied: Bitboard) -> Bitboard {
+        let magic  = self.magics[square];
+        let offset = magic.offset;
+        let index  = magic.index(occupied);
+
+        self.attacks[offset + index]
     }
 }
 
@@ -170,23 +183,17 @@ impl MagicSquare {
         }
     }
 
-    #[inline]
-    #[must_use]
-    pub const fn index(&self, occupied: Bitboard) -> usize {
-        self.offset + self.index_relative(occupied)
-    }
-
     #[cfg(use_pext)]
     #[inline]
     #[must_use]
-    const fn index_relative(&self, occupied: Bitboard) -> usize {
+    const fn index(&self, occupied: Bitboard) -> usize {
         std::arch::x86_64::_pext_u64(occupied.0, self.mask.0)
     }
 
     #[cfg(target_pointer_width = "64")]
     #[inline]
     #[must_use]
-    const fn index_relative(&self, occupied: Bitboard) -> usize {
+    const fn index(&self, occupied: Bitboard) -> usize {
         // we have explicitly opted into 64-bit platforms, where a
         // u64 should be the same size as a usize
         #[allow(clippy::cast_possible_truncation)] {
@@ -197,7 +204,7 @@ impl MagicSquare {
     #[cfg(target_pointer_width = "32")]
     #[inline]
     #[must_use]
-    const fn index_relative(&self, occupied: Bitboard) -> usize {
+    const fn index(&self, occupied: Bitboard) -> usize {
         let index           = (occupied & self.mask).0;
         let magic_lo: usize = (self.magic & 0xffff_ffff) as _;
         let magic_hi: usize = (self.magic >> 32)         as _;
