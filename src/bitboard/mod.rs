@@ -101,6 +101,18 @@ impl Bitboard {
         self.0 == Self::ALL.0
     }
 
+    #[inline]
+    #[must_use]
+    pub const fn contains(self, s: Square) -> bool {
+        self.overlaps(s.into())
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn overlaps(self, rhs: Self) -> bool {
+        (self & rhs).is_any()
+    }
+
     // Returns the number of squares in the bitboard.
     #[inline]
     #[must_use]
@@ -447,6 +459,18 @@ mod tests {
                 fast::square(s),
                 slow::square(s),
             );
+        }
+    }
+
+    #[test]
+    fn line_is_correct() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
+                assert_eq!(
+                    fast::line(s1, s2),
+                    slow::line(s1, s2),
+                );
+            }
         }
     }
 

@@ -39,6 +39,17 @@ pub(crate) const fn square(s: Square) -> Bitboard {
 }
 
 #[must_use]
+pub(crate) fn line(s1: Square, s2: Square) -> Bitboard {
+    for pt in [PieceType::BISHOP, PieceType::ROOK] {
+        if pseudo_attacks(pt, s1).contains(s2) {
+            return pseudo_attacks(pt, s1) & pseudo_attacks(pt, s2) | s1 | s2
+        }
+    }
+
+    Bitboard::EMPTY
+}
+
+#[must_use]
 pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
         "occupancy bitboard must not contain the attacking piece");

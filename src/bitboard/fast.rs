@@ -24,6 +24,8 @@ const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 // extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 // extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 
+const LINE: [[Bitboard; Square::COUNT]; Square::COUNT] = bb!("LINE");
+
 /// The attacks for any type of piece assuming an empty board.
 const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; PieceType::COUNT] = bb!("PSEUDO_ATTACKS");
 
@@ -95,6 +97,19 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
 #[must_use]
 pub const fn square(s: Square) -> Bitboard {
     SQUARE[usize::from(s)]
+}
+
+/// Returns a bitboard representing an entire line (from board edge to board
+/// edge) that intersects the two given squares. If the given squares are not
+/// on a same file, rank, or diagonal, or if the squares are the same, returns
+/// an empty bitboard.
+///
+/// For example, `line(Square::C4, Square::F7)` will return a bitboard with the
+/// bits on the A2-G8 diagonal set.
+#[inline]
+#[must_use]
+pub const fn line(s1: Square, s2: Square) -> Bitboard {
+    LINE[s1][s2]
 }
 
 /// Returns a bitboard of valid attacks given a board containing other pieces
