@@ -96,13 +96,13 @@ pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
 #[must_use]
 pub(crate) fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
     let mut attacks    = Bitboard::EMPTY;
-    let     directions = PieceType::BISHOP.sliding_directions();
+    let     directions = PieceType::BISHOP_DIRECTIONS;
 
     for dir in directions {
         let mut s = square;
 
-        while (s + *dir).is_some() && (occupied & s).is_empty() {
-            s = match s + *dir {
+        while (s + dir).is_some() && (occupied & s).is_empty() {
+            s = match s + dir {
                 Some(v) => v,
                 None    => unreachable!(), // already tested is_some
             };
@@ -117,13 +117,13 @@ pub(crate) fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
 #[must_use]
 pub(crate) fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
     let mut attacks    = Bitboard::EMPTY;
-    let     directions = PieceType::ROOK.sliding_directions();
+    let     directions = PieceType::ROOK_DIRECTIONS;
 
     for dir in directions {
         let mut s = square;
 
-        while (s + *dir).is_some() && (occupied & s).is_empty() {
-            s = match s + *dir {
+        while (s + dir).is_some() && (occupied & s).is_empty() {
+            s = match s + dir {
                 Some(v) => v,
                 None    => unreachable!(), // already tested is_some
             };

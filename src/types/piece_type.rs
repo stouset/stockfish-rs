@@ -91,23 +91,6 @@ impl PieceType {
 
     #[inline]
     #[must_use]
-    pub const fn is_sliding(self) -> bool {
-        self.0 == Self::BISHOP.0
-            || self.0 == Self::ROOK.0
-            || self.0 == Self::QUEEN.0
-    }
-
-    pub const fn sliding_directions(self) -> &'static [Direction] {
-        match self {
-            Self::ROOK   => Self::ROOK_DIRECTIONS  .as_slice(),
-            Self::BISHOP => Self::BISHOP_DIRECTIONS.as_slice(),
-            Self::QUEEN  => Self::QUEEN_DIRECTIONS .as_slice(),
-            _            => &[],
-        }
-    }
-
-    #[inline]
-    #[must_use]
     pub const fn as_u8(self) -> u8 {
         self.0
     }
