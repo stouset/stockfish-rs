@@ -25,13 +25,16 @@ const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 // extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 // extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 
+/// The attacks for pawns of each color.
 const PAWN_ATTACKS: [[Bitboard; Square::COUNT]; Color::COUNT] = bb!("PAWN_ATTACKS");
 
+/// A "magic bitboard" of Bishop attacks.
 const BISHOP_MAGICS: Magic<0x1480> = Magic {
     magics:  bb!("BISHOP_MAGIC_MAGICS"),
     attacks: bb!("BISHOP_MAGIC_ATTACKS"),
 };
 
+/// A "magic bitboard" of Rook attacks.
 const ROOK_MAGICS: Magic<0x19000> = Magic {
     magics:  bb!("ROOK_MAGIC_MAGICS"),
     attacks: bb!("ROOK_MAGIC_ATTACKS")
@@ -80,7 +83,7 @@ pub const fn square(s: Square) -> Bitboard {
 #[inline]
 #[must_use]
 pub const fn square_distance(s1: Square, s2: Square) -> u8 {
-    SQUARE_DISTANCE[usize::from(s1)][usize::from(s2)]
+    SQUARE_DISTANCE[s1][s2]
 }
 
 #[inline]

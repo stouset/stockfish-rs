@@ -33,11 +33,11 @@ impl File {
     #[inline]
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
-        if v == v & Self::MAX { Some(Self(v)) } else { None }
+        if v <= Self::MAX { Some(Self(v)) } else { None }
     }
 
     #[inline]
-    pub fn iter() -> Iter {
+    pub const fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
@@ -72,16 +72,16 @@ impl File {
 impl const From<File> for u8 {
     #[inline]
     #[must_use]
-    fn from(s: File) -> Self {
-        s.as_u8()
+    fn from(f: File) -> Self {
+        f.as_u8()
     }
 }
 
 impl const From<File> for usize {
     #[inline]
     #[must_use]
-    fn from(s: File) -> Self {
-        s.as_u8().into()
+    fn from(f: File) -> Self {
+        f.as_u8().into()
     }
 }
 
@@ -92,7 +92,7 @@ impl const From<Square> for File {
     }
 }
 
-impl<T> const Index<File> for [T; 8] {
+impl<T> const Index<File> for [T; File::COUNT] {
     type Output = T;
 
     #[inline]
@@ -102,7 +102,7 @@ impl<T> const Index<File> for [T; 8] {
     }
 }
 
-impl<T> const IndexMut<File> for [T; 8] {
+impl<T> const IndexMut<File> for [T; File::COUNT] {
     #[inline]
     #[must_use]
     fn index_mut(&mut self, index: File) -> &mut Self::Output {

@@ -1,6 +1,9 @@
 use super::Bitboard;
 use crate::types::{Color, Direction, PieceType, Square};
 
+// TODO: const-generic versions of functions that take enum-like structs (e.g.,
+// PieceType, Color) once the `adt_const_params` feature is complete.
+
 #[must_use]
 pub(crate) const fn popcnt16(i: u16) -> u8 {
     match i.count_ones().try_into() {

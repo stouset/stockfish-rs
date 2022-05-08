@@ -33,7 +33,7 @@ impl Color {
     }
 
     #[inline]
-    pub fn iter() -> Iter {
+    pub const fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 

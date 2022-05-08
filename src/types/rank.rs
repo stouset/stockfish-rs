@@ -32,11 +32,11 @@ impl Rank {
     #[inline]
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
-        if v == v & Self::MAX { Some(Self(v)) } else { None }
+        if v <= Self::MAX { Some(Self(v)) } else { None }
     }
 
     #[inline]
-    pub fn iter() -> Iter {
+    pub const fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
@@ -91,7 +91,7 @@ impl const From<Square> for Rank {
     }
 }
 
-impl<T> const Index<Rank> for [T; 8] {
+impl<T> const Index<Rank> for [T; Rank::COUNT] {
     type Output = T;
 
     #[inline]
@@ -101,7 +101,7 @@ impl<T> const Index<Rank> for [T; 8] {
     }
 }
 
-impl<T> const IndexMut<Rank> for [T; 8] {
+impl<T> const IndexMut<Rank> for [T; Rank::COUNT] {
     #[inline]
     #[must_use]
     fn index_mut(&mut self, index: Rank) -> &mut Self::Output {

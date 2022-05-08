@@ -108,11 +108,11 @@ impl Square {
     #[inline]
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
-        if v == v & Self::MAX { Some(Self(v)) } else { None }
+        if v <= Self::MAX { Some(Self(v)) } else { None }
     }
 
     #[inline]
-    pub fn iter() -> Iter {
+    pub const fn iter() -> Iter {
         Iter(Self::MIN)
     }
 
@@ -192,7 +192,7 @@ impl const From<Square> for usize {
     }
 }
 
-impl<T> const Index<Square> for [T; 64] {
+impl<T> const Index<Square> for [T; Square::COUNT] {
     type Output = T;
 
     #[inline]
@@ -202,7 +202,7 @@ impl<T> const Index<Square> for [T; 64] {
     }
 }
 
-impl<T> const IndexMut<Square> for [T; 64] {
+impl<T> const IndexMut<Square> for [T; Square::COUNT] {
     #[inline]
     #[must_use]
     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
