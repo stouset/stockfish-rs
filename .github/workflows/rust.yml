@@ -17,6 +17,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      # TODO: this should only apply for PRs and not on the `main` branch
+      RUSTFLAGS: -Dwarnings
+
     steps:
     - uses: actions/checkout@v3
 
