@@ -40,9 +40,8 @@ pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
     let board: Bitboard = square.into();
 
     match color {
-        Color::WHITE => (board + Direction::NW) | (board + Direction::NE),
-        Color::BLACK => (board + Direction::SW) | (board + Direction::SE),
-        _            => unreachable!(),
+        Color::White => (board + Direction::NW) | (board + Direction::NE),
+        Color::Black => (board + Direction::SW) | (board + Direction::SE),
     }
 }
 

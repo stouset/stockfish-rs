@@ -2,8 +2,12 @@ use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
 #[must_use]
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub struct Color(u8);
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Color {
+    White = 0,
+    Black = 1,
+}
 
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
@@ -12,19 +16,20 @@ pub struct Color(u8);
 pub struct Iter(u8, u8);
 
 impl Color {
-    pub const WHITE: Self = Self(0b0);
-    pub const BLACK: Self = Self(0b1);
-
-    pub const FIRST: Self  = Self::WHITE;
-    pub const LAST:  Self  = Self::BLACK;
-    pub const MIN:   u8    = Self::FIRST.0;
-    pub const MAX:   u8    = Self::LAST.0;
+    pub const FIRST: Color = Self::White;
+    pub const LAST:  Color = Self::Black;
+    pub const MIN:   u8    = Self::FIRST.as_u8();
+    pub const MAX:   u8    = Self::LAST.as_u8();
     pub const COUNT: usize = Self::MAX as usize + 1;
 
     #[inline]
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
-        if v == v & Self::MAX { Some(Self(v)) } else { None }
+        match v {
+            0 => Some(Self::White),
+            1 => Some(Self::Black),
+            _ => None,
+        }
     }
 
     #[inline]
@@ -32,40 +37,31 @@ impl Color {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
-    #[must_use]
-    pub const fn name(self) -> &'static str {
-        match self {
-            Self::WHITE => "white",
-            Self::BLACK => "black",
-            _           => unreachable!(),
-        }
-    }
-
     #[inline]
     #[must_use]
     pub const fn as_u8(self) -> u8 {
-        self.0
+        self as u8
     }
 }
 
 impl const From<Color> for u8 {
     #[inline]
     #[must_use]
-    fn from(s: Color) -> Self {
-        s.as_u8()
+    fn from(c: Color) -> Self {
+        c.as_u8()
     }
 }
 
 impl const From<Color> for usize {
     #[inline]
     #[must_use]
-    fn from(s: Color) -> Self {
-        s.as_u8().into()
+    fn from(c: Color) -> Self {
+        c.as_u8().into()
     }
 }
 
 
-impl<T> const Index<Color> for [T; 2] {
+impl<T> const Index<Color> for [T; Color::COUNT] {
     type Output = T;
 
     #[inline]
@@ -75,23 +71,11 @@ impl<T> const Index<Color> for [T; 2] {
     }
 }
 
-impl<T> const IndexMut<Color> for [T; 2] {
+impl<T> const IndexMut<Color> for [T; Color::COUNT] {
     #[inline]
     #[must_use]
     fn index_mut(&mut self, index: Color) -> &mut Self::Output {
         self.index_mut(usize::from(index))
-    }
-}
-
-impl std::fmt::Display for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name())
-    }
-}
-
-impl std::fmt::Debug for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}::{}", std::any::type_name::<Self>(), self.name())
     }
 }
 
