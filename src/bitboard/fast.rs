@@ -42,6 +42,9 @@ const ROOK_MAGICS: Magic<0x19000> = Magic {
     attacks: bb!("ROOK_MAGIC_ATTACKS")
 };
 
+/// Counts the set bits in a [`u16`]. Uses a native instruction on architectures
+/// that have it, and accelerates the operation with a lookup table on ones
+/// that don't.
 #[inline]
 #[must_use]
 pub const fn popcnt16(i: u16) -> u8 {
@@ -56,6 +59,9 @@ pub const fn popcnt16(i: u16) -> u8 {
     }
 }
 
+/// Counts the set bits in a [`u64`]. Uses a native instruction on architectures
+/// that have it, and accelerates the operation with a 16-bit lookup table on
+/// ones that don't.
 #[inline]
 #[must_use]
 pub const fn popcnt64(i: u64) -> u8 {
@@ -76,18 +82,23 @@ pub const fn popcnt64(i: u64) -> u8 {
     }
 }
 
-#[inline]
-#[must_use]
-pub const fn square(s: Square) -> Bitboard {
-    SQUARE[usize::from(s)]
-}
-
+/// Returns the number of moves it would take for a king to move from the first
+/// square to the second.
 #[inline]
 #[must_use]
 pub const fn square_distance(s1: Square, s2: Square) -> u8 {
     SQUARE_DISTANCE[s1][s2]
 }
 
+/// Converts a square to a bitboard containing just that square.
+#[inline]
+#[must_use]
+pub const fn square(s: Square) -> Bitboard {
+    SQUARE[usize::from(s)]
+}
+
+/// Returns a bitboard of valid attacks given a board containing other pieces
+/// that may interfere with its movements.
 #[inline]
 #[must_use]
 pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {

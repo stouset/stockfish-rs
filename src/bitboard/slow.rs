@@ -21,11 +21,6 @@ pub(crate) const fn popcnt64(i: u64) -> u8 {
 }
 
 #[must_use]
-pub(crate) const fn square(s: Square) -> Bitboard {
-    Bitboard(1 << s.as_u8())
-}
-
-#[must_use]
 pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
     let s1_file: u8 = s1.file().into();
     let s1_rank: u8 = s1.rank().into();
@@ -38,7 +33,11 @@ pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
     if file_diff > rank_diff { file_diff } else { rank_diff }
 }
 
-#[inline]
+#[must_use]
+pub(crate) const fn square(s: Square) -> Bitboard {
+    Bitboard(1 << s.as_u8())
+}
+
 #[must_use]
 pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
