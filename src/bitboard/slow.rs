@@ -42,45 +42,33 @@ pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
 #[must_use]
 pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
-        "occupancy bitboard cannot contain the attacking piece");
+        "occupancy bitboard must not contain the attacking piece");
 
     match pt {
-        PieceType::PAWN   => pawn_attacks(color, square),
-        PieceType::BISHOP => bishop_attacks(square, occupied),
-        PieceType::ROOK   => rook_attacks(square, occupied),
-        PieceType::QUEEN  => bishop_attacks(square, occupied) |
-                             rook_attacks(square, occupied),
-        _                 => pseudo_attacks(pt, square)
+        PieceType::PAWN                     => pawn_attacks(color, square),
+        PieceType::KNIGHT | PieceType::KING => pseudo_attacks(pt, square),
+        _                                   => sliding_attacks(pt, square, occupied),
     }
 }
 
 #[must_use]
-pub(crate) fn pseudo_attacks(piece: PieceType, square: Square) -> Bitboard {
-    match piece {
-        PieceType::KNIGHT => {
-            PieceType::KNIGHT_DIRECTIONS
-                .into_iter()
-                .map(|d| square + d)
-                .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
-        },
+pub(crate) fn pseudo_attacks(pt: PieceType, square: Square) -> Bitboard {
+    // pawns require a color to know which direction they attack in
+    debug_assert!(pt != PieceType::PAWN,
+        "pawns do not have pseudo-attacks on them");
 
-        PieceType::BISHOP => bishop_attacks(square, Bitboard::EMPTY),
-        PieceType::ROOK   => rook_attacks(square, Bitboard::EMPTY),
-
-        PieceType::QUEEN => {
-            pseudo_attacks(PieceType::ROOK,   square) |
-            pseudo_attacks(PieceType::BISHOP, square)
-        },
-
-        PieceType::KING => {
-            PieceType::KING_DIRECTIONS
-                .into_iter()
-                .map(|d| square + d)
-                .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
-        },
-
-        _ => unreachable!("pseudo attacks are not available for this piece")
+    // punt to `sliding_attacks` on an empty board for pieces which slide along
+    // the board (bishop, rook, queen)
+    if pt.is_sliding() {
+        return sliding_attacks(pt, square, Bitboard::EMPTY);
     }
+
+    // if the piece doesn't slide, (knight or king), OR together any single
+    // movements that land on a valid square
+    PieceType::MOVEMENTS[pt]
+        .iter()
+        .map(|d| square + *d)
+        .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
 }
 
 #[must_use]
@@ -94,36 +82,18 @@ pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
 }
 
 #[must_use]
-pub(crate) fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
+pub(crate) fn sliding_attacks(pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
+    debug_assert!(pt.is_sliding(),
+        "{:?} is not capable of sliding attacks", pt);
+
     let mut attacks    = Bitboard::EMPTY;
-    let     directions = PieceType::BISHOP_DIRECTIONS;
+    let     directions = PieceType::MOVEMENTS[pt];
 
     for dir in directions {
         let mut s = square;
 
-        while (s + dir).is_some() && (occupied & s).is_empty() {
-            s = match s + dir {
-                Some(v) => v,
-                None    => unreachable!(), // already tested is_some
-            };
-
-            attacks |= s;
-        }
-    }
-
-    attacks
-}
-
-#[must_use]
-pub(crate) fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-    let mut attacks    = Bitboard::EMPTY;
-    let     directions = PieceType::ROOK_DIRECTIONS;
-
-    for dir in directions {
-        let mut s = square;
-
-        while (s + dir).is_some() && (occupied & s).is_empty() {
-            s = match s + dir {
+        while (s + *dir).is_some() && (occupied & s).is_empty() {
+            s = match s + *dir {
                 Some(v) => v,
                 None    => unreachable!(), // already tested is_some
             };

@@ -27,43 +27,28 @@ impl PieceType {
     pub const MAX:   u8    = Self::LAST.0;
     pub const COUNT: usize = Self::MAX as usize + 1;
 
-    pub const KNIGHT_DIRECTIONS: [Direction; 8] = [
-        Direction::NNW,
-        Direction::NNE,
-        Direction::ENE,
-        Direction::ESE,
-        Direction::SSE,
-        Direction::SSW,
-        Direction::WSW,
-        Direction::WNW,
-    ];
+    pub const MOVEMENTS: [&'static [Direction]; Self::COUNT] = [
+        // pawn
+        &[],
 
-    pub const BISHOP_DIRECTIONS: [Direction; 4] = [
-        Direction::NW,
-        Direction::NE,
-        Direction::SE,
-        Direction::SW,
-    ];
+        // knight
+        &[ Direction::NNW, Direction::NNE, Direction::ENE, Direction::ESE,
+           Direction::SSE, Direction::SSW, Direction::WSW, Direction::WNW ],
 
-    pub const ROOK_DIRECTIONS: [Direction; 4] = [
-        Direction::N,
-        Direction::S,
-        Direction::E,
-        Direction::W,
-    ];
+        // bishop
+        &[ Direction::NW, Direction::NE, Direction::SE, Direction::SW ],
 
-    pub const QUEEN_DIRECTIONS: [Direction; 8] = [
-        Direction::NW,
-        Direction::N,
-        Direction::NE,
-        Direction::E,
-        Direction::SE,
-        Direction::S,
-        Direction::SW,
-        Direction::W,
-    ];
+        // rook
+        &[ Direction::N,  Direction::E,  Direction::S,  Direction::W ],
 
-    pub const KING_DIRECTIONS: [Direction; 8] = Self::QUEEN_DIRECTIONS;
+        // queen
+        &[ Direction::NW, Direction::N, Direction::NE, Direction::E,
+           Direction::SE, Direction::S, Direction::SW, Direction::W ],
+
+        // king
+        &[ Direction::NW, Direction::N, Direction::NE, Direction::E,
+           Direction::SE, Direction::S, Direction::SW, Direction::W ],
+    ];
 
     #[inline]
     #[must_use]
@@ -87,6 +72,14 @@ impl PieceType {
             Self::KING   => "king",
             _            => unreachable!(),
         }
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn is_sliding(self) -> bool {
+        self.0 == Self::BISHOP.0
+            || self.0 == Self::ROOK.0
+            || self.0 == Self::QUEEN.0
     }
 
     #[inline]
