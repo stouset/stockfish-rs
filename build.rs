@@ -6,6 +6,7 @@
 #![feature(const_ops)]
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
+#![feature(const_try)]
 #![feature(mixed_integer_ops)]
 #![feature(new_uninit)]
 #![feature(strict_provenance)]

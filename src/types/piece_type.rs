@@ -19,30 +19,43 @@ impl PieceType {
     pub const MAX:   u8    = Self::LAST.0;
     pub const COUNT: usize = Self::MAX as usize + 1;
 
-    pub const ROOK_DIRECTIONS: [Direction; 4] = [
-        Direction::NORTH,
-        Direction::SOUTH,
-        Direction::EAST,
-        Direction::WEST,
+    pub const KNIGHT_DIRECTIONS: [Direction; 8] = [
+        Direction::NNW,
+        Direction::NNE,
+        Direction::ENE,
+        Direction::ESE,
+        Direction::SSE,
+        Direction::SSW,
+        Direction::WSW,
+        Direction::WNW,
     ];
 
     pub const BISHOP_DIRECTIONS: [Direction; 4] = [
-        Direction::NORTH_EAST,
-        Direction::SOUTH_EAST,
-        Direction::SOUTH_WEST,
-        Direction::NORTH_WEST,
+        Direction::NW,
+        Direction::NE,
+        Direction::SE,
+        Direction::SW,
+    ];
+
+    pub const ROOK_DIRECTIONS: [Direction; 4] = [
+        Direction::N,
+        Direction::S,
+        Direction::E,
+        Direction::W,
     ];
 
     pub const QUEEN_DIRECTIONS: [Direction; 8] = [
-        Direction::NORTH,
-        Direction::SOUTH,
-        Direction::EAST,
-        Direction::WEST,
-        Direction::NORTH_EAST,
-        Direction::SOUTH_EAST,
-        Direction::SOUTH_WEST,
-        Direction::NORTH_WEST,
+        Direction::NW,
+        Direction::N,
+        Direction::NE,
+        Direction::E,
+        Direction::SE,
+        Direction::S,
+        Direction::SW,
+        Direction::W,
     ];
+
+    pub const KING_DIRECTIONS: [Direction; 8] = Self::QUEEN_DIRECTIONS;
 
     #[must_use]
     pub const fn name(self) -> &'static str {

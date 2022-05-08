@@ -8,6 +8,7 @@ use std::ops::{
     BitXor, BitXorAssign,
     Not,
     Shl,
+    Add,
 };
 
 mod magic;
@@ -105,22 +106,6 @@ impl Bitboard {
     #[must_use]
     pub const fn count(self) -> usize {
         popcnt64(self.0) as _
-    }
-
-    #[inline]
-    #[must_use]
-    pub const fn shift(self, direction: Direction) -> Self {
-        match direction {
-            Direction::NORTH      => Self(self.0 << 8),
-            Direction::SOUTH      => Self(self.0 >> 8),
-            Direction::EAST       => Self((self & !Self::FILE_H).0 << 1),
-            Direction::WEST       => Self((self & !Self::FILE_A).0 >> 1),
-            Direction::NORTH_EAST => Self((self & !Self::FILE_H).0 << 9),
-            Direction::NORTH_WEST => Self((self & !Self::FILE_A).0 << 7),
-            Direction::SOUTH_EAST => Self((self & !Self::FILE_H).0 >> 7),
-            Direction::SOUTH_WEST => Self((self & !Self::FILE_A).0 >> 9),
-            _                     => unimplemented!(), // TODO: 2-step shifts
-        }
     }
 
     // Returns the underlying integer representation of the bitboard.
@@ -330,6 +315,23 @@ impl const Shl<u8> for Bitboard {
     #[must_use]
     fn shl(self, rhs: u8) -> Self::Output {
         (self.0 << rhs).into()
+    }
+}
+
+impl const Add<Direction> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    #[must_use]
+    fn add(self, direction: Direction) -> Self {
+        let shift = direction.as_i8();
+        let mask  = !direction.discarded_files();
+
+        #[allow(clippy::match_bool)]
+        Bitboard(match shift.is_positive() {
+            true  => (self & mask).0 << shift,
+            false => (self & mask).0 >> shift.abs(),
+        })
     }
 }
 
