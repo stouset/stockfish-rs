@@ -1,4 +1,4 @@
-use crate::types::{Color, Square};
+use crate::types::{Color, PieceType, Square};
 use super::{Bitboard, Magic};
 
 macro_rules! bb {
@@ -23,7 +23,9 @@ const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 // pub const BB_BETWEEN: [[Bitboard; SQUARES]; SQUARES] = cast(*include_bytes!(env!("STOCKFISH_RS_BB_BETWEEN")));
 // extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 // extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-// extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
+
+/// The attacks for any type of piece assuming an empty board.
+const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; PieceType::COUNT] = bb!("PSEUDO_ATTACKS");
 
 /// The attacks for pawns of each color.
 const PAWN_ATTACKS: [[Bitboard; Square::COUNT]; Color::COUNT] = bb!("PAWN_ATTACKS");

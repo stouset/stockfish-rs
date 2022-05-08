@@ -39,6 +39,35 @@ pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
 }
 
 #[must_use]
+pub(crate) fn pseudo_attacks(piece: PieceType, square: Square) -> Bitboard {
+    match piece {
+        PieceType::KNIGHT => {
+            PieceType::KNIGHT_DIRECTIONS
+                .into_iter()
+                .map(|d| square + d)
+                .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
+        },
+
+        PieceType::BISHOP => bishop_attacks(square, Bitboard::EMPTY),
+        PieceType::ROOK   => rook_attacks(square, Bitboard::EMPTY),
+
+        PieceType::QUEEN => {
+            pseudo_attacks(PieceType::ROOK,   square) |
+            pseudo_attacks(PieceType::BISHOP, square)
+        },
+
+        PieceType::KING => {
+            PieceType::KING_DIRECTIONS
+                .into_iter()
+                .map(|d| square + d)
+                .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
+        },
+
+        _ => unreachable!("pseudo attacks are not available for this piece")
+    }
+}
+
+#[must_use]
 pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
     let board: Bitboard = square.into();
 

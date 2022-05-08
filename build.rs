@@ -43,6 +43,8 @@ fn generate_bitboards() {
     generate("BB_POPCNT_16",       &dir, &computed::popcnt16());
     generate("BB_SQUARE_DISTANCE", &dir, &computed::square_distance());
     generate("BB_SQUARE",          &dir, &computed::square());
+    generate("BB_PSEUDO_ATTACKS",  &dir, &computed::pseudo_attacks());
+    generate("BB_PAWN_ATTACKS",    &dir, &computed::pawn_attacks());
 
     let bishop_magics = computed::bishop_magics();
     generate("BB_BISHOP_MAGIC_MAGICS",  &dir, &bishop_magics.magics);
@@ -51,8 +53,6 @@ fn generate_bitboards() {
     let rook_magics = computed::rook_magics();
     generate("BB_ROOK_MAGIC_MAGICS",  &dir, &rook_magics.magics);
     generate("BB_ROOK_MAGIC_ATTACKS", &dir, &rook_magics.attacks);
-
-    generate("BB_PAWN_ATTACKS", &dir, &computed::pawn_attacks());
 }
 
 fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
@@ -78,7 +78,7 @@ fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
 
 mod computed {
     use crate::bitboard::{self, Bitboard, Magic};
-    use crate::types::{Color, Square};
+    use crate::types::{Color, PieceType, Square};
 
     pub fn popcnt16() -> [u8; 1 << 16] {
         let mut popcnt16 = [0; 1 << 16];
@@ -130,5 +130,23 @@ mod computed {
         }
 
         pawn_attacks
+    }
+
+    pub fn pseudo_attacks() -> [[Bitboard; Square::COUNT]; PieceType::COUNT] {
+        let mut pseudo_attacks = [[Bitboard::EMPTY; 64]; 6];
+
+        for pt in [
+            PieceType::KNIGHT,
+            PieceType::BISHOP,
+            PieceType::ROOK,
+            PieceType::QUEEN,
+            PieceType::KING,
+        ] {
+            for s in Square::iter() {
+                pseudo_attacks[pt][s] = bitboard::pseudo_attacks(pt, s);
+            }
+        }
+
+        pseudo_attacks
     }
 }

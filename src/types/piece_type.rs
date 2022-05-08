@@ -1,6 +1,8 @@
 use super::{Direction, Square};
 use crate::bitboard::{self, Bitboard};
 
+use std::ops::{Index, IndexMut};
+
 #[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PieceType(u8);
@@ -56,6 +58,12 @@ impl PieceType {
     ];
 
     pub const KING_DIRECTIONS: [Direction; 8] = Self::QUEEN_DIRECTIONS;
+
+    #[inline]
+    #[must_use]
+    pub const fn from_u8(v: u8) -> Option<Self> {
+        if v <= Self::MAX { Some(Self(v)) } else { None }
+    }
 
     #[must_use]
     pub const fn name(self) -> &'static str {
@@ -117,6 +125,22 @@ impl PieceType {
     }
 }
 
+impl const From<PieceType> for u8 {
+    #[inline]
+    #[must_use]
+    fn from(pt: PieceType) -> Self {
+        pt.as_u8()
+    }
+}
+
+impl const From<PieceType> for usize {
+    #[inline]
+    #[must_use]
+    fn from(pt: PieceType) -> Self {
+        pt.as_u8().into()
+    }
+}
+
 impl std::fmt::Display for PieceType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.name())
@@ -126,5 +150,23 @@ impl std::fmt::Display for PieceType {
 impl std::fmt::Debug for PieceType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}::{}", std::any::type_name::<Self>(), self.name())
+    }
+}
+
+impl<T> const Index<PieceType> for [T; PieceType::COUNT] {
+    type Output = T;
+
+    #[inline]
+    #[must_use]
+    fn index(&self, index: PieceType) -> &Self::Output {
+        self.index(usize::from(index))
+    }
+}
+
+impl<T> const IndexMut<PieceType> for [T; PieceType::COUNT] {
+    #[inline]
+    #[must_use]
+    fn index_mut(&mut self, index: PieceType) -> &mut Self::Output {
+        self.index_mut(usize::from(index))
     }
 }
