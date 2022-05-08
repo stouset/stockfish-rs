@@ -1,5 +1,4 @@
-use super::{Direction, Square};
-use crate::bitboard::{self, Bitboard};
+use super::Direction;
 
 use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
@@ -104,29 +103,6 @@ impl PieceType {
             Self::BISHOP => Self::BISHOP_DIRECTIONS.as_slice(),
             Self::QUEEN  => Self::QUEEN_DIRECTIONS .as_slice(),
             _            => &[],
-        }
-    }
-
-    #[must_use]
-    pub fn sliding_attacks(
-        self,
-        square:   Square,
-        occupied: Bitboard
-    ) -> Bitboard {
-        debug_assert!(self.is_sliding(),
-            "{:?} is not capable of sliding attacks", self);
-
-        debug_assert!((occupied & square).is_empty(),
-            "{:?} must not be in the occupancy board {:?}", self, occupied);
-
-        match self {
-            Self::ROOK   => bitboard::rook_attacks(square, occupied),
-            Self::BISHOP => bitboard::bishop_attacks(square, occupied),
-            Self::QUEEN  => (
-                Self::ROOK  .sliding_attacks(square, occupied) |
-                Self::BISHOP.sliding_attacks(square, occupied)
-            ),
-            _ => Bitboard::EMPTY,
         }
     }
 

@@ -1,6 +1,6 @@
 use super::Bitboard;
 use crate::misc::Prng;
-use crate::types::{PieceType, Square};
+use crate::types::{Color, PieceType, Square};
 
 #[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -69,7 +69,7 @@ impl<const N: usize> Magic<N> {
             // to contain all the attacks for each possible subset of the mask
             // and so is 2 power the number of 1s of the mask. Hence we deduce
             // the size of the shift to apply to get the index.
-            magic.mask  = pt.sliding_attacks(s, Bitboard::EMPTY) & !edges;
+            magic.mask  = super::attacks(Color::White, pt, s, Bitboard::EMPTY) & !edges;
             magic.shift = (std::mem::size_of::<usize>() * 8) - magic.mask.count();
 
             // Set the offset for the attacks table of the square. We have
@@ -83,7 +83,7 @@ impl<const N: usize> Magic<N> {
             // store the corresponding sliding attack bitboard in reference[].
             loop {
                 occupancy[size] = b;
-                reference[size] = pt.sliding_attacks(s, b);
+                reference[size] = super::attacks(Color::White, pt, s, b);
 
                 #[cfg(use_pext)] {
                     attacks[std::arch::x86_64::_pext_u64(b.0, magic.mask.0)] = reference[size];

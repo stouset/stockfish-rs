@@ -100,15 +100,3 @@ pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitb
         _                 => PSEUDO_ATTACKS[pt][square]
     }
 }
-
-#[inline]
-#[must_use]
-pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-    BISHOP_MAGICS.attacks(square, occupied)
-}
-
-#[inline]
-#[must_use]
-pub const fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
-    ROOK_MAGICS.attacks(square, occupied)
-}
