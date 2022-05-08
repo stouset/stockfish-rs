@@ -102,7 +102,7 @@ pub(crate) fn sliding_attacks(pt: PieceType, square: Square, occupied: Bitboard)
     for dir in directions {
         let mut s = square;
 
-        while (s + *dir).is_some() && (occupied & s).is_empty() {
+        while (s + *dir).is_some() && !occupied.contains(s) {
             s = match s + *dir {
                 Some(v) => v,
                 None    => unreachable!(), // already tested is_some
