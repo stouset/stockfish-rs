@@ -112,6 +112,16 @@ pub const fn line(s1: Square, s2: Square) -> Bitboard {
     LINE[s1][s2]
 }
 
+/// Returns a bitboard of valid moves for the piece given an empty board.
+#[inline]
+#[must_use]
+pub const fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
+    match pt {
+        PieceType::PAWN => PAWN_ATTACKS[color][square],
+        _               => PSEUDO_ATTACKS[pt][square],
+    }
+}
+
 /// Returns a bitboard of valid attacks given a board containing other pieces
 /// that may interfere with its movements.
 #[inline]
