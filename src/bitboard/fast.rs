@@ -90,6 +90,19 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
 
 #[inline]
 #[must_use]
+pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
+    match pt {
+        PieceType::PAWN   => PAWN_ATTACKS[color][square],
+        PieceType::BISHOP => BISHOP_MAGICS.attacks(square, occupied),
+        PieceType::ROOK   => ROOK_MAGICS  .attacks(square, occupied),
+        PieceType::QUEEN  => BISHOP_MAGICS.attacks(square, occupied) |
+                             ROOK_MAGICS  .attacks(square, occupied),
+        _                 => PSEUDO_ATTACKS[pt][square]
+    }
+}
+
+#[inline]
+#[must_use]
 pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
     BISHOP_MAGICS.attacks(square, occupied)
 }
@@ -98,10 +111,4 @@ pub const fn bishop_attacks(square: Square, occupied: Bitboard) -> Bitboard {
 #[must_use]
 pub const fn rook_attacks(square: Square, occupied: Bitboard) -> Bitboard {
     ROOK_MAGICS.attacks(square, occupied)
-}
-
-#[inline]
-#[must_use]
-pub const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
-    PAWN_ATTACKS[color][square]
 }

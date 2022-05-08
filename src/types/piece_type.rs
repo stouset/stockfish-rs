@@ -1,11 +1,18 @@
 use super::{Direction, Square};
 use crate::bitboard::{self, Bitboard};
 
+use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
 #[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PieceType(u8);
+
+// implementing Copy on Iterator is a footgun
+#[allow(missing_copy_implementations)]
+#[must_use]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Iter(u8, u8);
 
 impl PieceType {
     pub const PAWN:   Self = Self(0);
@@ -63,6 +70,11 @@ impl PieceType {
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
         if v <= Self::MAX { Some(Self(v)) } else { None }
+    }
+
+    #[inline]
+    pub const fn iter() -> Iter {
+        Iter(Self::MIN, Self::MAX + 1)
     }
 
     #[must_use]
@@ -170,3 +182,40 @@ impl<T> const IndexMut<PieceType> for [T; PieceType::COUNT] {
         self.index_mut(usize::from(index))
     }
 }
+
+impl Iterator for Iter {
+    type Item = PieceType;
+
+    #[must_use]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0 == self.1 {
+            return None;
+        }
+
+        let next = Self::Item::from_u8(self.0);
+        self.0  += 1;
+
+        next
+    }
+
+    #[must_use]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let size = (self.1 - self.0) as usize;
+
+        (size, Some(size))
+    }
+}
+
+impl DoubleEndedIterator for Iter {
+    #[must_use]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.0 == self.1 {
+            return None;
+        }
+
+        self.1 -= 1;
+        Self::Item::from_u8(self.1)
+    }
+}
+
+impl FusedIterator for Iter {}

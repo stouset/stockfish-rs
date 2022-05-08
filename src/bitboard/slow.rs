@@ -38,6 +38,22 @@ pub(crate) const fn square_distance(s1: Square, s2: Square) -> u8 {
     if file_diff > rank_diff { file_diff } else { rank_diff }
 }
 
+#[inline]
+#[must_use]
+pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
+    debug_assert!((occupied & square).is_empty(),
+        "occupancy bitboard cannot contain the attacking piece");
+
+    match pt {
+        PieceType::PAWN   => pawn_attacks(color, square),
+        PieceType::BISHOP => bishop_attacks(square, occupied),
+        PieceType::ROOK   => rook_attacks(square, occupied),
+        PieceType::QUEEN  => bishop_attacks(square, occupied) |
+                             rook_attacks(square, occupied),
+        _                 => pseudo_attacks(pt, square)
+    }
+}
+
 #[must_use]
 pub(crate) fn pseudo_attacks(piece: PieceType, square: Square) -> Bitboard {
     match piece {

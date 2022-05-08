@@ -366,7 +366,7 @@ mod tests {
 
     use super::*;
     use crate::misc::Prng;
-    use crate::types::{Color, Square};
+    use crate::types::{Color, PieceType, Square};
 
     impl Bitboard {
         /// Returns a pseudorandom bitboard with ~1/8th of its spaces filled
@@ -430,53 +430,22 @@ mod tests {
     }
 
     #[test]
-    fn pawn_attacks_are_correct() {
+    fn attacks_are_correct() {
+        let mut prng = Prng::from_seed(0x054b_1917_6345_7ee6);
+
         for c in Color::iter() {
-            for s in Square::iter() {
-                assert_eq!(
-                    fast::pawn_attacks(c, s),
-                    slow::pawn_attacks(c, s),
-                );
-            }
-        }
-    }
+            for pt in PieceType::iter() {
+                for s in Square::iter() {
+                    for _ in 0..2_048 {
+                        let square = Bitboard::from(s);
+                        let board  = Bitboard::pseudorandom_sparse(&mut prng) & !square;
 
-    #[test]
-    fn bishop_attacks_are_correct() {
-        let mut prng = Prng::from_seed(0xbc7f_32a8_69ea_e794);
-
-        for s in Square::iter() {
-            for _ in 0..1024 {
-                let square = Bitboard::from(s);
-                let board  = Bitboard::pseudorandom_sparse(&mut prng) & !square;
-
-                assert_eq!(
-                    fast::bishop_attacks(s, board),
-                    slow::bishop_attacks(s, board),
-                    "square = {}, board = {:?}",
-                    s,
-                    board,
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn rook_attacks_are_correct() {
-        let mut prng = Prng::from_seed(0x0d8f_e827_fd12_b8b1);
-
-        for s in Square::iter() {
-            for _ in 0..1024 {
-                let square = Bitboard::from(s);
-                let board  = Bitboard::pseudorandom_sparse(&mut prng) & !square;
-
-                assert_eq!(
-                    fast::rook_attacks(s, board),
-                    slow::rook_attacks(s, board),
-                    "square = {}, board = {:?}",
-                    s,
-                    board,
-                );
+                        assert_eq!(
+                            fast::attacks(c, pt, s, board),
+                            slow::attacks(c, pt, s, board),
+                        );
+                    }
+                }
             }
         }
     }
