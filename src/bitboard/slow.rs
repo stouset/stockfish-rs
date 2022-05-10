@@ -5,14 +5,6 @@ use crate::types::{Color, Direction, PieceType, Square};
 // PieceType, Color) once the `adt_const_params` feature is complete.
 
 #[must_use]
-pub(crate) const fn popcnt16(i: u16) -> u8 {
-    match i.count_ones().try_into() {
-        Ok(v)  => v,
-        Err(_) => unreachable!(),
-    }
-}
-
-#[must_use]
 pub(crate) const fn popcnt64(i: u64) -> u8 {
     match i.count_ones().try_into() {
         Ok(v)  => v,

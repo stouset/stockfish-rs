@@ -416,15 +416,6 @@ mod tests {
         assert!(cfg!(use_computed_bitboards));
     }
 
-    #[test]
-    fn popcnt16_is_correct() {
-        for i in 0..u16::MAX {
-            assert_eq!(
-                fast::popcnt16(i),
-                slow::popcnt16(i),
-            );
-        }
-    }
 
     #[test]
     fn popcnt64_is_correct() {
