@@ -27,7 +27,7 @@ impl PieceType {
     pub const MAX:   u8    = Self::LAST.0;
     pub const COUNT: usize = Self::MAX as usize + 1;
 
-    pub const MOVEMENTS: [&'static [Direction]; Self::COUNT] = [
+    pub const STEPS: [&'static [Direction]; Self::COUNT] = [
         // pawn
         &[],
 

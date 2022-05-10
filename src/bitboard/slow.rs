@@ -41,6 +41,16 @@ pub(crate) fn line(s1: Square, s2: Square) -> Bitboard {
     Bitboard::EMPTY
 }
 
+/// Returns a bitboard of valid moves for the piece given an empty board.
+#[inline]
+#[must_use]
+pub(crate) fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
+    match pt {
+        PieceType::PAWN => pawn_attacks(color, square),
+        _               => pseudo_attacks(pt, square),
+    }
+}
+
 #[must_use]
 pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
@@ -67,7 +77,7 @@ pub(crate) fn pseudo_attacks(pt: PieceType, square: Square) -> Bitboard {
 
     // if the piece doesn't slide, (knight or king), OR together any single
     // movements that land on a valid square
-    PieceType::MOVEMENTS[pt]
+    PieceType::STEPS[pt]
         .iter()
         .map(|d| square + *d)
         .fold(Bitboard::EMPTY, std::ops::BitOr::bitor)
@@ -89,7 +99,7 @@ pub(crate) fn sliding_attacks(pt: PieceType, square: Square, occupied: Bitboard)
         "{:?} is not capable of sliding attacks", pt);
 
     let mut attacks    = Bitboard::EMPTY;
-    let     directions = PieceType::MOVEMENTS[pt];
+    let     directions = PieceType::STEPS[pt];
 
     for dir in directions {
         let mut s = square;

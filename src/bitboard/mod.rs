@@ -471,6 +471,20 @@ mod tests {
     }
 
     #[test]
+    fn moves_are_correct() {
+        for c in Color::iter() {
+            for pt in PieceType::iter() {
+                for s in Square::iter() {
+                    assert_eq!(
+                        fast::moves(c, pt, s),
+                        slow::moves(c, pt, s),
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn attacks_are_correct() {
         let mut prng = Prng::from_seed(0x054b_1917_6345_7ee6);
 
