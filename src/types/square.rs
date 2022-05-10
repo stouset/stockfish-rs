@@ -285,8 +285,8 @@ mod tests {
     fn square_file_rank() {
         for s in 0..64 {
             let square = Square(s);
-            let file   = File::from_u8(s & 7) .unwrap();
-            let rank   = Rank::from_u8(s >> 3).unwrap();
+            let file   = File::try_from_u8(s & 7) .unwrap();
+            let rank   = Rank::try_from_u8(s >> 3).unwrap();
 
             assert_eq!(square.file(), file);
             assert_eq!(square.rank(), rank);

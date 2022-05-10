@@ -1,11 +1,40 @@
+
 use super::Square;
 
 use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
+/// A rank, 1 through 8, on a chess board. The variants for this enum are
+/// prefixed an underscore due to constant names being unable to begin with
+/// digits.
 #[must_use]
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub struct Rank(u8);
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Rank {
+    /// The 1st rank.
+    _1 = 0o00,
+
+    /// The 2nd rank.
+    _2 = 0o01,
+
+    /// The 3rd rank.
+    _3 = 0o02,
+
+    /// The 4th rank.
+    _4 = 0o03,
+
+    /// The 5th rank.
+    _5 = 0o04,
+
+    /// The 6th rank.
+    _6 = 0o05,
+
+    /// The 7th rank.
+    _7 = 0o06,
+
+    /// The 8th rank.
+    _8 = 0o07,
+}
 
 // implementing Copy on Iterator is a footgun
 #[allow(missing_copy_implementations)]
@@ -14,57 +43,65 @@ pub struct Rank(u8);
 pub struct Iter(u8, u8);
 
 impl Rank {
-    pub const _1: Self = Self(0o0);
-    pub const _2: Self = Self(0o1);
-    pub const _3: Self = Self(0o2);
-    pub const _4: Self = Self(0o3);
-    pub const _5: Self = Self(0o4);
-    pub const _6: Self = Self(0o5);
-    pub const _7: Self = Self(0o6);
-    pub const _8: Self = Self(0o7);
+    /// The first variant.
+    pub const FIRST: Self = Self::_1;
 
-    pub const FIRST: Self  = Self::_1;
-    pub const LAST:  Self  = Self::_8;
-    pub const MIN:   u8    = Self::FIRST.0;
-    pub const MAX:   u8    = Self::LAST.0;
+    /// The first variant.
+    pub const LAST: Self = Self::_8;
+
+    /// The value of the first variant.
+    pub const MIN: u8 = Self::FIRST.as_u8();
+
+    /// The value of the second variant.
+    pub const MAX: u8 = Self::LAST.as_u8();
+
+    /// The number of enum variants.
     pub const COUNT: usize = Self::MAX as usize + 1;
 
+    /// Converts the provided [`u8`] to its corresponding [`Rank`].
+    ///
+    /// # Safety
+    ///
+    /// This function is unsafe. You must guarantee that the input value maps to
+    /// a real variant of this enum.
     #[inline]
-    #[must_use]
-    pub const fn from_u8(v: u8) -> Option<Self> {
-        if v <= Self::MAX { Some(Self(v)) } else { None }
+    #[allow(unsafe_code)]
+    pub const unsafe fn from_u8_unchecked(v: u8) -> Self {
+        std::mem::transmute(v)
     }
 
+    /// Attempts to convert the provided [`u8`] to its corresponding [`Rank`].
+    #[inline]
+    #[must_use]
+    pub const fn try_from_u8(v: u8) -> Option<Self> {
+        if v > Self::MAX {
+            return None;
+        }
+
+        // the above check ensures that the value is valid
+        #[allow(unsafe_code)]
+        unsafe { Self::from_u8_unchecked(v) }.into()
+    }
+
+    /// Returns an iterator through all ranks A through H.
     #[inline]
     pub const fn iter() -> Iter {
         Iter(Self::MIN, Self::MAX + 1)
     }
 
-    #[must_use]
-    pub const fn name(self) -> &'static str {
-        match self {
-            Self::_1 => "1",
-            Self::_2 => "2",
-            Self::_3 => "3",
-            Self::_4 => "4",
-            Self::_5 => "5",
-            Self::_6 => "6",
-            Self::_7 => "7",
-            Self::_8 => "8",
-            _        => unreachable!(),
-        }
-    }
-
+    /// The number of steps it would take a king to move from one rank to the
+    /// other.
     #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
         self.as_u8().abs_diff(other.into())
     }
 
+    /// Converts the [`Rank`] to its underlying [`u8`] representation.
     #[inline]
     #[must_use]
     pub const fn as_u8(self) -> u8 {
-        self.0
+        self as _
     }
 }
 
@@ -87,7 +124,10 @@ impl const From<Rank> for usize {
 impl const From<Square> for Rank {
     #[inline]
     fn from(s: Square) -> Self {
-        Self(s.as_u8() >> 3)
+        // Masking against 0b0111 ensures that the input must be within a valid
+        // range.
+        #[allow(unsafe_code)]
+        unsafe { Self::from_u8_unchecked(s.as_u8() >> 3) }
     }
 }
 
@@ -109,18 +149,6 @@ impl<T> const IndexMut<Rank> for [T; Rank::COUNT] {
     }
 }
 
-impl std::fmt::Display for Rank {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name())
-    }
-}
-
-impl std::fmt::Debug for Rank {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}::{}", std::any::type_name::<Self>(), self.name())
-    }
-}
-
 impl Iterator for Iter {
     type Item = Rank;
 
@@ -130,10 +158,13 @@ impl Iterator for Iter {
             return None;
         }
 
-        let next = Self::Item::from_u8(self.0);
+        // The above check ensures that the instantiated item is within the
+        // valid range of possible discriminants.
+        #[allow(unsafe_code)]
+        let next = unsafe { Self::Item::from_u8_unchecked(self.0) };
         self.0  += 1;
 
-        next
+        Some(next)
     }
 
     #[must_use]
@@ -152,7 +183,13 @@ impl DoubleEndedIterator for Iter {
         }
 
         self.1 -= 1;
-        Self::Item::from_u8(self.1)
+
+        // The above check ensures that the instantiated item is within the
+        // valid range of possible discriminants.
+        #[allow(unsafe_code)]
+        Some(unsafe {
+            Self::Item::from_u8_unchecked(self.1)
+        })
     }
 }
 
@@ -161,6 +198,56 @@ impl FusedIterator for Iter {}
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn rank_clone() {
+        for rank in Rank::iter() {
+            assert_eq!(rank, rank.clone());
+        }
+    }
+
+    #[test]
+    fn rank_debug() {
+        assert_ne!("", format!("{:?}", Rank::_7));
+    }
+
+    #[test]
+    fn rank_try_from_u8_out_of_bounds() {
+        assert_ne!(None, Rank::try_from_u8(Rank::MAX));
+        assert_eq!(None, Rank::try_from_u8(Rank::MAX + 1));
+    }
+
+    #[test]
+    fn rank_array_index() {
+        let mut a = [0; Rank::COUNT];
+
+        a[Rank::_3] = 3;
+        a[Rank::_8] = 4;
+
+        assert_eq!(0, a[Rank::_1]);
+        assert_eq!(3, a[Rank::_3]);
+        assert_eq!(4, a[Rank::_8]);
+    }
+
+    #[test]
+    fn rank_iter() {
+        let ranks: Vec<Rank> = Rank::iter().collect();
+
+        assert_eq!(ranks, vec![
+            Rank::_1, Rank::_2, Rank::_3, Rank::_4,
+            Rank::_5, Rank::_6, Rank::_7, Rank::_8,
+        ]);
+    }
+
+    #[test]
+    fn rank_iter_rev() {
+        let ranks: Vec<Rank> = Rank::iter().rev().collect();
+
+        assert_eq!(ranks, vec![
+            Rank::_8, Rank::_7, Rank::_6, Rank::_5,
+            Rank::_4, Rank::_3, Rank::_2, Rank::_1,
+        ]);
+    }
 
     #[test]
     fn rank_distance() {

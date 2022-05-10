@@ -149,7 +149,6 @@ impl const From<File> for Bitboard {
             File::_F => Self::FILE_F,
             File::_G => Self::FILE_G,
             File::_H => Self::FILE_H,
-            _        => unreachable!(),
         }
     }
 }
@@ -167,7 +166,6 @@ impl const From<Rank> for Bitboard {
             Rank::_6 => Self::RANK_6,
             Rank::_7 => Self::RANK_7,
             Rank::_8 => Self::RANK_8,
-            _        => unreachable!(),
         }
     }
 }
