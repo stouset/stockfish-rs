@@ -413,9 +413,14 @@ mod tests {
 
     #[test]
     fn using_computed_bitboards() {
+        // check that the config flag is enabled
         assert!(cfg!(use_computed_bitboards));
-    }
 
+        // pick one of the fast functions, and make sure the version exported on
+        // the module itself is the same one
+        assert_eq!(popcnt64 as usize, fast::popcnt64 as usize);
+        assert_ne!(popcnt64 as usize, slow::popcnt64 as usize);
+    }
 
     #[test]
     fn popcnt64_is_correct() {
