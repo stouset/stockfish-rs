@@ -11,6 +11,7 @@ macro_rules! bb {
 }
 
 /// The number of bits set for any given 16-bit value.
+#[cfg(not(use_popcnt))]
 const POPCNT16: [u8; 1 << 16] = bb!("POPCNT_16");
 
 /// The number of moves necessary to walk a King from one square to the other.
@@ -44,43 +45,28 @@ const ROOK_MAGICS: Magic<0x19000> = Magic {
     attacks: bb!("ROOK_MAGIC_ATTACKS")
 };
 
-/// Counts the set bits in a [`u16`]. Uses a native instruction on architectures
-/// that have it, and accelerates the operation with a lookup table on ones
-/// that don't.
-#[inline]
-#[must_use]
-pub const fn popcnt16(i: u16) -> u8 {
-    if cfg!(use_popcnt) {
-        // This cannot truncate as a u16 cannot possibly contain more
-        // than 255 enabled bits.
-        #[allow(clippy::cast_possible_truncation)] {
-            i.count_ones() as _
-        }
-    } else {
-        POPCNT16[i as usize]
-    }
-}
-
 /// Counts the set bits in a [`u64`]. Uses a native instruction on architectures
 /// that have it, and accelerates the operation with a 16-bit lookup table on
 /// ones that don't.
 #[inline]
 #[must_use]
 pub const fn popcnt64(i: u64) -> u8 {
-    if cfg!(use_popcnt) {
+    #[cfg(use_popcnt)] {
         // This cannot truncate as a u64 cannot possibly contain more
         // than 255 enabled bits.
         #[allow(clippy::cast_possible_truncation)] {
             i.count_ones() as _
         }
-    } else {
+    }
+
+    #[cfg(not(use_popcnt))] {
         let chunks: [u16; 4] =
             constmuck::cast(i, constmuck::infer!());
 
-        popcnt16(chunks[0])
-            + popcnt16(chunks[1])
-            + popcnt16(chunks[2])
-            + popcnt16(chunks[3])
+        POPCNT16[chunks[0]]
+            + POPCNT16[chunks[1]]
+            + POPCNT16[chunks[2]]
+            + POPCNT16[chunks[3]]
     }
 }
 

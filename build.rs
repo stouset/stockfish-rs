@@ -85,7 +85,7 @@ mod computed {
         let mut popcnt16 = [0; 1 << 16];
 
         for i in 0..u16::MAX {
-            popcnt16[i as usize] = bitboard::popcnt16(i);
+            popcnt16[i as usize] = bitboard::popcnt64(i as _);
         }
 
         popcnt16
