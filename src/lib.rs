@@ -1,4 +1,4 @@
-//! #stockfish-rs
+//! # `stockfish_rs`
 
 // Lint Groups
 #![warn(future_incompatible)]
@@ -17,7 +17,7 @@
 #![warn(missing_abi)]
 #![warn(missing_copy_implementations)]
 #![warn(missing_debug_implementations)]
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 #![warn(non_ascii_idents)]
 #![warn(noop_method_call)]
 #![warn(single_use_lifetimes)]
@@ -56,16 +56,5 @@
 #![feature(strict_provenance)]
 
 pub mod bitboard;
-pub mod command_line;
 pub mod misc;
 pub mod types;
-
-use command_line::CommandLine;
-
-use color_eyre::Report;
-
-fn main() -> Result<(), Report> {
-    let _command_line = CommandLine::init()?;
-
-    Ok(())
-}
