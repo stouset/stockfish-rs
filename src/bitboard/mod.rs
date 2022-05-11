@@ -469,6 +469,18 @@ mod tests {
     }
 
     #[test]
+    fn between_is_correct() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
+                assert_eq!(
+                    fast::between(s1, s2),
+                    slow::between(s1, s2),
+                );
+            }
+        }
+    }
+
+    #[test]
     fn moves_are_correct() {
         for c in Color::iter() {
             for pt in PieceType::iter() {

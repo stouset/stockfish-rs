@@ -21,11 +21,13 @@ const SQUARE_DISTANCE: [[u8; Square::COUNT]; Square::COUNT] = bb!("SQUARE_DISTAN
 /// square set.
 const SQUARE: [Bitboard; Square::COUNT] = bb!("SQUARE");
 
-// pub const BB_BETWEEN: [[Bitboard; SQUARES]; SQUARES] = cast(*include_bytes!(env!("STOCKFISH_RS_BB_BETWEEN")));
-// extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
-// extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-
+/// All of the squares on an entire line, edge-to-edge, connecting the two
+/// squares (if such a line exists).
 const LINE: [[Bitboard; Square::COUNT]; Square::COUNT] = bb!("LINE");
+
+/// All of the squares on a line between the two squares, inclusive of the
+/// second square. If no such line exists, just the second square.
+const BETWEEN: [[Bitboard; Square::COUNT]; Square::COUNT] = bb!("BETWEEN");
 
 /// The attacks for any type of piece assuming an empty board.
 const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; PieceType::COUNT] = bb!("PSEUDO_ATTACKS");
@@ -92,10 +94,54 @@ pub const fn square(s: Square) -> Bitboard {
 ///
 /// For example, `line(Square::C4, Square::F7)` will return a bitboard with the
 /// bits on the A2-G8 diagonal set.
+///
+/// # Example
+///
+/// ```rust
+/// # use stockfish_rs::bitboard::{self, Bitboard};
+/// # use stockfish_rs::types::Square;
+///
+/// assert_eq!(
+///     Square::A2 | Square::B3 | Square::C4 | Square::D5 | Square::E6 | Square::F7 | Square::G8,
+///     bitboard::line(Square::C4, Square::F7),
+/// );
+/// ```
 #[inline]
 #[must_use]
 pub const fn line(s1: Square, s2: Square) -> Bitboard {
     LINE[s1][s2]
+}
+
+/// Returns a bitboard representing the squares in the semi-open segment between
+/// the squares `s1` and `s2` (excluding `s1` but including `s2`). If the given
+/// squares are not on a same file, rank, or diagonal, it returns `s2`.
+///
+/// For example, `between(Square::C4, Square::F7)` will return a bitboard with
+/// squares D5, E6 and F7, but `between(Square::E6, Square::F8)` will return a
+/// bitboard with the square F8. This trick allows to generate non-king evasion
+/// moves faster: the defending piece must either interpose itself to cover the
+/// check or capture the checking piece.
+///
+/// # Examples
+///
+/// ```rust
+/// # use stockfish_rs::bitboard::{self, Bitboard};
+/// # use stockfish_rs::types::Square;
+///
+/// assert_eq!(
+///     Square::D5 | Square::E6 | Square::F7,
+///     bitboard::between(Square::C4, Square::F7),
+/// );
+///
+/// assert_eq!(
+///     Bitboard::from(Square::F8),
+///     bitboard::between(Square::E6, Square::F8),
+/// );
+/// ```
+#[inline]
+#[must_use]
+pub const fn between(s1: Square, s2: Square) -> Bitboard {
+    BETWEEN[s1][s2]
 }
 
 /// Returns a bitboard of valid moves for the piece given an empty board.

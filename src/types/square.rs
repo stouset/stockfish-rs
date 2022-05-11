@@ -1,6 +1,7 @@
 use super::{File, Rank};
+use crate::bitboard::Bitboard;
 
-use std::ops::{Index, IndexMut};
+use std::ops::{Index, IndexMut, BitOr, BitAnd};
 
 #[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -181,6 +182,26 @@ impl const From<Square> for usize {
     #[must_use]
     fn from(s: Square) -> Self {
         s.as_u8().into()
+    }
+}
+
+impl const BitAnd for Square {
+    type Output = Bitboard;
+
+    #[inline]
+    #[must_use]
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) & rhs
+    }
+}
+
+impl const BitOr for Square {
+    type Output = Bitboard;
+
+    #[inline]
+    #[must_use]
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) | rhs
     }
 }
 

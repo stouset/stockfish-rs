@@ -51,6 +51,7 @@ fn generate_bitboards() {
     generate("BB_SQUARE_DISTANCE", &dir, &computed::square_distance());
     generate("BB_SQUARE",          &dir, &computed::square());
     generate("BB_LINE" ,           &dir, &computed::line());
+    generate("BB_BETWEEN",         &dir, &computed::between());
     generate("BB_PSEUDO_ATTACKS",  &dir, &computed::pseudo_attacks());
     generate("BB_PAWN_ATTACKS",    &dir, &computed::pawn_attacks());
 
@@ -130,6 +131,18 @@ mod computed {
         }
 
         line
+    }
+
+    pub fn between() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
+        let mut between = [[Bitboard::EMPTY; 64]; 64];
+
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
+                between[s1][s2] = bitboard::between(s1, s2);
+            }
+        }
+
+        between
     }
 
     pub fn bishop_magics() -> Box<bitboard::Magic<0x1480>> {

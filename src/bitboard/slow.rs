@@ -41,7 +41,20 @@ pub(crate) fn line(s1: Square, s2: Square) -> Bitboard {
     Bitboard::EMPTY
 }
 
-/// Returns a bitboard of valid moves for the piece given an empty board.
+#[must_use]
+pub(crate) fn between(s1: Square, s2: Square) -> Bitboard {
+    for pt in [PieceType::Bishop, PieceType::Rook] {
+        if pseudo_attacks(pt, s1).contains(s2) {
+            return Bitboard::from(s2) | (
+                attacks(Color::White, pt, s1, s2.into()) &
+                attacks(Color::White, pt, s2, s1.into())
+             );
+        }
+    }
+
+    s2.into()
+}
+
 #[inline]
 #[must_use]
 pub(crate) fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
