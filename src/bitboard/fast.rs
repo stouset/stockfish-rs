@@ -159,6 +159,9 @@ pub const fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
 #[inline]
 #[must_use]
 pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
+    debug_assert!((occupied & square).is_empty(),
+        "occupancy bitboard must not contain the attacking piece");
+
     match pt {
         PieceType::Pawn   => PAWN_ATTACKS[color][square],
         PieceType::Bishop => BISHOP_MAGICS.attacks(square, occupied),
@@ -166,5 +169,23 @@ pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitb
         PieceType::Queen  => BISHOP_MAGICS.attacks(square, occupied) |
                              ROOK_MAGICS  .attacks(square, occupied),
         _                 => PSEUDO_ATTACKS[pt][square]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::types::{Color, PieceType, Square};
+
+    #[test]
+    #[should_panic(expected = "must not contain the attacking piece")]
+    fn attacks_detects_accidental_misuse() {
+        let _ = attacks(
+            Color::Black,
+            PieceType::King,
+            Square::C3,
+            Bitboard::FILE_C
+        );
     }
 }

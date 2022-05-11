@@ -129,3 +129,21 @@ pub(crate) fn sliding_attacks(pt: PieceType, square: Square, occupied: Bitboard)
 
     attacks
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::types::{Color, PieceType, Square};
+
+    #[test]
+    #[should_panic(expected = "must not contain the attacking piece")]
+    fn attacks_detects_accidental_misuse() {
+        let _ = attacks(
+            Color::Black,
+            PieceType::King,
+            Square::C3,
+            Bitboard::FILE_C
+        );
+    }
+}
