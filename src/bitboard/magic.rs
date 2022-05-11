@@ -38,7 +38,7 @@ impl<const N: usize> Magic<N> {
     /// called "fancy" approach.
     #[must_use]
     pub fn new(pt: PieceType) -> Box<Self> {
-        debug_assert!(pt == PieceType::BISHOP || pt == PieceType::ROOK,
+        debug_assert!(pt == PieceType::Bishop || pt == PieceType::Rook,
             "unable to generate a magic bitboard for {:?}", pt);
 
         let mut attacks = bytemuck::allocation::zeroed_box::<[Bitboard; N]>();
@@ -179,14 +179,14 @@ impl<const N: usize> Magic<N> {
 impl Magic<0x1480> {
     #[must_use]
     pub fn new_bishop() -> Box<Self> {
-        Self::new(PieceType::BISHOP)
+        Self::new(PieceType::Bishop)
     }
 }
 
 impl Magic<0x19000> {
     #[must_use]
     pub fn new_rook() -> Box<Self> {
-        Self::new(PieceType::ROOK)
+        Self::new(PieceType::Rook)
     }
 }
 

@@ -46,14 +46,20 @@
 
 // Unstable Features
 #![feature(const_convert)]
+#![feature(const_intoiterator_identity)]
 #![feature(const_mut_refs)]
 #![feature(const_ops)]
+#![feature(const_option)]
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
 #![feature(const_try)]
+#![feature(macro_metavar_expr)]
 #![feature(mixed_integer_ops)]
 #![feature(new_uninit)]
 #![feature(strict_provenance)]
+
+#[macro_use]
+pub(crate) mod macros;
 
 pub mod bitboard;
 pub mod misc;

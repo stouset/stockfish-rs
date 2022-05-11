@@ -372,7 +372,7 @@ impl std::fmt::Debug for Bitboard {
         writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
 
         for rank in Rank::iter().rev() {
-            write!(f, "{} ", rank.as_u8() + 1)?;
+            write!(f, "{} ", u8::from(rank) + 1)?;
 
             for file in File::iter() {
                 let s  = Square::new(file, rank);

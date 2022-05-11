@@ -103,7 +103,7 @@ pub const fn line(s1: Square, s2: Square) -> Bitboard {
 #[must_use]
 pub const fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
     match pt {
-        PieceType::PAWN => PAWN_ATTACKS[color][square],
+        PieceType::Pawn => PAWN_ATTACKS[color][square],
         _               => PSEUDO_ATTACKS[pt][square],
     }
 }
@@ -114,10 +114,10 @@ pub const fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
 #[must_use]
 pub const fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bitboard) -> Bitboard {
     match pt {
-        PieceType::PAWN   => PAWN_ATTACKS[color][square],
-        PieceType::BISHOP => BISHOP_MAGICS.attacks(square, occupied),
-        PieceType::ROOK   => ROOK_MAGICS  .attacks(square, occupied),
-        PieceType::QUEEN  => BISHOP_MAGICS.attacks(square, occupied) |
+        PieceType::Pawn   => PAWN_ATTACKS[color][square],
+        PieceType::Bishop => BISHOP_MAGICS.attacks(square, occupied),
+        PieceType::Rook   => ROOK_MAGICS  .attacks(square, occupied),
+        PieceType::Queen  => BISHOP_MAGICS.attacks(square, occupied) |
                              ROOK_MAGICS  .attacks(square, occupied),
         _                 => PSEUDO_ATTACKS[pt][square]
     }

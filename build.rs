@@ -2,17 +2,24 @@
 #![allow(dead_code)]
 
 #![feature(const_convert)]
+#![feature(const_intoiterator_identity)]
 #![feature(const_mut_refs)]
 #![feature(const_ops)]
+#![feature(const_option)]
 #![feature(const_slice_index)]
 #![feature(const_trait_impl)]
 #![feature(const_try)]
+#![feature(macro_metavar_expr)]
 #![feature(mixed_integer_ops)]
 #![feature(new_uninit)]
 #![feature(strict_provenance)]
 
 use std::env;
 use std::path::{Path, PathBuf};
+
+#[path = "src/macros.rs"]
+#[macro_use]
+mod macros;
 
 #[path = "src/bitboard/mod.rs"]
 mod bitboard;
@@ -149,11 +156,11 @@ mod computed {
         let mut pseudo_attacks = [[Bitboard::EMPTY; 64]; 6];
 
         for pt in [
-            PieceType::KNIGHT,
-            PieceType::BISHOP,
-            PieceType::ROOK,
-            PieceType::QUEEN,
-            PieceType::KING,
+            PieceType::Knight,
+            PieceType::Bishop,
+            PieceType::Rook,
+            PieceType::Queen,
+            PieceType::King,
         ] {
             for s in Square::iter() {
                 pseudo_attacks[pt][s] = bitboard::pseudo_attacks(pt, s);

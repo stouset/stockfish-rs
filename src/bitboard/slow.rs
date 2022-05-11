@@ -32,7 +32,7 @@ pub(crate) const fn square(s: Square) -> Bitboard {
 
 #[must_use]
 pub(crate) fn line(s1: Square, s2: Square) -> Bitboard {
-    for pt in [PieceType::BISHOP, PieceType::ROOK] {
+    for pt in [PieceType::Bishop, PieceType::Rook] {
         if pseudo_attacks(pt, s1).contains(s2) {
             return pseudo_attacks(pt, s1) & pseudo_attacks(pt, s2) | s1 | s2
         }
@@ -46,7 +46,7 @@ pub(crate) fn line(s1: Square, s2: Square) -> Bitboard {
 #[must_use]
 pub(crate) fn moves(color: Color, pt: PieceType, square: Square) -> Bitboard {
     match pt {
-        PieceType::PAWN => pawn_attacks(color, square),
+        PieceType::Pawn => pawn_attacks(color, square),
         _               => pseudo_attacks(pt, square),
     }
 }
@@ -57,8 +57,8 @@ pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bit
         "occupancy bitboard must not contain the attacking piece");
 
     match pt {
-        PieceType::PAWN                     => pawn_attacks(color, square),
-        PieceType::KNIGHT | PieceType::KING => pseudo_attacks(pt, square),
+        PieceType::Pawn                     => pawn_attacks(color, square),
+        PieceType::Knight | PieceType::King => pseudo_attacks(pt, square),
         _                                   => sliding_attacks(pt, square, occupied),
     }
 }
@@ -66,7 +66,7 @@ pub(crate) fn attacks(color: Color, pt: PieceType, square: Square, occupied: Bit
 #[must_use]
 pub(crate) fn pseudo_attacks(pt: PieceType, square: Square) -> Bitboard {
     // pawns require a color to know which direction they attack in
-    debug_assert!(pt != PieceType::PAWN,
+    debug_assert!(pt != PieceType::Pawn,
         "pawns do not have pseudo-attacks on them");
 
     // punt to `sliding_attacks` on an empty board for pieces which slide along
