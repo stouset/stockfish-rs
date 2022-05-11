@@ -1,17 +1,10 @@
 use super::{File, Rank};
 
-use std::iter::FusedIterator;
 use std::ops::{Index, IndexMut};
 
 #[must_use]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Square(u8);
-
-// implementing Copy on Iterator is a footgun
-#[allow(missing_copy_implementations)]
-#[must_use]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Iter(u8);
 
 impl Square {
     pub const A1: Self = Self(0o00);
@@ -79,11 +72,18 @@ impl Square {
     pub const G8: Self = Self(0o76);
     pub const H8: Self = Self(0o77);
 
-    pub const FIRST: Self  = Self::A1;
-    pub const LAST:  Self  = Self::H8;
-    pub const MIN:   u8    = Self::FIRST.0;
-    pub const MAX:   u8    = Self::LAST.0;
-    pub const COUNT: usize = Self::MAX as usize + 1;
+    pub const SQUARES: [Square; 64] = [
+        Self::A1, Self::B1, Self::C1, Self::D1, Self::E1, Self::F1, Self::G1, Self::H1,
+        Self::A2, Self::B2, Self::C2, Self::D2, Self::E2, Self::F2, Self::G2, Self::H2,
+        Self::A3, Self::B3, Self::C3, Self::D3, Self::E3, Self::F3, Self::G3, Self::H3,
+        Self::A4, Self::B4, Self::C4, Self::D4, Self::E4, Self::F4, Self::G4, Self::H4,
+        Self::A5, Self::B5, Self::C5, Self::D5, Self::E5, Self::F5, Self::G5, Self::H5,
+        Self::A6, Self::B6, Self::C6, Self::D6, Self::E6, Self::F6, Self::G6, Self::H6,
+        Self::A7, Self::B7, Self::C7, Self::D7, Self::E7, Self::F7, Self::G7, Self::H7,
+        Self::A8, Self::B8, Self::C8, Self::D8, Self::E8, Self::F8, Self::G8, Self::H8,
+    ];
+
+    pub const COUNT: usize = Self::SQUARES.len();
 
     pub const NAMES: [&'static str; Self::COUNT] = [
         "A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1",
@@ -108,12 +108,14 @@ impl Square {
     #[inline]
     #[must_use]
     pub const fn from_u8(v: u8) -> Option<Self> {
-        if v <= Self::MAX { Some(Self(v)) } else { None }
+        Self::SQUARES.get(v as usize).copied()
     }
 
+    /// Returns an iterator through all Squares.
     #[inline]
-    pub const fn iter() -> Iter {
-        Iter(Self::MIN)
+    #[must_use]
+    pub const fn iter() -> std::array::IntoIter<Self, 64> {
+        Self::SQUARES.into_iter()
     }
 
     #[must_use]
@@ -133,12 +135,12 @@ impl Square {
 
     #[inline]
     pub const fn flip_file(self) -> Self {
-        self ^ Square::H1
+        Self(self.as_u8() ^ Square::H1.as_u8())
     }
 
     #[inline]
     pub const fn flip_rank(self) -> Self {
-        self ^ Square::A8
+        Self(self.as_u8() ^ Square::A8.as_u8())
     }
 
     #[inline]
@@ -163,16 +165,6 @@ impl Square {
     #[must_use]
     pub const fn as_u8(self) -> u8 {
         self.0
-    }
-}
-
-impl const std::ops::BitXor for Square {
-    type Output = Square;
-
-    #[inline]
-    #[must_use]
-    fn bitxor(self, rhs: Self) -> Self::Output {
-        Self(self.as_u8() ^ rhs.as_u8())
     }
 }
 
@@ -221,27 +213,6 @@ impl std::fmt::Debug for Square {
         write!(f, "{}::{}", std::any::type_name::<Self>(), self.name())
     }
 }
-
-impl Iterator for Iter {
-    type Item = Square;
-
-    #[must_use]
-    fn next(&mut self) -> Option<Self::Item> {
-        let next = Self::Item::from_u8(self.0);
-        self.0  += 1;
-
-        next
-    }
-
-    #[must_use]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = (Self::Item::MAX - self.0 + 1) as usize;
-
-        (size, Some(size))
-    }
-}
-
-impl FusedIterator for Iter {}
 
 #[cfg(test)]
 mod tests {
