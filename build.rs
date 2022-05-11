@@ -68,7 +68,7 @@ fn generate<T: bytemuck::Pod>(name: &str, dir: &Path, data: &T) {
     use std::fs::{self, File};
     use std::io::prelude::Write;
 
-    let _ = fs::create_dir_all(dir).unwrap();
+    fs::create_dir_all(dir).unwrap();
 
     let mut path: PathBuf = dir.to_path_buf();
     path.push(name.to_lowercase());
