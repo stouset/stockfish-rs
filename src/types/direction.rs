@@ -41,8 +41,8 @@ impl Direction {
         self.0
     }
 
-    /// Returns a bitboard of files that will be pushed off the board by shifting
-    /// it in this direction.
+    /// Returns a bitboard of files that will be pushed off the board by
+    /// shifting it in this direction.
     ///
     /// # Panics
     ///
@@ -55,10 +55,10 @@ impl Direction {
         // encode a shift in some direction. However if distances get large
         // (above 3), it's no longer possible to uniquely distinguish them.
         //
-        // For example, one step NW (`Distance(8 + -1)`) is a left shift
-        // by seven while masking the contents of the A file. But seven steps
-        // E (`Distance(7)`) is encoded the same way, but requires a left shift
-        // by seven while masking the contents of files B through H.
+        // For example, one step NW (`Distance(8 + -1)`) is a left shift by
+        // seven while masking the contents of the A file. But seven steps E
+        // (`Distance(7)`) is encoded the same way, but requires a left shift by
+        // seven while masking the contents of files B through H.
         #[cfg(debug_assertions)] {
             #![allow(clippy::assertions_on_constants)]
             assert!(Direction::MAX_DISTANCE < 4,

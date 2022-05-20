@@ -6,9 +6,10 @@ use crate::types::{Color, Direction, PieceType, Square};
 
 #[must_use]
 pub(crate) const fn popcnt64(i: u64) -> u8 {
-    match i.count_ones().try_into() {
-        Ok(v)  => v,
-        Err(_) => unreachable!(),
+    // this cannot truncate as a u64 cannot possibly contain more
+    // than 255 enabled bits
+    #[allow(clippy::cast_possible_truncation)] {
+        i.count_ones() as _
     }
 }
 

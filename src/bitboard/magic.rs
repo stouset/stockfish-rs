@@ -12,6 +12,7 @@ pub struct Magic<const N: usize> {
     pub(crate) attacks: [Bitboard; N],
 }
 
+// There's no reasonable better name for this struct.
 #[allow(clippy::module_name_repetitions)]
 #[must_use]
 #[repr(C)]
