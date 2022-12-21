@@ -125,7 +125,7 @@ macro_rules! enumeration {
             /// value is a real discriminant of this type.
             #[inline]
             #[allow(unsafe_code)]
-            $vis const unsafe fn from_repr_unchecked(repr: $repr) -> Self {
+            pub(crate) const unsafe fn from_repr_unchecked(repr: $repr) -> Self {
                 debug_assert!(Self::from_repr(repr).is_some());
 
                 *Self::VARIANTS.get_unchecked(repr as usize)
@@ -140,34 +140,34 @@ macro_rules! enumeration {
             /// given value.
             #[inline]
             #[must_use]
-            $vis const fn from_repr(repr: $repr) -> Option<Self> {
+            pub(crate) const fn from_repr(repr: $repr) -> Option<Self> {
                 Self::VARIANTS.get(repr as usize).copied()
             }
 
             /// Returns an iterator through all [`$type`] variants.
             #[inline]
             #[must_use]
-            pub fn into_iter() -> std::array::IntoIter<Self, ${count(var)}> {
+            $vis fn into_iter() -> std::array::IntoIter<Self, ${count(var)}> {
                 Self::VARIANTS.into_iter()
             }
 
             /// Returns the name of the variant as a string.
             #[inline]
             #[must_use]
-            pub fn name(self) -> &'static str {
+            $vis fn name(self) -> &'static str {
                 Self::NAMES[self.as_usize()]
             }
 
             /// Returns the variant as its underlying discriminant.
             #[inline]
             #[must_use]
-            pub const fn as_repr(self) -> $repr {
+            pub(crate) const fn as_repr(self) -> $repr {
                 self as $repr
             }
 
             #[inline]
             #[must_use]
-            pub const fn as_usize(self) -> usize {
+            pub(crate) const fn as_usize(self) -> usize {
                 self as _
             }
         }

@@ -28,7 +28,7 @@ impl Square {
 
     #[inline]
     #[must_use]
-    pub const fn file_index(self) -> u8 {
+    pub(crate) const fn file_index(self) -> u8 {
         self.as_repr() & 0b0111
     }
 
@@ -39,7 +39,7 @@ impl Square {
 
     #[inline]
     #[must_use]
-    pub const fn rank_index(self) -> u8 {
+    pub(crate) const fn rank_index(self) -> u8 {
         self.as_repr() >> 3
     }
 
