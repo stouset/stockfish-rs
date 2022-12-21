@@ -235,14 +235,24 @@ macro_rules! enumeration {
     )
 }
 
+#[cfg(test)]
+macro_rules! refute {
+    ($cond:expr $(,)?)        => { assert!(!$cond) };
+    ($cond:expr, $($arg:tt)+) => { assert!(!$cond, $($arg)+) };
+}
+
 mod color;
+mod direction;
 mod file;
+mod piece;
 mod rank;
 mod square;
 
 pub mod prelude {
     pub use crate::color::Color;
+    pub use crate::direction::Direction;
     pub use crate::file::File;
+    pub use crate::piece::Piece;
     pub use crate::rank::Rank;
     pub use crate::square::Square;
 }
