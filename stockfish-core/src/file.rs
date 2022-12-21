@@ -26,10 +26,10 @@ impl File {
 impl const From<Square> for File {
     #[inline]
     fn from(s: Square) -> Self {
-        // Masking against 0b0111 ensures that the input must be within a valid
-        // range.
-        #[allow(unsafe_code)]
-        unsafe { Self::from_repr_unchecked(s.as_u8() & 0b0111) }
+        unsafe_optimization!(
+            Self::from_repr(s.file_index()).unwrap(),
+            Self::from_repr_unchecked(s.file_index())
+        )
     }
 }
 

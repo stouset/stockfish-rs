@@ -68,20 +68,34 @@
 #![allow(rustdoc::missing_doc_code_examples)]
 
 // Unstable Features
+#![feature(const_cmp)]
 #![feature(const_convert)]
+#![feature(const_discriminant)]
 #![feature(const_option)]
 #![feature(const_trait_impl)]
 #![feature(const_slice_index)]
+#![feature(derive_const)]
 #![feature(macro_metavar_expr)]
 #![feature(rustdoc_missing_doc_code_examples)]
 #![feature(strict_provenance)]
 
+macro_rules! unsafe_optimization {
+    ($safe:expr, $unsafe:expr) => { {
+        #[allow(unsafe_code)]
+        unsafe {
+            debug_assert!($safe == $unsafe);
+            $unsafe
+        }
+    } }
+}
+
 macro_rules! enumeration {
     ($(#[$outer:meta])* $vis:vis $name:ident, $repr:ty, [$($var:ident),+ $(,)?]) => (
         $(#[$outer])*
-        #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
-        #[repr($repr)]
+        #[derive(Copy, Debug, Eq)]
+        #[derive_const(Clone, PartialEq, Ord, PartialOrd)]
         #[must_use]
+        #[repr($repr)]
         $vis enum $name {
             $($var = ${index()}),+
         }
@@ -112,6 +126,8 @@ macro_rules! enumeration {
             #[inline]
             #[allow(unsafe_code)]
             $vis const unsafe fn from_repr_unchecked(repr: $repr) -> Self {
+                debug_assert!(Self::from_repr(repr).is_some());
+
                 *Self::VARIANTS.get_unchecked(repr as usize)
             }
 

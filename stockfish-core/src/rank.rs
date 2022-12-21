@@ -29,10 +29,10 @@ impl Rank {
 impl const From<Square> for Rank {
     #[inline]
     fn from(s: Square) -> Self {
-        // Masking against 0b0111 ensures that the input must be within a valid
-        // range.
-        #[allow(unsafe_code)]
-        unsafe { Self::from_repr_unchecked(s.as_u8() >> 3) }
+        unsafe_optimization!(
+            Self::from_repr(s.rank_index()).unwrap(),
+            Self::from_repr_unchecked(s.rank_index())
+        )
     }
 }
 

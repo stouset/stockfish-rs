@@ -14,19 +14,33 @@ enumeration! {
 }
 
 impl Square {
+    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(file: File, rank: Rank) -> Self {
         let f: u8 = file.into();
         let r: u8 = rank.into();
         let s: u8 = (r << 3) + f;
+        unsafe_optimization!(
+            Self::from_repr(s).unwrap(),
+            Self::from_repr_unchecked(s)
+        )
+    }
 
-        #[allow(unsafe_code)]
-        unsafe { Self::from_repr_unchecked(s) }
+    #[inline]
+    #[must_use]
+    pub const fn file_index(self) -> u8 {
+        self.as_u8() & 0b0111
     }
 
     #[inline]
     pub const fn file(self) -> File {
         self.into()
+    }
+
+    #[inline]
+    #[must_use]
+    pub const fn rank_index(self) -> u8 {
+        self.as_u8() >> 3
     }
 
     #[inline]
@@ -69,10 +83,17 @@ impl Square {
     /// assert_eq!(Square::B6, Square::B3.from_perspective(Color::Black));
     /// assert_eq!(Square::C1, Square::C8.from_perspective(Color::Black));
     /// ```
+    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn from_perspective(self, color: Color) -> Self {
-        #[allow(unsafe_code)]
-        unsafe { Self::from_repr_unchecked(self.as_u8() ^ (color.as_u8() * 56)) }
+        // flip all the bits in the rank portion of the square if the color
+        // is black, otherwise XOR with 0 is a no-op
+        let s = self.as_u8() ^ (color.as_u8() * 0b0011_1000);
+
+        unsafe_optimization!(
+            Self::from_repr(s).unwrap(),
+            Self::from_repr_unchecked(s)
+        )
     }
 
     #[inline]
@@ -128,8 +149,12 @@ impl const std::ops::BitXor for Square {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
-        #[allow(unsafe_code)]
-        unsafe { Self::from_repr_unchecked(self.as_u8() ^ rhs.as_u8()) }
+        let s = self.as_u8() ^ rhs.as_u8();
+
+        unsafe_optimization! {
+            Self::from_repr(s).unwrap(),
+            Self::from_repr_unchecked(s)
+        }
     }
 }
 
