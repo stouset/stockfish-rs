@@ -12,14 +12,7 @@ impl File {
     #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
-        self.as_u8().abs_diff(other.into())
-    }
-
-    /// The underlying value of the [`File`] as a [`u8`].
-    #[inline]
-    #[must_use]
-    pub const fn as_u8(self) -> u8 {
-        self.as_repr()
+        self.as_repr().abs_diff(other.into())
     }
 }
 
