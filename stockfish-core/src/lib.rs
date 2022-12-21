@@ -13,11 +13,11 @@
 #![warn(fuzzy_provenance_casts)]
 #![warn(lossy_provenance_casts)]
 #![warn(macro_use_extern_crate)]
-// #![warn(meta_variable_misuse)]
+#![warn(meta_variable_misuse)]
 #![warn(missing_abi)]
 #![warn(missing_copy_implementations)]
 #![warn(missing_debug_implementations)]
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 #![warn(non_ascii_idents)]
 #![warn(noop_method_call)]
 #![warn(single_use_lifetimes)]
@@ -51,7 +51,7 @@
 #![warn(clippy::if_then_some_else_none)]
 #![warn(clippy::map_err_ignore)]
 #![warn(clippy::mem_forget)]
-// #![warn(clippy::missing_docs_in_private_items)]
+#![warn(clippy::missing_docs_in_private_items)]
 #![warn(clippy::panic)]
 #![warn(clippy::panic_in_result_fn)]
 #![warn(clippy::string_slice)]
@@ -65,7 +65,13 @@
 
 // Lint Exceptions
 #![allow(unstable_features)]
+
+// TODO: remove
+#![allow(missing_docs)]
+#![allow(meta_variable_misuse)] // false positive with `count()`
+#![allow(unused_macro_rules)]
 #![allow(rustdoc::missing_doc_code_examples)]
+#![allow(clippy::missing_docs_in_private_items)]
 
 // Unstable Features
 #![feature(const_cmp)]
@@ -100,6 +106,7 @@ macro_rules! enumeration {
             $($var = ${index()}),+
         }
 
+        #[allow(dead_code)]
         impl $name {
             /// The total number of [`$name`]s.
             $vis const COUNT: usize = ${count(var)};
