@@ -53,6 +53,12 @@ mod tests {
     }
 
     #[test]
+    fn file_order() {
+        assert!(File::_A < File::_B);
+        assert!(File::_D > File::_C);
+    }
+
+    #[test]
     fn file_debug() {
         assert_eq!("_G", format!("{:?}", File::_G));
     }
@@ -74,16 +80,6 @@ mod tests {
     }
 
     #[test]
-    fn file_iter_rev() {
-        let files: Vec<File> = File::into_iter().rev().collect();
-
-        assert_eq!(files, vec![
-            File::_H, File::_G, File::_F, File::_E,
-            File::_D, File::_C, File::_B, File::_A,
-        ]);
-    }
-
-    #[test]
     fn file_distance() {
         assert_eq!(File::_A.distance(File::_A), 0);
         assert_eq!(File::_A.distance(File::_B), 1);
@@ -100,5 +96,12 @@ mod tests {
         assert_eq!(File::_G.distance(File::_A), 6);
         assert_eq!(File::_G.distance(File::_H), 1);
         assert_eq!(File::_H.distance(File::_H), 0);
+    }
+
+    #[test]
+    fn file_bitor_rank() {
+        for square in Square::into_iter() {
+            assert_eq!(square.file() | square.rank(), square);
+        }
     }
 }

@@ -239,4 +239,25 @@ mod tests {
     //         }
     //     }
     // }
+
+    #[test]
+    fn square_from_perspective() {
+        assert_eq!(Square::H8, Square::H1.from_perspective(Color::Black));
+        assert_eq!(Square::C4, Square::C5.from_perspective(Color::Black));
+        assert_eq!(Square::D7, Square::D7.from_perspective(Color::White));
+    }
+
+    #[test]
+    fn square_distance_files() {
+        assert_eq!(3, Square::H4.distance_files(Square::E1));
+        assert_eq!(0, Square::G3.distance_files(Square::G8));
+        assert_eq!(7, Square::A7.distance_files(Square::H7));
+    }
+
+    #[test]
+    fn square_distance_ranks() {
+        assert_eq!(3, Square::H4.distance_ranks(Square::E1));
+        assert_eq!(0, Square::G3.distance_ranks(Square::D3));
+        assert_eq!(7, Square::A1.distance_ranks(Square::A8));
+    }
 }

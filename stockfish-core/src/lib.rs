@@ -171,6 +171,44 @@ macro_rules! enumeration {
                 this as usize
             }
         }
+
+        #[cfg(test)]
+        mod tests_enumerate_macro {
+            use super::*;
+
+            #[test]
+            fn test_impl() {
+                for v1 in $name::into_iter() {
+                    assert_eq!(v1.clone(), v1);
+                    assert_eq!(v1.name(),  format!("{:?}", v1));
+
+                    for v2 in $name::into_iter() {
+                        assert_eq!(
+                            v1.partial_cmp(&v2).unwrap(),
+                            v1.cmp(&v2)
+                        );
+                    }
+                }
+            }
+
+            #[test]
+            fn test_impl_from() {
+                for (repr, variant) in $name::into_iter().enumerate() {
+                    assert_eq!(repr as u8, u8   ::from(variant));
+                    assert_eq!(repr,       usize::from(variant));
+                }
+            }
+
+            #[test]
+            fn test_from_repr() {
+                for (repr, variant) in $name::into_iter().enumerate() {
+                    assert_eq!(variant, unsafe_optimization!{
+                        $name::from_repr(repr as _).unwrap(),
+                        $name::from_repr_unchecked(repr as _)
+                    })
+                }
+            }
+        }
     )
 }
 
@@ -179,14 +217,11 @@ mod file;
 mod rank;
 mod square;
 
-pub use color::Color;
-pub use file::File;
-pub use rank::Rank;
-pub use square::Square;
-
 pub mod prelude {
-    pub use crate::Color;
-    pub use crate::File;
-    pub use crate::Rank;
-    pub use crate::Square;
+    pub use crate::color::Color;
+    pub use crate::file::File;
+    pub use crate::rank::Rank;
+    pub use crate::square::Square;
 }
+
+pub use prelude::*;

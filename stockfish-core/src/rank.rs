@@ -56,6 +56,12 @@ mod tests {
     }
 
     #[test]
+    fn rank_order() {
+        assert!(Rank::_2 < Rank::_4);
+        assert!(Rank::_7 > Rank::_6);
+    }
+
+    #[test]
     fn rank_debug() {
         assert_ne!("", format!("{:?}", Rank::_7));
     }
@@ -103,5 +109,12 @@ mod tests {
         assert_eq!(Rank::_7.distance(Rank::_1), 6);
         assert_eq!(Rank::_7.distance(Rank::_8), 1);
         assert_eq!(Rank::_8.distance(Rank::_8), 0);
+    }
+
+    #[test]
+    fn rank_bitor_file() {
+        for square in Square::into_iter() {
+            assert_eq!(square.rank() | square.file(), square);
+        }
     }
 }
