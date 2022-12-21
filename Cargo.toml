@@ -1,24 +1,7 @@
-[package]
-name    = 'stockfish-rs'
-license = 'GPL-3.0-only'
-version = '0.1.0'
-edition = '2021'
+[workspace]
+members = [
+    "stockfish-core",
+]
 
-description = 'Rust reimplementation of the Stockfish chess engine'
-categories  = ['games']
-keywords    = ['chess', 'chess-engine']
-
-readme        = 'README.md'
-homepage      = 'https://crates.io/crates/stockfish-rs'
-repository    = 'https://github.com/stouset/stockfish-rs'
-documentation = 'https://docs.rs/stockfish-rs'
-
-[lib]
-name = 'stockfish_rs'
-
-[dependencies]
-bytemuck  = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
-constmuck = '0'
-
-[build-dependencies]
-bytemuck = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
+[profile.release]
+lto = "fat"

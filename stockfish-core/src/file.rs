@@ -1,11 +1,9 @@
-use super::Square;
+use crate::prelude::*;
 
-c_style_enum! {
+enumeration! {
     /// A file, A through H, on a chess board. The variants for this enum are
-    /// prefixed an underscore to mimic those of [`Rank`].
-    pub File, u8, 8; [
-        _A, _B, _C, _D, _E, _F, _G, _H,
-    ]
+    /// prefixed with an underscore to mimic those of [`Rank`].
+    pub File, u8, [ _A, _B, _C, _D, _E, _F, _G, _H ]
 }
 
 impl File {
@@ -17,11 +15,11 @@ impl File {
         self.as_u8().abs_diff(other.into())
     }
 
-    /// Converts the [`File`] to its underlying [`u8`] representation.
+    /// The underlying value of the [`File`] as a [`u8`].
     #[inline]
     #[must_use]
     pub const fn as_u8(self) -> u8 {
-        self as _
+        self.as_repr()
     }
 }
 
@@ -31,7 +29,15 @@ impl const From<Square> for File {
         // Masking against 0b0111 ensures that the input must be within a valid
         // range.
         #[allow(unsafe_code)]
-        unsafe { Self::from_discriminant_unchecked(s.as_u8() & 0b0111) }
+        unsafe { Self::from_repr_unchecked(s.as_u8() & 0b0111) }
+    }
+}
+
+impl const std::ops::BitOr<Rank> for File {
+    type Output = Square;
+
+    fn bitor(self, rhs: Rank) -> Self::Output {
+        Square::new(self, rhs)
     }
 }
 
@@ -41,37 +47,25 @@ mod tests {
 
     #[test]
     fn file_clone() {
-        for file in File::iter() {
+        for file in File::into_iter() {
             assert_eq!(file, file.clone());
         }
     }
 
     #[test]
     fn file_debug() {
-        assert_ne!("", format!("{:?}", File::_G));
+        assert_eq!("_G", format!("{:?}", File::_G));
     }
 
     #[test]
-    fn file_try_from_discriminant_out_of_bounds() {
-        assert_ne!(None, File::try_from_discriminant(7));
-        assert_eq!(None, File::try_from_discriminant(8));
-    }
-
-    #[test]
-    fn file_array_index() {
-        let mut a = [0; File::COUNT];
-
-        a[File::_C] = 3;
-        a[File::_H] = 4;
-
-        assert_eq!(0, a[File::_A]);
-        assert_eq!(3, a[File::_C]);
-        assert_eq!(4, a[File::_H]);
+    fn file_try_from_repr_out_of_bounds() {
+        assert_ne!(None, File::from_repr(7));
+        assert_eq!(None, File::from_repr(8));
     }
 
     #[test]
     fn file_iter() {
-        let files: Vec<File> = File::iter().collect();
+        let files: Vec<File> = File::into_iter().collect();
 
         assert_eq!(files, vec![
             File::_A, File::_B, File::_C, File::_D,
@@ -81,7 +75,7 @@ mod tests {
 
     #[test]
     fn file_iter_rev() {
-        let files: Vec<File> = File::iter().rev().collect();
+        let files: Vec<File> = File::into_iter().rev().collect();
 
         assert_eq!(files, vec![
             File::_H, File::_G, File::_F, File::_E,
