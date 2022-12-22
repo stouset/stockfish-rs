@@ -10,13 +10,6 @@ enumeration! {
 }
 
 impl Rank {
-    /// The underlying value of the [`Rank`] as a [`u8`].
-    #[inline]
-    #[must_use]
-    pub const fn as_u8(self) -> u8 {
-        self.as_repr()
-    }
-
     /// The number of steps it would take a king to move from one rank to the
     /// other.
     #[inline]
@@ -30,8 +23,8 @@ impl const From<Square> for Rank {
     #[inline]
     fn from(s: Square) -> Self {
         unsafe_optimization!(
-            Self::from_repr(s.rank_index()).unwrap(),
-            Self::from_repr_unchecked(s.rank_index())
+            Self::from_u8(s.rank_index()).unwrap(),
+            Self::from_u8_unchecked(s.rank_index())
         )
     }
 }

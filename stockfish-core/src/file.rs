@@ -12,7 +12,7 @@ impl File {
     #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
-        self.as_repr().abs_diff(other.into())
+        self.as_u8().abs_diff(other.into())
     }
 }
 
@@ -20,8 +20,8 @@ impl const From<Square> for File {
     #[inline]
     fn from(s: Square) -> Self {
         unsafe_optimization!(
-            Self::from_repr(s.file_index()).unwrap(),
-            Self::from_repr_unchecked(s.file_index())
+            Self::from_u8(s.file_index()).unwrap(),
+            Self::from_u8_unchecked(s.file_index())
         )
     }
 }

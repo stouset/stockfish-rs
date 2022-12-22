@@ -123,32 +123,34 @@ macro_rules! enumeration {
                 $(stringify!($var),)+
             ];
 
-            /// Converts the provided [`$repr`] discriminant to its
-            /// corresponding [`$name`].
-            ///
-            /// # Safety
-            ///
-            /// This function is unsafe. You *must* guarantee that the input
-            /// value is a real discriminant of this type.
-            #[inline]
-            #[allow(unsafe_code)]
-            pub(crate) const unsafe fn from_repr_unchecked(repr: $repr) -> Self {
-                debug_assert!(Self::from_repr(repr).is_some());
+            paste::paste!{
+                /// Converts the provided [`$repr`] discriminant to its
+                /// corresponding [`$name`].
+                ///
+                /// # Safety
+                ///
+                /// This function is unsafe. You *must* guarantee that the input
+                /// value is a real discriminant of this type.
+                #[inline]
+                #[allow(unsafe_code)]
+                pub(crate) const unsafe fn [<from_ $repr _unchecked>](repr: $repr) -> Self {
+                    debug_assert!(Self::from_u8(repr).is_some());
 
-                *Self::VARIANTS.get_unchecked(repr as usize)
-            }
+                    *Self::VARIANTS.get_unchecked(repr as usize)
+                }
 
-            /// Converts the provided [`$repr`] discriminant to its
-            /// corresponding [`$name`].
-            ///
-            /// # Panics
-            ///
-            /// This function panics if there is not a discriminant with the
-            /// given value.
-            #[inline]
-            #[must_use]
-            pub(crate) const fn from_repr(repr: $repr) -> Option<Self> {
-                Self::VARIANTS.get(repr as usize).copied()
+                /// Converts the provided [`$repr`] discriminant to its
+                /// corresponding [`$name`].
+                ///
+                /// # Panics
+                ///
+                /// This function panics if there is not a discriminant with the
+                /// given value.
+                #[inline]
+                #[must_use]
+                pub(crate) const fn [<from_ $repr>](repr: $repr) -> Option<Self> {
+                    Self::VARIANTS.get(repr as usize).copied()
+                }
             }
 
             /// Returns an iterator through all [`$type`] variants.
@@ -165,13 +167,16 @@ macro_rules! enumeration {
                 Self::NAMES[self.as_usize()]
             }
 
-            /// Returns the variant as its underlying discriminant.
-            #[inline]
-            #[must_use]
-            pub(crate) const fn as_repr(self) -> $repr {
-                self as $repr
+            paste::paste! {
+                /// Returns the variant as its underlying representation.
+                #[inline]
+                #[must_use]
+                pub(crate) const fn [<as_ $repr>](self) -> $repr {
+                    self as $repr
+                }
             }
 
+            /// Returns the variant as a usize.
             #[inline]
             #[must_use]
             pub(crate) const fn as_usize(self) -> usize {
@@ -223,11 +228,11 @@ macro_rules! enumeration {
             }
 
             #[test]
-            fn test_from_repr() {
+            fn test_from_u8() {
                 for (repr, variant) in $name::into_iter().enumerate() {
                     assert_eq!(variant, unsafe_optimization!{
-                        $name::from_repr(repr as _).unwrap(),
-                        $name::from_repr_unchecked(repr as _)
+                        $name::from_u8(repr as _).unwrap(),
+                        $name::from_u8_unchecked(repr as _)
                     })
                 }
             }

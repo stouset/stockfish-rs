@@ -13,7 +13,8 @@ repository    = 'https://github.com/stouset/stockfish-rs'
 homepage      = 'https://crates.io/crates/stockfish-core'
 documentation = 'https://docs.rs/stockfish-core'
 
-# [dependencies]
+[dependencies]
+paste = '1'
 # bitflags  = '1'
 # bytemuck  = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
 # constmuck = '0'

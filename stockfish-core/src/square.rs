@@ -21,15 +21,15 @@ impl Square {
         let r: u8 = rank.into();
         let s: u8 = (r << 3) + f;
         unsafe_optimization!(
-            Self::from_repr(s).unwrap(),
-            Self::from_repr_unchecked(s)
+            Self::from_u8(s).unwrap(),
+            Self::from_u8_unchecked(s)
         )
     }
 
     #[inline]
     #[must_use]
     pub(crate) const fn file_index(self) -> u8 {
-        self.as_repr() & 0b0111
+        self.as_u8() & 0b0111
     }
 
     #[inline]
@@ -40,7 +40,7 @@ impl Square {
     #[inline]
     #[must_use]
     pub(crate) const fn rank_index(self) -> u8 {
-        self.as_repr() >> 3
+        self.as_u8() >> 3
     }
 
     #[inline]
@@ -88,11 +88,11 @@ impl Square {
     pub const fn from_perspective(self, color: Color) -> Self {
         // flip all the bits in the rank portion of the square if the color
         // is black, otherwise XOR with 0 is a no-op
-        let s = self.as_repr() ^ (color.as_repr() * 0b0011_1000);
+        let s = self.as_u8() ^ (color.as_u8() * 0b0011_1000);
 
         unsafe_optimization!(
-            Self::from_repr(s).unwrap(),
-            Self::from_repr_unchecked(s)
+            Self::from_u8(s).unwrap(),
+            Self::from_u8_unchecked(s)
         )
     }
 
@@ -142,11 +142,11 @@ impl const std::ops::BitXor for Square {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {
-        let s = self.as_repr() ^ rhs.as_repr();
+        let s = self.as_u8() ^ rhs.as_u8();
 
         unsafe_optimization! {
-            Self::from_repr(s).unwrap(),
-            Self::from_repr_unchecked(s)
+            Self::from_u8(s).unwrap(),
+            Self::from_u8_unchecked(s)
         }
     }
 }
@@ -192,8 +192,8 @@ mod tests {
     #[test]
     fn square_file_rank() {
         for square in Square::into_iter() {
-            let file = File::from_repr(square.as_repr() & 7) .unwrap();
-            let rank = Rank::from_repr(square.as_repr() >> 3).unwrap();
+            let file = File::from_u8(square.as_u8() & 7) .unwrap();
+            let rank = Rank::from_u8(square.as_u8() >> 3).unwrap();
 
             assert_eq!(square.file(), file);
             assert_eq!(square.rank(), rank);
