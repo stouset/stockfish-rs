@@ -86,17 +86,17 @@
 #![feature(strict_provenance)]
 
 macro_rules! unsafe_optimization {
-    ($safe:expr, $unsafe:expr) => { {
+    ($safe:expr, $unsafe:expr) => {{
         #[allow(unsafe_code)]
         unsafe {
             debug_assert!($safe == $unsafe);
             $unsafe
         }
-    } }
+    }};
 }
 
 macro_rules! enumeration {
-    ($(#[$outer:meta])* $vis:vis $name:ident, $repr:ty, [$($var:ident),+ $(,)?]) => (
+    ($(#[$outer:meta])* $vis:vis $name:ident, $repr:ty, [$($var:ident),+ $(,)?]) => {
         $(#[$outer])*
         #[derive(Copy, Debug, Eq)]
         #[derive_const(Clone, PartialEq, Ord, PartialOrd)]
@@ -232,7 +232,7 @@ macro_rules! enumeration {
                 }
             }
         }
-    )
+    }
 }
 
 #[cfg(test)]

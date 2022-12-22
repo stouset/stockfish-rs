@@ -151,7 +151,6 @@ impl const std::ops::BitXor for Square {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
