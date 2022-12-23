@@ -169,27 +169,6 @@ mod tests {
     }
 
     #[test]
-    fn square_from_u8() {
-        assert_eq!(Square::A1, Square::from_repr(0o00).unwrap());
-        assert_eq!(Square::B3, Square::from_repr(0o21).unwrap());
-        assert_eq!(Square::B4, Square::from_repr(0o31).unwrap());
-        assert_eq!(Square::C7, Square::from_repr(0o62).unwrap());
-        assert_eq!(Square::D2, Square::from_repr(0o13).unwrap());
-        assert_eq!(Square::E6, Square::from_repr(0o54).unwrap());
-        assert_eq!(Square::F5, Square::from_repr(0o45).unwrap());
-        assert_eq!(Square::G8, Square::from_repr(0o76).unwrap());
-        assert_eq!(Square::H8, Square::from_repr(0o77).unwrap());
-    }
-
-    #[test]
-    fn square_name() {
-        assert_eq!(Square::A1.name(), "A1");
-        assert_eq!(Square::C4.name(), "C4");
-        assert_eq!(Square::G2.name(), "G2");
-        assert_eq!(Square::H8.name(), "H8");
-    }
-
-    #[test]
     fn square_file_rank() {
         for square in Square::into_iter() {
             let file = File::from_u8(square.as_u8() & 7) .unwrap();

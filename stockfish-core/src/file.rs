@@ -39,40 +39,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn file_clone() {
-        for file in File::into_iter() {
-            assert_eq!(file, file.clone());
-        }
-    }
-
-    #[test]
-    fn file_order() {
-        assert!(File::_A < File::_B);
-        assert!(File::_D > File::_C);
-    }
-
-    #[test]
-    fn file_debug() {
-        assert_eq!("_G", format!("{:?}", File::_G));
-    }
-
-    #[test]
-    fn file_try_from_repr_out_of_bounds() {
-        assert_ne!(None, File::from_repr(7));
-        assert_eq!(None, File::from_repr(8));
-    }
-
-    #[test]
-    fn file_iter() {
-        let files: Vec<File> = File::into_iter().collect();
-
-        assert_eq!(files, vec![
-            File::_A, File::_B, File::_C, File::_D,
-            File::_E, File::_F, File::_G, File::_H,
-        ]);
-    }
-
-    #[test]
     fn file_distance() {
         assert_eq!(File::_A.distance(File::_A), 0);
         assert_eq!(File::_A.distance(File::_B), 1);

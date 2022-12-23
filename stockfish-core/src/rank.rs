@@ -42,50 +42,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn rank_clone() {
-        for rank in Rank::into_iter() {
-            assert_eq!(rank, rank.clone());
-        }
-    }
-
-    #[test]
-    fn rank_order() {
-        assert!(Rank::_2 < Rank::_4);
-        assert!(Rank::_7 > Rank::_6);
-    }
-
-    #[test]
-    fn rank_debug() {
-        assert_ne!("", format!("{:?}", Rank::_7));
-    }
-
-    #[test]
-    fn rank_try_from_repr_out_of_bounds() {
-        assert_ne!(None, Rank::from_repr(7));
-        assert_eq!(None, Rank::from_repr(8));
-    }
-
-    #[test]
-    fn rank_iter() {
-        let ranks: Vec<Rank> = Rank::into_iter().collect();
-
-        assert_eq!(ranks, vec![
-            Rank::_1, Rank::_2, Rank::_3, Rank::_4,
-            Rank::_5, Rank::_6, Rank::_7, Rank::_8,
-        ]);
-    }
-
-    #[test]
-    fn rank_iter_rev() {
-        let ranks: Vec<Rank> = Rank::into_iter().rev().collect();
-
-        assert_eq!(ranks, vec![
-            Rank::_8, Rank::_7, Rank::_6, Rank::_5,
-            Rank::_4, Rank::_3, Rank::_2, Rank::_1,
-        ]);
-    }
-
-    #[test]
     fn rank_distance() {
         assert_eq!(Rank::_1.distance(Rank::_1), 0);
         assert_eq!(Rank::_1.distance(Rank::_2), 1);
