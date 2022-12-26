@@ -31,8 +31,8 @@ impl Direction {
     pub const WSW: Self = Self(Self::WW.0 + Self::S.0);
     pub const WNW: Self = Self(Self::WW.0 + Self::N.0);
 
-    // The maximum distance a Direction can cover.
-    // pub const MAX_DISTANCE: u8 = 2;
+    /// The maximum distance a Direction can cover.
+    pub const MAX: u8 = 2;
 
     // /// Returns a bitboard of files that will be pushed off the board by
     // /// shifting it in this direction.
@@ -90,6 +90,16 @@ impl Direction {
     //         _ => unsafe { unreachable_unchecked() },
     //     }
     // }
+
+    // fn as_i8(self) -> i8 {
+    //     self.into()
+    // }
+}
+
+impl const From<Direction> for i8 {
+    fn from(value: Direction) -> Self {
+        value.0
+    }
 }
 
 // impl const std::ops::Add<Direction> for Square {
@@ -101,7 +111,7 @@ impl Direction {
 //         let step = rhs .as_i8();
 //         let to   = Self::from_u8(from.wrapping_add_signed(step))?;
 
-//         if self.distance(to) <= Direction::MAX_DISTANCE {
+//         if self.distance(to) <= Direction::MAX {
 //             return Some(to);
 //         }
 
