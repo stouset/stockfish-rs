@@ -9,24 +9,24 @@ macro_rules! enumeration {
             $($var = ${index()}),+
         }
 
-        #[allow(dead_code)]
-        impl $name {
-            /// The total number of [`$name`]s.
-            $vis const COUNT: usize = ${count(var)};
+        paste::paste! {
+            #[allow(dead_code)]
+            impl $name {
+                /// The total number of [`$name`]s.
+                $vis const COUNT: usize = ${count(var)};
 
-            /// All of the variants of [`$name`]s, indexable by their
-            /// discriminant.
-            $vis const VARIANTS: [$name; Self::COUNT] = [
-                $(Self::$var,)+
-            ];
+                /// All of the variants of [`$name`]s, indexable by their
+                /// discriminant.
+                $vis const VARIANTS: [$name; Self::COUNT] = [
+                    $(Self::$var,)+
+                ];
 
-            /// All of the variant names of [`$name`], indexable by their
-            /// discriminant.
-            $vis const NAMES: [&'static str; Self::COUNT] = [
-                $(stringify!($var),)+
-            ];
+                /// All of the variant names of [`$name`], indexable by their
+                /// discriminant.
+                $vis const NAMES: [&'static str; Self::COUNT] = [
+                    $(stringify!($var),)+
+                ];
 
-            paste::paste!{
                 /// Converts the provided [`$repr`] discriminant to its
                 /// corresponding [`$name`].
                 ///
@@ -54,36 +54,34 @@ macro_rules! enumeration {
                 pub(crate) const fn [<from_ $repr>](repr: $repr) -> Option<Self> {
                     Self::VARIANTS.get(repr as usize).copied()
                 }
-            }
 
-            /// Returns an iterator through all [`$type`] variants.
-            #[inline]
-            #[must_use]
-            $vis fn into_iter() -> std::array::IntoIter<Self, ${count(var)}> {
-                Self::VARIANTS.into_iter()
-            }
+                /// Returns an iterator through all [`$type`] variants.
+                #[inline]
+                #[must_use]
+                $vis fn into_iter() -> std::array::IntoIter<Self, ${count(var)}> {
+                    Self::VARIANTS.into_iter()
+                }
 
-            /// Returns the name of the variant as a string.
-            #[inline]
-            #[must_use]
-            $vis fn name(self) -> &'static str {
-                Self::NAMES[self.as_usize()]
-            }
+                /// Returns the name of the variant as a string.
+                #[inline]
+                #[must_use]
+                $vis fn name(self) -> &'static str {
+                    Self::NAMES[self.as_usize()]
+                }
 
-            paste::paste! {
                 /// Returns the variant as its underlying representation.
                 #[inline]
                 #[must_use]
                 pub const fn [<as_ $repr>](self) -> $repr {
                     self as $repr
                 }
-            }
 
-            /// Returns the variant as a usize.
-            #[inline]
-            #[must_use]
-            pub const fn as_usize(self) -> usize {
-                self as _
+                /// Returns the variant as a usize.
+                #[inline]
+                #[must_use]
+                pub const fn as_usize(self) -> usize {
+                    self as _
+                }
             }
         }
 

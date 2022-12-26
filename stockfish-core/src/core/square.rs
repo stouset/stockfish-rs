@@ -20,6 +20,7 @@ impl Square {
         let f: u8 = file.into();
         let r: u8 = rank.into();
         let s: u8 = (r << 3) + f;
+
         unsafe_optimization!(
             Self::from_u8(s).unwrap(),
             Self::from_u8_unchecked(s)
