@@ -1,24 +1,19 @@
 [package]
 name    = 'stockfish-core'
-license = 'GPL-3.0-only'
-version = '0.1.0'
-edition = '2021'
+version = '0.0.0'
 
+readme      = 'README.md'
 description = 'Core types for implementing a fast chess engine'
-categories  = ['games']
-keywords    = ['chess', 'chess-engine']
 
-readme        = 'README.md'
-repository    = 'https://github.com/stouset/stockfish-rs'
 homepage      = 'https://crates.io/crates/stockfish-core'
 documentation = 'https://docs.rs/stockfish-core'
 
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+categories.workspace = true
+keywords.workspace   = true
+repository.workspace = true
+
 [dependencies]
 paste = '1'
-# bitflags  = '1'
-# bytemuck  = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }
-# constmuck = '0'
-
-# [build-dependencies]
-# bitflags = '1'
-# bytemuck = { version = '1', features = ["derive", "min_const_generics", "extern_crate_alloc"] }

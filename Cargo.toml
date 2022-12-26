@@ -3,5 +3,14 @@ members = [
     "stockfish-core",
 ]
 
+[workspace.package]
+authors    = ["Stephen Touset <stephen@touset.org>"]
+license    = 'GPL-3.0-only'
+edition    = '2021'
+categories = ['games']
+keywords   = ['chess', 'chess-engine']
+
+repository = 'https://github.com/stouset/stockfish-rs'
+
 [profile.release]
 lto = "fat"
