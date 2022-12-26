@@ -72,14 +72,14 @@ macro_rules! enumeration {
                 /// Returns the variant as its underlying representation.
                 #[inline]
                 #[must_use]
-                pub const fn [<as_ $repr>](self) -> $repr {
+                pub(crate) const fn [<as_ $repr>](self) -> $repr {
                     self as $repr
                 }
 
                 /// Returns the variant as a usize.
                 #[inline]
                 #[must_use]
-                pub const fn as_usize(self) -> usize {
+                pub(crate) const fn as_usize(self) -> usize {
                     self as _
                 }
             }
