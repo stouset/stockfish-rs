@@ -108,6 +108,7 @@ impl Square {
         self.rank().distance(other.rank())
     }
 
+    #[inline]
     #[must_use]
     pub const fn distance(self, rhs: Self) -> u8 {
         crate::accelerate::square_distance(self, rhs)

@@ -80,6 +80,9 @@
 #![feature(rustdoc_missing_doc_code_examples)]
 #![feature(strict_provenance)]
 
+#[cfg(test)]
+use criterion as _;
+
 macro_rules! unsafe_optimization {
     ($safe:expr, $unsafe:expr) => {{
         #[allow(unsafe_code)]
