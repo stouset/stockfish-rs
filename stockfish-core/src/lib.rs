@@ -96,6 +96,7 @@ macro_rules! refute {
     ($cond:expr, $($arg:tt)+) => { assert!(!$cond, $($arg)+) };
 }
 
+pub mod accelerate;
 pub mod core;
 
 pub mod prelude {

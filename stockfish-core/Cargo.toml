@@ -15,5 +15,14 @@ categories.workspace = true
 keywords.workspace   = true
 repository.workspace = true
 
+[[bin]]
+name              = "stockfish-accelerate"
+required-features = ["unaccelerated"]
+
 [dependencies]
-paste = '1'
+bytemuck = { version = '1', optional = true, features = ["derive", "extern_crate_alloc"] }
+paste    = '1'
+
+[features]
+default       = []
+unaccelerated = ["bytemuck"]

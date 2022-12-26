@@ -108,12 +108,10 @@ impl Square {
         self.rank().distance(other.rank())
     }
 
-    // TODO: implement off bitboards
-    // #[inline]
-    // #[must_use]
-    // pub const fn distance(self, rhs: Self) -> u8 {
-    //     crate::bitboard::square_distance(self, rhs)
-    // }
+    #[must_use]
+    pub const fn distance(self, rhs: Self) -> u8 {
+        crate::accelerate::square_distance(self, rhs)
+    }
 }
 
 // TODO: implement off bitboards
@@ -222,19 +220,19 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn square_distance() {
-    //     for s1 in Square::into_iter() {
-    //         for s2 in Square::into_iter() {
-    //             assert_eq!(s1.distance(s2), std::cmp::max(
-    //                 s1.distance_files(s2),
-    //                 s1.distance_ranks(s2),
-    //             ));
+    #[test]
+    fn square_distance() {
+        for s1 in Square::into_iter() {
+            for s2 in Square::into_iter() {
+                assert_eq!(s1.distance(s2), std::cmp::max(
+                    s1.distance_files(s2),
+                    s1.distance_ranks(s2),
+                ));
 
-    //             assert_eq!(s1.distance(s2), s2.distance(s1));
-    //         }
-    //     }
-    // }
+                assert_eq!(s1.distance(s2), s2.distance(s1));
+            }
+        }
+    }
 
     #[test]
     fn square_from_perspective() {
