@@ -78,6 +78,7 @@
 #![feature(const_slice_index)]
 #![feature(derive_const)]
 #![feature(macro_metavar_expr)]
+#![feature(no_coverage)]
 #![feature(rustdoc_missing_doc_code_examples)]
 #![feature(strict_provenance)]
 
