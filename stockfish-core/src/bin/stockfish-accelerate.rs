@@ -11,7 +11,6 @@ fn main() -> std::io::Result<()> {
     fs::create_dir_all(&output_root)?;
 
     accelerate("square_distance", &output_root, &generate_square_distance());
-    // accelerate("square",          &output_root, &generate_square());
 
     Ok(())
 }
@@ -39,13 +38,3 @@ fn generate_square_distance() -> [[u8; Square::COUNT]; Square::COUNT] {
 
     distances
 }
-
-// fn generate_square() -> [Bitboard; Square::COUNT] {
-//     let mut bitboards = [Bitboard::EMPTY; Square::COUNT];
-
-//     for s in Square::into_iter() {
-//         bitboards[s] = computed::square(s);
-//     }
-
-//     bitboards
-// }

@@ -72,6 +72,7 @@
 #![feature(const_cmp)]
 #![feature(const_convert)]
 #![feature(const_discriminant)]
+#![feature(const_ops)]
 #![feature(const_option)]
 #![feature(const_trait_impl)]
 #![feature(const_slice_index)]
@@ -100,6 +101,7 @@ macro_rules! refute {
 }
 
 pub mod accelerate;
+pub mod bitboard;
 pub mod core;
 
 pub mod prelude {
@@ -109,6 +111,8 @@ pub mod prelude {
     pub use crate::core::Piece;
     pub use crate::core::Rank;
     pub use crate::core::Square;
+
+    pub use crate::bitboard::Bitboard;
 }
 
 pub use prelude::*;
