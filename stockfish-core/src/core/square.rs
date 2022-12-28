@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use std::ops::{BitOr, BitXor};
+
 enumeration! {
     pub Square, u8, [
         A1, B1, C1, D1, E1, F1, G1, H1,
@@ -138,7 +140,15 @@ impl Square {
 //     }
 // }
 
-impl const std::ops::BitXor for Square {
+impl const BitOr for Square {
+    type Output = Bitboard;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) | rhs
+    }
+}
+
+impl const BitXor for Square {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self::Output {

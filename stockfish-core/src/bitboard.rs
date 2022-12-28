@@ -1,6 +1,13 @@
 use crate::prelude::*;
 
-use std::fmt::Debug;
+use std::ops::{
+    BitAnd, BitAndAssign,
+    BitOr,  BitOrAssign,
+    BitXor, BitXorAssign,
+    Not,
+    Shl,
+    Add,
+};
 
 #[derive(Copy, Eq)]
 // #[derive(bytemuck::Pod, bytemuck::Zeroable)]
@@ -112,7 +119,7 @@ impl Bitboard {
     }
 }
 
-impl Debug for Bitboard {
+impl std::fmt::Debug for Bitboard {
     #[cfg_attr(coverage, no_coverage)]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let ranks = self.0.to_be_bytes();
@@ -184,16 +191,7 @@ impl const From<Square> for Bitboard {
     }
 }
 
-impl const std::ops::Not for Bitboard {
-    type Output = Self;
-
-    #[inline]
-    fn not(self) -> Self::Output {
-        (!self.0).into()
-    }
-}
-
-impl const std::ops::BitAnd<Self> for Bitboard {
+impl const BitAnd<Self> for Bitboard {
     type Output = Self;
 
     #[inline]
@@ -202,7 +200,14 @@ impl const std::ops::BitAnd<Self> for Bitboard {
     }
 }
 
-impl const std::ops::BitAnd<Square> for Bitboard {
+impl const BitAndAssign<Self> for Bitboard {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: Self) {
+        *self = (*self).bitand(rhs);
+    }
+}
+
+impl const BitAnd<Square> for Bitboard {
     type Output = Self;
 
     #[inline]
@@ -211,7 +216,14 @@ impl const std::ops::BitAnd<Square> for Bitboard {
     }
 }
 
-impl const std::ops::BitOr<Self> for Bitboard {
+impl const BitAndAssign<Square> for Bitboard {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: Square) {
+        *self = (*self).bitand(rhs);
+    }
+}
+
+impl const BitOr<Self> for Bitboard {
     type Output = Self;
 
     #[inline]
@@ -220,7 +232,30 @@ impl const std::ops::BitOr<Self> for Bitboard {
     }
 }
 
-impl const std::ops::BitXor<Self> for Bitboard {
+impl const BitOr<Square> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitor(self, rhs: Square) -> Self::Output {
+        self.bitor(Self::from(rhs))
+    }
+}
+
+impl const BitOrAssign<Self> for Bitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Self) {
+        *self = (*self).bitor(rhs);
+    }
+}
+
+impl const BitOrAssign<Square> for Bitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Square) {
+        *self = (*self).bitor(rhs);
+    }
+}
+
+impl const BitXor<Self> for Bitboard {
     type Output = Self;
 
     #[inline]
@@ -229,12 +264,52 @@ impl const std::ops::BitXor<Self> for Bitboard {
     }
 }
 
-impl const std::ops::Shl<u8> for Bitboard {
+impl const BitXor<Square> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitxor(self, rhs: Square) -> Self::Output {
+        self.bitxor(Self::from(rhs))
+    }
+}
+
+impl const BitXorAssign<Self> for Bitboard {
+    #[inline]
+    fn bitxor_assign(&mut self, rhs: Self) {
+        *self = (*self).bitxor(rhs);
+    }
+}
+
+impl const Not for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn not(self) -> Self::Output {
+        (!self.0).into()
+    }
+}
+
+impl const Shl<u8> for Bitboard {
     type Output = Self;
 
     #[inline]
     fn shl(self, rhs: u8) -> Self::Output {
         (self.0 << rhs).into()
+    }
+}
+
+impl const Add<Direction> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn add(self, direction: Direction) -> Self {
+        let shift: i8 = direction.into();
+        let mask      = !direction.discarded_files();
+
+        match shift {
+            0.. => (self & mask).0 << shift,
+            _   => (self & mask).0 >> shift.abs(),
+        }.into()
     }
 }
 
@@ -451,13 +526,6 @@ mod tests {
     }
 
     #[test]
-    fn not() {
-        assert_eq!(Bitboard::EMPTY,         !Bitboard::ALL);
-        assert_eq!(Bitboard::LIGHT_SQUARES, !Bitboard::DARK_SQUARES);
-        assert_eq!(Bitboard::FILE_C,        !!Bitboard::FILE_C);
-    }
-
-    #[test]
     fn bitand() {
         assert_eq!(Bitboard::EMPTY,  Bitboard::EMPTY         & Bitboard::EMPTY);
         assert_eq!(Bitboard::FILE_A, Bitboard::FILE_A        & Bitboard::FILE_A);
@@ -482,6 +550,13 @@ mod tests {
         assert_eq!(Bitboard::EMPTY,  Bitboard::EMPTY         ^ Bitboard::EMPTY);
         assert_eq!(Bitboard::EMPTY,  Bitboard::FILE_A        ^ Bitboard::FILE_A);
         assert_eq!(Bitboard::ALL,    Bitboard::LIGHT_SQUARES ^ Bitboard::DARK_SQUARES);
+    }
+
+    #[test]
+    fn not() {
+        assert_eq!(Bitboard::EMPTY,         !Bitboard::ALL);
+        assert_eq!(Bitboard::LIGHT_SQUARES, !Bitboard::DARK_SQUARES);
+        assert_eq!(Bitboard::FILE_C,        !!Bitboard::FILE_C);
     }
 
     #[test]
