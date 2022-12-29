@@ -14,10 +14,13 @@
 ///   <http://vigna.di.unimi.it/ftp/papers/xorshift.pdf>
 #[must_use]
 pub(crate) struct Prng {
+    /// The internal seed from which the next pseudorandom number is generated.
     seed: u64,
 }
 
 impl Prng {
+    /// Returns a new pseudorandom [`u64`]. Updates the seed internally so the
+    /// next value will be different (with overwhelming probability).
     #[must_use]
     pub(crate) const fn next_u64(&mut self) -> u64 {
         self.seed ^= self.seed >> 12;
@@ -40,6 +43,20 @@ impl From<u64> for Prng {
         assert!(seed != 0, "seed must not be zero");
 
         Self { seed }
+    }
+}
+
+impl Iterator for Prng {
+    type Item = u64;
+
+    #[must_use]
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(self.next_u64())
+    }
+
+    #[must_use]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (usize::MAX, None)
     }
 }
 
