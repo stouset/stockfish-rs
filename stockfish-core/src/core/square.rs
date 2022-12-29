@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{BitOr, BitXor};
+use std::ops::{BitOr, BitXor, Not};
 
 enumeration! {
     pub Square, u8, [
@@ -158,6 +158,14 @@ impl const BitXor for Square {
             Self::from_u8(s).unwrap(),
             Self::from_u8_unchecked(s)
         }
+    }
+}
+
+impl const Not for Square {
+    type Output = Bitboard;
+
+    fn not(self) -> Self::Output {
+        ! Bitboard::from(self)
     }
 }
 

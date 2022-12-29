@@ -103,6 +103,8 @@ macro_rules! refute {
     ($cond:expr, $($arg:tt)+) => { assert!(!$cond, $($arg)+) };
 }
 
+mod misc;
+
 pub mod accelerate;
 pub mod bitboard;
 pub mod core;

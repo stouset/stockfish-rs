@@ -43,6 +43,9 @@ impl Direction {
     ///
     /// This function will panic in debug builds if it encounters a Direction
     /// with too large a distance. This should not be encountered in practice.
+    ///
+    /// TODO: statically check these assertions so this cannot possibly panic or
+    /// be invalid for release builds
     #[inline]
     pub(crate) const fn discarded_files(self) -> Bitboard {
         // Distances currently rely on the assumption that they unambiguously

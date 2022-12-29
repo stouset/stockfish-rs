@@ -15,7 +15,7 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
     std::cmp::max(file_diff, rank_diff)
 }
 
-pub(crate) const fn attacks(color: Color, piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
+pub const fn attacks(color: Color, piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
         "occupancy bitboard must not contain the attacking piece");
 
@@ -26,7 +26,7 @@ pub(crate) const fn attacks(color: Color, piece: Piece, square: Square, occupied
     }
 }
 
-pub(crate) const fn pseudo_attacks(piece: Piece, square: Square) -> Bitboard {
+pub const fn pseudo_attacks(piece: Piece, square: Square) -> Bitboard {
     // pawns require a color to know which direction they attack in
     debug_assert!(piece != Piece::Pawn,
         "pawns do not have pseudo-attacks defined on them");
@@ -54,7 +54,7 @@ pub(crate) const fn pseudo_attacks(piece: Piece, square: Square) -> Bitboard {
     bb
 }
 
-pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
+pub const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
     let board: Bitboard = square.into();
 
     match color {
@@ -63,7 +63,7 @@ pub(crate) const fn pawn_attacks(color: Color, square: Square) -> Bitboard {
     }
 }
 
-pub(crate) const fn sliding_attacks(piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
+pub const fn sliding_attacks(piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!(piece.is_sliding(),
         "piece is not capable of sliding attacks");
 
@@ -138,7 +138,7 @@ mod tests {
         assert_eq!(
             Square::B3 | Square::C2,
             attacks(Color::Black, Piece::Knight, Square::A1, Bitboard::EMPTY)
-        )
+        );
     }
 
     #[test]

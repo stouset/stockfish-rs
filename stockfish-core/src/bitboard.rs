@@ -1,3 +1,6 @@
+#[doc(hidden)]
+pub mod magic;
+
 use crate::prelude::*;
 
 use std::ops::{
@@ -10,9 +13,9 @@ use std::ops::{
 };
 
 #[derive(Copy, Eq)]
-// #[derive(bytemuck::Pod, bytemuck::Zeroable)]
+#[derive(bytemuck::Pod, bytemuck::Zeroable)]
 #[derive_const(Clone, PartialEq)]
-// #[repr(transparent)]
+#[repr(transparent)]
 #[must_use]
 pub struct Bitboard(u64);
 

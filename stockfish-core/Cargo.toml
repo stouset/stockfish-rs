@@ -24,7 +24,7 @@ default       = []
 unaccelerated = []
 
 [dependencies]
-bytemuck = { version = '1', features = ['derive', 'extern_crate_alloc'] }
+bytemuck = { version = '1', features = ['derive', 'extern_crate_alloc', 'min_const_generics'] }
 paste    = '1'
 
 [dev-dependencies]
