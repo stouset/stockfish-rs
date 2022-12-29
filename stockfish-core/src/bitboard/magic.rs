@@ -102,7 +102,7 @@ impl<const N: usize> Magic<N> {
             }
 
             let     seed  = Self::SEEDS[square.rank()];
-            let mut prng  = Prng::from_seed(seed);
+            let mut prng  = Prng::from(seed);
             let mut i     = 0;
 
             // Find a magic for square 's' picking up an (almost) random number
