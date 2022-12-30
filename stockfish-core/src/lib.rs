@@ -110,13 +110,25 @@ pub mod bitboard;
 pub mod core;
 
 pub mod prelude {
+    #[doc(no_inline)]
     pub use crate::core::Color;
+
+    #[doc(no_inline)]
     pub use crate::core::Direction;
+
+    #[doc(no_inline)]
     pub use crate::core::File;
+
+    #[doc(no_inline)]
     pub use crate::core::Piece;
+
+    #[doc(no_inline)]
     pub use crate::core::Rank;
+
+    #[doc(no_inline)]
     pub use crate::core::Square;
 
+    #[doc(no_inline)]
     pub use crate::bitboard::Bitboard;
 }
 

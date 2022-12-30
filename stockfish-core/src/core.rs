@@ -1,3 +1,5 @@
+/// An internal macro that creates a c-style enum of the style used by many of
+/// the core types in this crate.
 macro_rules! enumeration {
     ($(#[$outer:meta])* $vis:vis $name:ident, $repr:ty, [$($var:ident),+ $(,)?]) => {
         $(#[$outer])*

@@ -20,40 +20,89 @@ use std::ops::{
 pub struct Bitboard(u64);
 
 impl Bitboard {
+    /// An empty board with no squares occupied.
     pub const EMPTY: Self = 0.into();
+
+    /// A board with all squares occupied.
     pub const ALL:   Self = u64::MAX.into();
 
+    /// A board with all the dark squares occupied.
     pub const DARK_SQUARES:  Self = 0xAA_55_AA_55_AA_55_AA_55.into();
+
+    /// A board with all the light squares occupied.
     pub const LIGHT_SQUARES: Self = 0x55_AA_55_AA_55_AA_55_AA.into();
 
+    /// A board with all of the squares on the A file occupied.
     pub const FILE_A: Bitboard = 0x01_01_01_01_01_01_01_01.into();
+
+    /// A board with all of the squares on the B file occupied.
     pub const FILE_B: Bitboard = Self::FILE_A << 1;
+
+    /// A board with all of the squares on the C file occupied.
     pub const FILE_C: Bitboard = Self::FILE_A << 2;
+
+    /// A board with all of the squares on the D file occupied.
     pub const FILE_D: Bitboard = Self::FILE_A << 3;
+
+    /// A board with all of the squares on the E file occupied.
     pub const FILE_E: Bitboard = Self::FILE_A << 4;
+
+    /// A board with all of the squares on the F file occupied.
     pub const FILE_F: Bitboard = Self::FILE_A << 5;
+
+    /// A board with all of the squares on the G file occupied.
     pub const FILE_G: Bitboard = Self::FILE_A << 6;
+
+    /// A board with all of the squares on the H file occupied.
     pub const FILE_H: Bitboard = Self::FILE_A << 7;
 
+    /// A board with all of the squares on the 1st rank occupied.
     pub const RANK_1: Bitboard = 0xFF.into();
+
+    /// A board with all of the squares on the 2nd rank occupied.
     pub const RANK_2: Bitboard = Self::RANK_1 << (8);
+
+    /// A board with all of the squares on the 3rd rank occupied.
     pub const RANK_3: Bitboard = Self::RANK_1 << (8 * 2);
+
+    /// A board with all of the squares on the 4th rank occupied.
     pub const RANK_4: Bitboard = Self::RANK_1 << (8 * 3);
+
+    /// A board with all of the squares on the 5th rank occupied.
     pub const RANK_5: Bitboard = Self::RANK_1 << (8 * 4);
+
+    /// A board with all of the squares on the 6th rank occupied.
     pub const RANK_6: Bitboard = Self::RANK_1 << (8 * 5);
+
+    /// A board with all of the squares on the 7th rank occupied.
     pub const RANK_7: Bitboard = Self::RANK_1 << (8 * 6);
+
+    /// A board with all of the squares on the 8th rank occupied.
     pub const RANK_8: Bitboard = Self::RANK_1 << (8 * 7);
 
-    // const BB_QUEEN_SIDE:   Bitboard = BB_FILE_A | BB_FILE_B | BB_FILE_C | BB_FILE_D;
-    // const BB_CENTER_FILES: Bitboard = BB_FILE_C | BB_FILE_D | BB_FILE_E | BB_FILE_F;
-    // const BB_KING_SIDE:    Bitboard = BB_FILE_E | BB_FILE_F | BB_FILE_G | BB_FILE_H;
-    // const BB_CENTER:       Bitboard = (BB_FILE_D | BB_FILE_E) & (BB_RANK_4 | BB_RANK_5);
+    /// A board with all of the squares on the queenside occupied.
+    pub const QUEEN_SIDE: Bitboard =
+        Self::FILE_A | Self::FILE_B | Self::FILE_C | Self::FILE_D;
 
-    // const BB_KING_FLANK: [Bitboard; File::COUNT] = [
-    //     BB_QUEEN_SIDE ^ BB_FILE_D, BB_QUEEN_SIDE,
-    //     BB_QUEEN_SIDE,             BB_CENTER_FILES,
-    //     BB_CENTER_FILES,           BB_KING_SIDE,
-    //     BB_KING_SIDE,              BB_KING_SIDE ^ BB_FILE_E,
+    /// A board with all of the center files occupied.
+    pub const CENTER_FILES: Bitboard =
+        Self::FILE_C | Self::FILE_D | Self::FILE_E | Self::FILE_F;
+
+    /// A board with all of the squares on the kingside occupied.
+    pub const KING_SIDE: Bitboard =
+        Self::FILE_E | Self::FILE_F | Self::FILE_G | Self::FILE_H;
+
+    /// A board with all of the squares in the center (D4, D5, E4, and E5)
+    /// occupied.
+    pub const CENTER: Bitboard =
+        (Self::FILE_D | Self::FILE_E) &
+        (Self::RANK_4 | Self::RANK_5);
+
+    // pub const KING_FLANK: [Bitboard; File::COUNT] = [
+    //     Self::QUEEN_SIDE ^ Self::FILE_D, Self::QUEEN_SIDE,
+    //     Self::QUEEN_SIDE,                Self::CENTER_FILES,
+    //     Self::CENTER_FILES,              Self::KING_SIDE,
+    //     Self::KING_SIDE,                 Self::KING_SIDE ^ Self::FILE_E,
     // ];
 
     /// Returns [`true`] if the [`Bitboard`] does not contain any spaces.
@@ -63,14 +112,14 @@ impl Bitboard {
         self == Self::EMPTY
     }
 
-    //// Returns [`true`] if the [`Bitboard`] contains any spaces.
+    /// Returns [`true`] if the [`Bitboard`] contains any spaces.
     #[inline]
     #[must_use]
     pub const fn is_any(self) -> bool {
         !self.is_empty()
     }
 
-    //// Returns [`true`] if the [`Bitboard`] contains only one space.
+    /// Returns [`true`] if the [`Bitboard`] contains only one space.
     #[inline]
     #[must_use]
     pub const fn is_one(self) -> bool {
@@ -89,32 +138,38 @@ impl Bitboard {
         self.0 & (self.0.wrapping_sub(1)) != 0
     }
 
-    // Returns [`true`] if the [`Bitboard`] contains all squares.
+    /// Returns [`true`] if the [`Bitboard`] contains all squares.
     #[inline]
     #[must_use]
     pub const fn is_all(self) -> bool {
         self.0 == Self::ALL.0
     }
 
+    /// Returns [`true`] if the [`Bitboard`] contains the given square.
     #[inline]
     #[must_use]
     pub const fn contains(self, s: Square) -> bool {
         self.overlaps(s.into())
     }
 
+    /// Returns [`true`] if the [`Bitboard`] has any squares in common with the
+    /// given [`Bitboard`].
     #[inline]
     #[must_use]
     pub const fn overlaps(self, rhs: Self) -> bool {
         (self & rhs).is_any()
     }
 
+    /// Returns one of the [`Square`]s that is included in this [`Bitboard`].
+    /// There is no guarantee as to which [`Square`] will be returned or that
+    /// the same one will be returned from successive calls to this function.
     #[inline]
     #[must_use]
-    pub fn into_some_square(self) -> Option<Square> {
+    pub const fn into_some_square(self) -> Option<Square> {
         Square::VARIANTS.get(self.0.trailing_zeros() as usize).copied()
     }
 
-    // Returns the number of squares in the bitboard.
+    /// Returns the number of [`Square`]s set in this [`Bitboard`].
     #[inline]
     #[must_use]
     pub const fn count(self) -> usize {
