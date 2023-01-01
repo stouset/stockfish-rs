@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use std::ops::{BitOr, Not};
+
 enumeration! {
     /// A rank, 1 through 8, on a chess board. The variants for this enum are
     /// prefixed with an underscore since identifiers may not begin with a
@@ -29,11 +31,19 @@ impl const From<Square> for Rank {
     }
 }
 
-impl const std::ops::BitOr<File> for Rank {
+impl const BitOr<File> for Rank {
     type Output = Square;
 
     fn bitor(self, rhs: File) -> Self::Output {
         Square::new(rhs, self)
+    }
+}
+
+impl const Not for Rank {
+    type Output = Bitboard;
+
+    fn not(self) -> Self::Output {
+        ! Bitboard::from(self)
     }
 }
 

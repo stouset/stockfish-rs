@@ -3,6 +3,7 @@ pub mod magic;
 
 use crate::prelude::*;
 
+use std::iter::FusedIterator;
 use std::ops::{
     BitAnd, BitAndAssign,
     BitOr,  BitOrAssign,
@@ -175,7 +176,52 @@ impl Bitboard {
     pub const fn count(self) -> usize {
         self.0.count_ones() as _
     }
+
+    /// Returns an iterator over every possible subset of squares on the
+    /// bitboard.
+    const fn powerset(self) -> PowerSetIter {
+        PowerSetIter::new(self)
+    }
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[must_use]
+pub struct PowerSetIter {
+    source: Bitboard,
+    next:   Option<Bitboard>,
+}
+
+impl PowerSetIter {
+    const fn new(bitboard: Bitboard) -> Self {
+        Self {
+            source: bitboard,
+            next:   Some(Bitboard::EMPTY),
+        }
+    }
+}
+
+impl Iterator for PowerSetIter {
+    type Item = Bitboard;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // use Carry-Ripler trick to enumerate all subsets of the source
+        // bitboard
+        let next  = self.next;
+        self.next = self.next
+            .map(|bb| bb.0.wrapping_sub(self.source.0) & self.source.0)
+            .map(Bitboard::from)
+            .filter(|bb| bb.is_any());
+
+        next
+    }
+
+    // TODO: more accurately estimate the bounds
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(2_usize.pow(self.source.0.count_ones())))
+    }
+}
+
+impl FusedIterator for PowerSetIter {}
 
 impl std::fmt::Debug for Bitboard {
     #[cfg_attr(coverage, no_coverage)]

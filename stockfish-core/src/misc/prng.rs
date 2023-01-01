@@ -38,7 +38,7 @@ impl Prng {
     }
 }
 
-impl From<u64> for Prng {
+impl const From<u64> for Prng {
     fn from(seed: u64) -> Self {
         assert!(seed != 0, "seed must not be zero");
 
@@ -68,9 +68,9 @@ mod tests {
     fn prng_next_u64() {
         let mut prng = Prng::from(1);
 
-        assert_eq!(0x47E4CE4B896CDD1D, prng.next_u64());
-        assert_eq!(0xABCFA6A8E079651D, prng.next_u64());
-        assert_eq!(0xB9D10D8FEB731F57, prng.next_u64());
+        assert_eq!(0x47E4_CE4B_896C_DD1D, prng.next_u64());
+        assert_eq!(0xABCF_A6A8_E079_651D, prng.next_u64());
+        assert_eq!(0xB9D1_0D8F_EB73_1F57, prng.next_u64());
     }
 
     #[test]
@@ -78,7 +78,7 @@ mod tests {
         let mut prng = Prng::from(1);
 
         assert_eq!(
-            0x47E4CE4B896CDD1D & 0xABCFA6A8E079651D & 0xB9D10D8FEB731F57,
+            0x47E4_CE4B_896C_DD1D & 0xABCF_A6A8_E079_651D & 0xB9D1_0D8F_EB73_1F57,
             prng.next_sparse_u64()
         );
     }
