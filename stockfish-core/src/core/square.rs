@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{BitOr, BitXor, Not};
+use std::ops::{BitAnd, BitOr, BitXor, Not};
 
 enumeration! {
     /// A square on a chess board.
@@ -52,17 +52,17 @@ impl Square {
         self.into()
     }
 
-    // TODO: implement off bitboards
-    // #[inline]
-    // pub const fn is_dark(self) -> bool {
-    //     (Bitboard::from(self) & Bitboard::DARK_SQUARES).is_any()
-    // }
+    #[inline]
+    #[must_use]
+    pub const fn is_dark(self) -> bool {
+        (Bitboard::from(self) & Bitboard::DARK_SQUARES).is_any()
+    }
 
-    // TODO: implement off bitboards
-    // #[inline]
-    // pub const fn is_light(self) -> bool {
-    //     !self.is_dark()
-    // }
+    #[inline]
+    #[must_use]
+    pub const fn is_light(self) -> bool {
+        !self.is_dark()
+    }
 
     #[inline]
     pub const fn flip_file(self) -> Self {
@@ -119,27 +119,15 @@ impl Square {
     }
 }
 
-// TODO: implement off bitboards
-// impl const std::ops::BitAnd for Square {
-//     type Output = Bitboard;
+impl const BitAnd for Square {
+    type Output = Bitboard;
 
-//     #[inline]
-//     #[must_use]
-//     fn bitand(self, rhs: Self) -> Self::Output {
-//         Bitboard::from(self) & rhs
-//     }
-// }
-
-// TODO: implement off bitboards
-// impl const std::ops::BitOr for Square {
-//     type Output = Bitboard;
-
-//     #[inline]
-//     #[must_use]
-//     fn bitor(self, rhs: Self) -> Self::Output {
-//         Bitboard::from(self) | rhs
-//     }
-// }
+    #[inline]
+    #[must_use]
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) & rhs
+    }
+}
 
 impl const BitOr for Square {
     type Output = Bitboard;
