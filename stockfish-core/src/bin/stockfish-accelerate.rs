@@ -12,6 +12,8 @@ fn main() -> std::io::Result<()> {
     fs::create_dir_all(&output_root)?;
 
     accelerate("square_distance", &output_root, &generate_square_distance());
+    accelerate("line",            &output_root, &generate_line());
+    accelerate("between",         &output_root, &generate_between());
     accelerate("pseudo_attacks",  &output_root, &generate_pseudo_attacks());
     accelerate("pawn_attacks",    &output_root, &generate_pawn_attacks());
 
@@ -48,6 +50,30 @@ fn generate_square_distance() -> [[u8; Square::COUNT]; Square::COUNT] {
     }
 
     distances
+}
+
+fn generate_line() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
+    let mut line = [[Bitboard::EMPTY; Square::COUNT]; Square::COUNT];
+
+    for s1 in Square::into_iter() {
+        for s2 in Square::into_iter() {
+            line[s1][s2] = computed::line(s1, s2);
+        }
+    }
+
+    line
+}
+
+fn generate_between() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
+    let mut between = [[Bitboard::EMPTY; Square::COUNT]; Square::COUNT];
+
+    for s1 in Square::into_iter() {
+        for s2 in Square::into_iter() {
+            between[s1][s2] = computed::between(s1, s2);
+        }
+    }
+
+    between
 }
 
 fn generate_pseudo_attacks() -> [[Bitboard; Square::COUNT]; Piece::COUNT] {

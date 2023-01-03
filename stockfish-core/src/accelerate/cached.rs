@@ -17,6 +17,12 @@ macro_rules! cached {
 /// Precomputed disatnces between [`Square`]s.
 const SQUARE_DISTANCE: [[u8; Square::COUNT]; Square::COUNT] = cached!("square_distance");
 
+/// Precomputed lines containing [`Square`]s.
+const LINE: [[Bitboard; Square::COUNT]; Square::COUNT] = cached!("line");
+
+/// Precomputed lines between [`Square`]s.
+const BETWEEN: [[Bitboard; Square::COUNT]; Square::COUNT] = cached!("between");
+
 /// Precomputed attacks for any type of piece on an empty board.
 const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; Piece::COUNT] = cached!("pseudo_attacks");
 
@@ -41,6 +47,24 @@ const ROOK_MAGICS: Magic<0x19000> = Magic {
 #[must_use]
 pub const fn square_distance(s1: Square, s2: Square) -> u8 {
     SQUARE_DISTANCE[s1][s2]
+}
+
+/// Returns a [`Bitboard`] containing all the [`Square`]s on the same file,
+/// rank, or diagonal as both `s1` and `s2`. Includes `s1` and `s2`.
+#[inline]
+pub const fn line(s1: Square, s2: Square) -> Bitboard {
+    LINE[s1][s2]
+}
+
+/// Returns a [`Bitboard`] containing all of the [`Square`]s between `s1` and
+/// `s2` exclusive of `s1` and inclusive of `s2`. If `s1` and `s2` are not on
+/// the same rank, file, or diagonal, returns `s2`.
+///
+/// This can allow us to generate non-king evasion moves faster: a defending
+/// piece must either interpose itself to cover the check or capture the
+/// checking piece.
+pub const fn between(s1: Square, s2: Square) -> Bitboard {
+    BETWEEN[s1][s2]
 }
 
 /// Returns a bitboard of valid attacks given a board containing other pieces
@@ -71,11 +95,37 @@ mod tests {
 
     #[test]
     fn square_distance() {
-        for (s1, s2) in Square::into_iter().zip(Square::into_iter()) {
-            assert_eq!(
-                computed::square_distance(s1, s2),
-                cached  ::square_distance(s1, s2),
-            );
+        for s1 in Square::into_iter() {
+            for s2 in Square::into_iter() {
+                assert_eq!(
+                    computed::square_distance(s1, s2),
+                    cached  ::square_distance(s1, s2),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn line() {
+        for s1 in Square::into_iter() {
+            for s2 in Square::into_iter() {
+                assert_eq!(
+                    computed::line(s1, s2),
+                    cached  ::line(s1, s2),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn between() {
+        for s1 in Square::into_iter() {
+            for s2 in Square::into_iter() {
+                assert_eq!(
+                    computed::between(s1, s2),
+                    cached  ::between(s1, s2),
+                );
+            }
         }
     }
 

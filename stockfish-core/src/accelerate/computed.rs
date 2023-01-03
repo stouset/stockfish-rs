@@ -15,6 +15,41 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
     std::cmp::max(file_diff, rank_diff)
 }
 
+/// Returns a [`Bitboard`] containing all the [`Square`]s on the same file,
+/// rank, or diagonal as both `s1` and `s2`. Includes `s1` and `s2`.
+pub fn line(s1: Square, s2: Square) -> Bitboard {
+    for piece in [Piece::Bishop, Piece::Rook] {
+        if pseudo_attacks(piece, s1).contains(s2) {
+            return (s1 | s2) | (
+                pseudo_attacks(piece, s1) &
+                pseudo_attacks(piece, s2)
+            );
+        }
+    }
+
+    Bitboard::EMPTY
+}
+
+/// Returns a [`Bitboard`] containing all of the [`Square`]s between `s1` and
+/// `s2` exclusive of `s1` and inclusive of `s2`. If `s1` and `s2` are not on
+/// the same rank, file, or diagonal, returns `s2`.
+///
+/// This can allow us to generate non-king evasion moves faster: a defending
+/// piece must either interpose itself to cover the check or capture the
+/// checking piece.
+pub fn between(s1: Square, s2: Square) -> Bitboard {
+    for piece in [Piece::Bishop, Piece::Rook] {
+        if pseudo_attacks(piece, s1).contains(s2) {
+            return
+                sliding_attacks(piece, s1, s2.into()) &
+                sliding_attacks(piece, s2, s1.into()) |
+                s2;
+        }
+    }
+
+    s2.into()
+}
+
 pub const fn attacks(color: Color, piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
         "occupancy bitboard must not contain the attacking piece");
@@ -102,6 +137,79 @@ mod tests {
         assert_eq!(4, square_distance(Square::G3, Square::G7));
         assert_eq!(4, square_distance(Square::B1, Square::F1));
         assert_eq!(5, square_distance(Square::H2, Square::C1));
+    }
+
+    #[test]
+    fn line_same_square() {
+        for s in Square::into_iter() {
+            assert_eq!(Bitboard::EMPTY, line(s, s));
+        }
+    }
+
+    #[test]
+    fn line_disjoint() {
+        for s1 in Square::into_iter() {
+            let moves = pseudo_attacks(Piece::Queen, s1);
+
+            for s2 in Square::into_iter().filter(|s| !moves.contains(*s)) {
+                assert_eq!(Bitboard::EMPTY, line(s1, s2));
+            }
+        }
+    }
+
+    #[test]
+    fn line_bishop_moves() {
+        for s1 in Square::into_iter() {
+            let moves = pseudo_attacks(Piece::Bishop, s1);
+
+            for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+                assert!(line(s1, s2).count() >  1);
+                assert!(line(s1, s2).count() <= 8);
+                assert!(line(s1, s2).overlaps(Bitboard::EDGES));
+            }
+        }
+    }
+
+    #[test]
+    fn line_rook_moves() {
+        for s1 in Square::into_iter() {
+            let moves = pseudo_attacks(Piece::Rook, s1);
+
+            for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+                assert_eq!(8, line(s1, s2).count());
+            }
+        }
+    }
+
+    #[test]
+    fn between_same_square() {
+        for s in Square::into_iter() {
+            assert_eq!(Bitboard::from(s), between(s, s));
+        }
+    }
+
+    #[test]
+    fn between_disjoint() {
+        for s1 in Square::into_iter() {
+            let moves = pseudo_attacks(Piece::Queen, s1);
+
+            for s2 in Square::into_iter().filter(|s| !moves.contains(*s)) {
+                assert_eq!(Bitboard::from(s2), between(s1, s2));
+            }
+        }
+    }
+
+    #[test]
+    fn between_overlapping() {
+        for piece in [Piece::Bishop, Piece::Rook] {
+            for s1 in Square::into_iter() {
+                let moves = pseudo_attacks(piece, s1);
+
+                for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+                    assert_eq!(s1.distance(s2) as usize, between(s1, s2).count());
+                }
+            }
+        }
     }
 
     #[test]
