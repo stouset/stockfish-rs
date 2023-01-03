@@ -85,11 +85,7 @@ impl Direction {
             // invalid (> 3 shift); we indicate all fields will be masked to
             // avoid having a panicking branch in release builds, but this
             // should be caught by the debug assertions above
-            0b100 => Bitboard::ALL,
-
-            // the above patterns are exhaustive for an 0b111 mask
-            #[allow(unsafe_code)]
-            _ => unsafe { std::hint::unreachable_unchecked() },
+            _ => Bitboard::ALL,
         }
     }
 
