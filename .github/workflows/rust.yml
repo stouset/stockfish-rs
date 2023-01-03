@@ -35,17 +35,26 @@ jobs:
       with:
         toolchain:  nightly
         profile:    minimal
-        components: clippy
+        components: clippy, miri
         override:   true
 
+    - name: Install cargo-nextest
+      uses: actions-rs/install@v0.1
+      with:
+        crate: cargo-nextest
+        use-tool-cache: true
+
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --all-targets
 
     - name: Lint
-      run: cargo clippy --verbose
+      run: cargo clippy --verbose --all-targets
 
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo nextest run --verbose
+
+    - name: Run tests under Miri
+      run: cargo miri nextest run --verbose
 
     - name: Generate docs
       run: cargo doc --verbose --no-deps
