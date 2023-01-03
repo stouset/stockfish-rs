@@ -99,6 +99,15 @@ impl Bitboard {
         (Self::FILE_D | Self::FILE_E) &
         (Self::RANK_4 | Self::RANK_5);
 
+    // A board with the edge files (A and H) occupied.
+    pub const EDGE_FILES: Bitboard = Self::FILE_A | Self::FILE_H;
+
+    // A board with the edge ranks (1 and 8) occupied;
+    pub const EDGE_RANKS: Bitboard = Self::RANK_1 | Self::RANK_8;
+
+    /// A board with all of the edges occupied.
+    pub const EDGES: Bitboard = Self::EDGE_FILES | Self::EDGE_RANKS;
+
     // pub const KING_FLANK: [Bitboard; File::COUNT] = [
     //     Self::QUEEN_SIDE ^ Self::FILE_D, Self::QUEEN_SIDE,
     //     Self::QUEEN_SIDE,                Self::CENTER_FILES,
@@ -159,6 +168,14 @@ impl Bitboard {
     #[must_use]
     pub const fn overlaps(self, rhs: Self) -> bool {
         (self & rhs).is_any()
+    }
+
+    /// Returns [`true`] if the [`Bitboard`] has no overlapping squares in
+    /// common with the given [`Bitboard`]
+    #[inline]
+    #[must_use]
+    pub const fn disjoint(self, rhs: Self) -> bool {
+        ! self.overlaps(rhs)
     }
 
     /// Returns one of the [`Square`]s that is included in this [`Bitboard`].

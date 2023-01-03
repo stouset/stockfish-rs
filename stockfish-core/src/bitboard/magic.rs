@@ -40,7 +40,7 @@ impl<const N: usize> Magic<N> {
     pub(crate) fn new(piece: Piece) -> Box<Self> {
         let mut m = bytemuck::zeroed_box::<Magic<N>>();
 
-        let _ = Square::into_iter().fold(0, |offset, square| {
+        let size = Square::into_iter().fold(0, |offset, square| {
             let mask  = MagicSquare::mask(piece, square);
             let shift = MagicSquare::shift(mask);
 
@@ -120,6 +120,10 @@ impl<const N: usize> Magic<N> {
 
             offset + size
         });
+
+        // the hardcoded size of this magic bitboard should be exactly thes size
+        // necessary to contain it and no larger
+        debug_assert_eq!(N, size);
 
         m
     }
@@ -224,5 +228,34 @@ impl MagicSquare {
         let magic_hi:  usize = (self.magic >> 32) as _;
 
         (lo.wrapping_mul(magic_lo) ^ hi.wrapping_mul(magic_hi)) >> self.shift
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn mask_passes_spot_check() {
+        for piece in [Piece::Bishop, Piece::Rook] {
+            for square in Square::into_iter() {
+                let mask = MagicSquare::mask(piece, square);
+
+                let edges = if piece == Piece::Rook {
+                    // the mask shouldn't contain the edges, except when the
+                    // piece is a Rook and *on* an edge, in which case we should
+                    // allow everything except the very first and last square on
+                    // that edge
+                    Bitboard::EDGES
+                        & (!Bitboard::from(square.rank()) | Bitboard::EDGE_FILES)
+                        & (!Bitboard::from(square.file()) | Bitboard::EDGE_RANKS)
+                } else {
+                    Bitboard::EDGES
+                };
+
+                refute!(mask.contains(square));
+                assert!(mask.disjoint(edges));
+            }
+        }
     }
 }
