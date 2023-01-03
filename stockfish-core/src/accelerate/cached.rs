@@ -151,4 +151,10 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    #[should_panic(expected = "must not contain the attacking piece")]
+    fn attacks_includes_origin_square() {
+        let _ = cached::attacks(Color::White, Piece::King, Square::C7, Square::C7.into());
+    }
 }
