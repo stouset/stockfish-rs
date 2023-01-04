@@ -1,0 +1,19 @@
+[package]
+name    = 'stockfish-game'
+version = '0.0.0'
+
+readme      = 'README.md'
+description = 'Implementation of game state for the Stockfish engine'
+
+homepage      = 'https://crates.io/crates/stockfish-game'
+documentation = 'https://docs.rs/stockfish-game'
+
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+categories.workspace = true
+keywords.workspace   = true
+repository.workspace = true
+
+[dependencies]
+stockfish-core = { path = '../stockfish-core' }

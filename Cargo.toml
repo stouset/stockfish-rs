@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "stockfish-core",
+    "stockfish-game",
 ]
 
 [workspace.package]
