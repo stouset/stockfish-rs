@@ -3,7 +3,7 @@ use crate::prelude::*;
 enumeration! {
     /// A file, A through H, on a chess board. The variants for this enum are
     /// prefixed an underscore to mimic those of [`Rank`].
-    pub Piece, u8, [
+    pub Piece, [
         Pawn, Knight, Bishop, Rook, Queen, King,
     ]
 }
