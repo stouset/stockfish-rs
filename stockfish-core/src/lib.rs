@@ -88,7 +88,7 @@
 use criterion as _;
 
 macro_rules! unsafe_optimization {
-    ($safe:expr, $unsafe:expr) => {{
+    ($safe:expr, $unsafe:expr $(,)?) => {{
         #[allow(unsafe_code)]
         unsafe {
             debug_assert!($safe == $unsafe);

@@ -26,7 +26,7 @@ impl Square {
 
         unsafe_optimization!(
             Self::from_u8(s).unwrap(),
-            Self::from_u8_unchecked(s)
+            Self::from_u8_unchecked(s),
         )
     }
 
@@ -96,7 +96,7 @@ impl Square {
 
         unsafe_optimization!(
             Self::from_u8(s).unwrap(),
-            Self::from_u8_unchecked(s)
+            Self::from_u8_unchecked(s),
         )
     }
 
@@ -145,7 +145,7 @@ impl const BitXor for Square {
 
         unsafe_optimization! {
             Self::from_u8(s).unwrap(),
-            Self::from_u8_unchecked(s)
+            Self::from_u8_unchecked(s),
         }
     }
 }

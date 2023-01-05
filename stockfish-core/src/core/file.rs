@@ -23,7 +23,7 @@ impl const From<Square> for File {
     fn from(s: Square) -> Self {
         unsafe_optimization!(
             Self::from_u8(s.file_index()).unwrap(),
-            Self::from_u8_unchecked(s.file_index())
+            Self::from_u8_unchecked(s.file_index()),
         )
     }
 }

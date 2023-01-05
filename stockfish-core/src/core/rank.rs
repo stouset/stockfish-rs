@@ -26,7 +26,7 @@ impl const From<Square> for Rank {
     fn from(s: Square) -> Self {
         unsafe_optimization!(
             Self::from_u8(s.rank_index()).unwrap(),
-            Self::from_u8_unchecked(s.rank_index())
+            Self::from_u8_unchecked(s.rank_index()),
         )
     }
 }
