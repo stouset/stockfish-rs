@@ -155,16 +155,20 @@ macro_rules! enumeration {
     }
 }
 
+mod castling;
 mod color;
 mod direction;
 mod file;
 mod piece;
 mod rank;
 mod square;
+mod token;
 
+pub use castling::Castling;
 pub use color::Color;
 pub use direction::Direction;
 pub use file::File;
 pub use piece::Piece;
 pub use rank::Rank;
 pub use square::Square;
+pub use token::Token;

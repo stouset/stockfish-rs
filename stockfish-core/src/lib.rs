@@ -111,6 +111,9 @@ pub mod core;
 
 pub mod prelude {
     #[doc(no_inline)]
+    pub use crate::core::Castling;
+
+    #[doc(no_inline)]
     pub use crate::core::Color;
 
     #[doc(no_inline)]
@@ -127,6 +130,9 @@ pub mod prelude {
 
     #[doc(no_inline)]
     pub use crate::core::Square;
+
+    #[doc(no_inline)]
+    pub use crate::core::Token;
 
     #[doc(no_inline)]
     pub use crate::bitboard::Bitboard;

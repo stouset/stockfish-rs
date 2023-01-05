@@ -24,6 +24,7 @@ default       = []
 unaccelerated = []
 
 [dependencies]
+bitflags = '1'
 bytemuck = { version = '1', features = ['derive', 'extern_crate_alloc', 'min_const_generics'] }
 
 [dev-dependencies]
