@@ -155,6 +155,7 @@ macro_rules! enumeration {
     }
 }
 
+mod board;
 mod castling;
 mod color;
 mod direction;
@@ -164,6 +165,7 @@ mod rank;
 mod square;
 mod token;
 
+pub use board::Board;
 pub use castling::Castling;
 pub use color::Color;
 pub use direction::Direction;

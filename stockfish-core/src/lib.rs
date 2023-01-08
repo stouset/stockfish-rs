@@ -110,6 +110,11 @@ pub mod bitboard;
 pub mod core;
 
 pub mod prelude {
+    pub use crate::{board, board_tokens};
+
+    #[doc(no_inline)]
+    pub use crate::core::Board;
+
     #[doc(no_inline)]
     pub use crate::core::Castling;
 
