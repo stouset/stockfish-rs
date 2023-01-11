@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use std::ops::{Index, IndexMut};
+
 #[derive(Copy, Debug, Eq, PartialEq)]
 #[derive_const(Clone)]
 #[must_use]
@@ -11,7 +13,7 @@ impl Board {
 
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it
 // allows for a convenient implementation of parsing a chess board from FEN
-impl const std::ops::Index<usize> for Board {
+impl const Index<usize> for Board {
     type Output = Option<Token>;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -21,13 +23,13 @@ impl const std::ops::Index<usize> for Board {
 
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it
 // allows for a convenient implementation of parsing a chess board from FEN
-impl const std::ops::IndexMut<usize> for Board {
+impl const IndexMut<usize> for Board {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.0.index_mut(index)
     }
 }
 
-impl const std::ops::Index<Square> for Board {
+impl const Index<Square> for Board {
     type Output = Option<Token>;
 
     fn index(&self, index: Square) -> &Self::Output {
@@ -35,7 +37,7 @@ impl const std::ops::Index<Square> for Board {
     }
 }
 
-impl const std::ops::IndexMut<Square> for Board {
+impl const IndexMut<Square> for Board {
     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
         self.index_mut(index.as_usize())
     }

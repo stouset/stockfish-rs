@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use std::ops::{Index, IndexMut};
+
 /// A token placed on a chess board. Combines a piece with its color.
 ///
 /// To keep this in a single byte, we pack both the color and the type of piece
@@ -88,6 +90,12 @@ impl Token {
     pub const fn as_u8(self) -> u8 {
         self as _
     }
+
+    #[inline]
+    #[must_use]
+    pub const fn as_usize(self) -> usize {
+        self as _
+    }
 }
 
 impl const From<Token> for Color {
@@ -101,5 +109,19 @@ impl const From<Token> for Piece {
     #[inline]
     fn from(token: Token) -> Self {
         token.piece()
+    }
+}
+
+impl<T> const Index<Token> for [T; Token::MAX + 1] {
+    type Output = T;
+
+    fn index(&self, index: Token) -> &Self::Output {
+        self.index(index.as_usize())
+    }
+}
+
+impl<T> const IndexMut<Token> for [T; Token::MAX + 1] {
+    fn index_mut(&mut self, index: Token) -> &mut Self::Output {
+        self.index_mut(index.as_usize())
     }
 }
