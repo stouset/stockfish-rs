@@ -245,6 +245,7 @@ impl std::fmt::Debug for Bitboard {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let ranks = self.0.to_be_bytes();
 
+        writeln!(f)?;
         writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
 
         for (rank, bits) in ranks.iter().enumerate() {
@@ -542,6 +543,7 @@ mod tests {
     fn fmt_a1() {
         assert_eq!(
             concat!(
+                "\n",
                 "  +---+---+---+---+---+---+---+---+\n",
                 "8 |   |   |   |   |   |   |   |   |\n",
                 "  +---+---+---+---+---+---+---+---+\n",
@@ -570,6 +572,7 @@ mod tests {
     fn fmt_h8() {
         assert_eq!(
             concat!(
+                "\n",
                 "  +---+---+---+---+---+---+---+---+\n",
                 "8 |   |   |   |   |   |   |   | X |\n",
                 "  +---+---+---+---+---+---+---+---+\n",
@@ -598,6 +601,7 @@ mod tests {
     fn fmt_dark_squares() {
         assert_eq!(
             concat!(
+                "\n",
                 "  +---+---+---+---+---+---+---+---+\n",
                 "8 |   | X |   | X |   | X |   | X |\n",
                 "  +---+---+---+---+---+---+---+---+\n",
