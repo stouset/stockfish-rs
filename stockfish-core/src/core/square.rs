@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn square_file_rank() {
-        for square in Square::into_iter() {
+        for square in Square::iter() {
             let file = File::from_u8(square.as_u8() & 7) .unwrap();
             let rank = Rank::from_u8(square.as_u8() >> 3).unwrap();
 
@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     fn square_flip_file_reflexive() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(s, s.flip_file().flip_file());
         }
     }
@@ -211,14 +211,14 @@ mod tests {
 
     #[test]
     fn square_flip_rank_reflexive() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(s, s.flip_rank().flip_rank());
         }
     }
 
     #[test]
     fn square_flip_around_the_world() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(s, s.flip_file().flip_rank().flip_file().flip_rank());
             assert_eq!(s.flip_file(), s.flip_rank().flip_file().flip_rank());
             assert_eq!(s.flip_file().flip_rank(), s.flip_rank().flip_file());
@@ -231,8 +231,8 @@ mod tests {
 
     #[test]
     fn square_distance() {
-        for s1 in Square::into_iter() {
-            for s2 in Square::into_iter() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
                 assert_eq!(s1.distance(s2), std::cmp::max(
                     s1.distance_files(s2),
                     s1.distance_ranks(s2),

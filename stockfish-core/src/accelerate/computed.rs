@@ -141,17 +141,17 @@ mod tests {
 
     #[test]
     fn line_same_square() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(Bitboard::EMPTY, line(s, s));
         }
     }
 
     #[test]
     fn line_disjoint() {
-        for s1 in Square::into_iter() {
+        for s1 in Square::iter() {
             let moves = pseudo_attacks(Piece::Queen, s1);
 
-            for s2 in Square::into_iter().filter(|s| !moves.contains(*s)) {
+            for s2 in Square::iter().filter(|s| !moves.contains(*s)) {
                 assert_eq!(Bitboard::EMPTY, line(s1, s2));
             }
         }
@@ -159,10 +159,10 @@ mod tests {
 
     #[test]
     fn line_bishop_moves() {
-        for s1 in Square::into_iter() {
+        for s1 in Square::iter() {
             let moves = pseudo_attacks(Piece::Bishop, s1);
 
-            for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+            for s2 in Square::iter().filter(|s| moves.contains(*s)) {
                 assert!(line(s1, s2).count() >  1);
                 assert!(line(s1, s2).count() <= 8);
                 assert!(line(s1, s2).overlaps(Bitboard::EDGES));
@@ -172,10 +172,10 @@ mod tests {
 
     #[test]
     fn line_rook_moves() {
-        for s1 in Square::into_iter() {
+        for s1 in Square::iter() {
             let moves = pseudo_attacks(Piece::Rook, s1);
 
-            for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+            for s2 in Square::iter().filter(|s| moves.contains(*s)) {
                 assert_eq!(8, line(s1, s2).count());
             }
         }
@@ -183,17 +183,17 @@ mod tests {
 
     #[test]
     fn between_same_square() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(Bitboard::from(s), between(s, s));
         }
     }
 
     #[test]
     fn between_disjoint() {
-        for s1 in Square::into_iter() {
+        for s1 in Square::iter() {
             let moves = pseudo_attacks(Piece::Queen, s1);
 
-            for s2 in Square::into_iter().filter(|s| !moves.contains(*s)) {
+            for s2 in Square::iter().filter(|s| !moves.contains(*s)) {
                 assert_eq!(Bitboard::from(s2), between(s1, s2));
             }
         }
@@ -202,10 +202,10 @@ mod tests {
     #[test]
     fn between_overlapping() {
         for piece in [Piece::Bishop, Piece::Rook] {
-            for s1 in Square::into_iter() {
+            for s1 in Square::iter() {
                 let moves = pseudo_attacks(piece, s1);
 
-                for s2 in Square::into_iter().filter(|s| moves.contains(*s)) {
+                for s2 in Square::iter().filter(|s| moves.contains(*s)) {
                     assert_eq!(s1.distance(s2) as usize, between(s1, s2).count());
                 }
             }

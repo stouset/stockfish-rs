@@ -24,8 +24,8 @@ fn bench_attacks(c: &mut Criterion) {
         Square::A7 | Square::B2 | Square::B3 | Square::C6 |
         Square::C4 | Square::D3 | Square::G6 | Square::H2 ;
 
-    for color in Color::into_iter() {
-        for piece in Piece::into_iter() {
+    for color in Color::iter() {
+        for piece in Piece::iter() {
             group.bench_with_input(
                 BenchmarkId::new("computed", format!("{color:?} {piece:?}")),
                 &(color, piece, square, occupancy),

@@ -517,7 +517,7 @@ mod tests {
 
     #[test]
     fn into_some_square() {
-        for s in Square::into_iter() {
+        for s in Square::iter() {
             assert_eq!(Some(s), Bitboard::from(s).into_some_square());
         }
 

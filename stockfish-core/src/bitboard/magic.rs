@@ -40,7 +40,7 @@ impl<const N: usize> Magic<N> {
     pub(crate) fn new(piece: Piece) -> Box<Self> {
         let mut m = bytemuck::zeroed_box::<Magic<N>>();
 
-        let size = Square::into_iter().fold(0, |offset, square| {
+        let size = Square::iter().fold(0, |offset, square| {
             let mask  = MagicSquare::mask(piece, square);
             let shift = MagicSquare::shift(mask);
 
@@ -238,7 +238,7 @@ mod tests {
     #[test]
     fn mask_passes_spot_check() {
         for piece in [Piece::Bishop, Piece::Rook] {
-            for square in Square::into_iter() {
+            for square in Square::iter() {
                 let mask = MagicSquare::mask(piece, square);
 
                 let edges = if piece == Piece::Rook {

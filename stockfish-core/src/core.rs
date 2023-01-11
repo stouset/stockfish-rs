@@ -59,7 +59,7 @@ macro_rules! enumeration {
             /// Returns an iterator through all [`$type`] variants.
             #[inline]
             #[must_use]
-            $vis fn into_iter() -> std::array::IntoIter<Self, ${count(var)}> {
+            $vis fn iter() -> std::array::IntoIter<Self, ${count(var)}> {
                 Self::VARIANTS.into_iter()
             }
 
@@ -121,11 +121,11 @@ macro_rules! enumeration {
 
             #[test]
             fn test_impl() {
-                for v1 in $name::into_iter() {
+                for v1 in $name::iter() {
                     assert_eq!(v1.clone(), v1);
                     assert_eq!(v1.name(),  format!("{:?}", v1));
 
-                    for v2 in $name::into_iter() {
+                    for v2 in $name::iter() {
                         assert_eq!(
                             v1.partial_cmp(&v2).unwrap(),
                             v1.cmp(&v2)
@@ -136,7 +136,7 @@ macro_rules! enumeration {
 
             #[test]
             fn test_impl_from() {
-                for (repr, variant) in $name::into_iter().enumerate() {
+                for (repr, variant) in $name::iter().enumerate() {
                     assert_eq!(repr as u8, u8   ::from(variant));
                     assert_eq!(repr,       usize::from(variant));
                 }
@@ -144,7 +144,7 @@ macro_rules! enumeration {
 
             #[test]
             fn test_from_u8() {
-                for (repr, variant) in $name::into_iter().enumerate() {
+                for (repr, variant) in $name::iter().enumerate() {
                     assert_eq!(variant, unsafe_optimization!{
                         $name::from_u8(repr as _).unwrap(),
                         $name::from_u8_unchecked(repr as _)

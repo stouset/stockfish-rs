@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn rank_bitor_file() {
-        for square in Square::into_iter() {
+        for square in Square::iter() {
             assert_eq!(square.rank() | square.file(), square);
         }
     }

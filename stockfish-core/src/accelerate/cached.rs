@@ -95,8 +95,8 @@ mod tests {
 
     #[test]
     fn square_distance() {
-        for s1 in Square::into_iter() {
-            for s2 in Square::into_iter() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
                 assert_eq!(
                     computed::square_distance(s1, s2),
                     cached  ::square_distance(s1, s2),
@@ -107,8 +107,8 @@ mod tests {
 
     #[test]
     fn line() {
-        for s1 in Square::into_iter() {
-            for s2 in Square::into_iter() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
                 assert_eq!(
                     computed::line(s1, s2),
                     cached  ::line(s1, s2),
@@ -119,8 +119,8 @@ mod tests {
 
     #[test]
     fn between() {
-        for s1 in Square::into_iter() {
-            for s2 in Square::into_iter() {
+        for s1 in Square::iter() {
+            for s2 in Square::iter() {
                 assert_eq!(
                     computed::between(s1, s2),
                     cached  ::between(s1, s2),
@@ -140,9 +140,9 @@ mod tests {
             Square::A7 | Square::H7 |
             Square::B8 | Square::D8 | Square::F8 | Square::G8 | Square::H8;
 
-        for color in Color::into_iter() {
-            for piece in Piece::into_iter() {
-                for square in Square::into_iter() {
+        for color in Color::iter() {
+            for piece in Piece::iter() {
+                for square in Square::iter() {
                     assert_eq!(
                         computed::attacks(color, piece, square, occupied & !square),
                         cached  ::attacks(color, piece, square, occupied & !square),
