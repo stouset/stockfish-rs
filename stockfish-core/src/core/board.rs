@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+use std::iter::IntoIterator;
 use std::ops::{Index, IndexMut};
 
 #[derive(Copy, Debug, Eq, PartialEq)]
@@ -9,6 +10,21 @@ pub struct Board([Option<Token>; Square::COUNT]);
 
 impl Board {
     pub const EMPTY: Self = Self([None; Square::COUNT]);
+
+    pub fn iter(&self) -> impl Iterator<Item = (Square, Token)> + '_ {
+        Square::iter().filter_map(|s| self[s].map(|t| (s, t)))
+    }
+
+    /// If the given [`Token`] is on the [`Board`], returns the [`Square`] it
+    /// resides on. If no such piece exists, returns [`None`].
+    ///
+    /// Note that this function by necessity iterates over every [`Square`]
+    /// until the piece is found. It should be used judiciously (or not at all)
+    /// in performance-sensitive situations.
+    #[must_use]
+    pub fn search<I: Iterator<Item = Square>>(&self, squares: I, token: Token) -> Option<Square> {
+        squares.into_iter().find(|s| self[*s] == Some(token))
+    }
 }
 
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it

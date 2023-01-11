@@ -52,6 +52,30 @@ impl Token {
         })
     }
 
+    /// Parses a FEN byte ('P' is a white pawn, `n` is a black knight, etc.)
+    /// into a [`Token`]. Returns [`None`] if
+    #[inline]
+    #[must_use]
+    pub const fn from_fen(byte: u8) -> Option<Self> {
+        Some(match byte {
+            b'P' => Self::WhitePawn,
+            b'N' => Self::WhiteKnight,
+            b'B' => Self::WhiteBishop,
+            b'R' => Self::WhiteRook,
+            b'Q' => Self::WhiteQueen,
+            b'K' => Self::WhiteKing,
+            b'p' => Self::BlackPawn,
+            b'n' => Self::BlackKnight,
+            b'b' => Self::BlackBishop,
+            b'r' => Self::BlackRook,
+            b'q' => Self::BlackQueen,
+            b'k' => Self::BlackKing,
+
+            _ => return None,
+        })
+    }
+
+
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(color: Color, piece: Piece) -> Self {

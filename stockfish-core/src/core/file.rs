@@ -9,6 +9,19 @@ enumeration! {
 }
 
 impl File {
+    /// Returns a [`File`] parsed from a FEN name. `None` if it isn't a valid
+    /// file name.
+    #[inline]
+    #[must_use]
+    pub const fn from_fen(byte: u8) -> Option<Self> {
+        match byte {
+            b'A'..=b'H' => Self::from_u8(byte - b'A'),
+            b'a'..=b'h' => Self::from_u8(byte - b'a'),
+
+            _ => None,
+        }
+    }
+
     /// The number of steps it would take a king to move from one file to the
     /// other.
     #[inline]

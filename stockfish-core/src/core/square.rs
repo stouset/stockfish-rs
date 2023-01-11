@@ -158,6 +158,20 @@ impl const Not for Square {
     }
 }
 
+impl std::iter::Step for Square {
+    fn steps_between(start: &Self, end: &Self) -> Option<usize> {
+        u8::steps_between(&start.as_u8(), &end.as_u8())
+    }
+
+    fn forward_checked(start: Self, count: usize) -> Option<Self> {
+        u8::forward_checked(start.as_u8(), count).and_then(Square::from_u8)
+    }
+
+    fn backward_checked(start: Self, count: usize) -> Option<Self> {
+        u8::backward_checked(start.as_u8(), count).and_then(Square::from_u8)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

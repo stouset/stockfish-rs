@@ -21,6 +21,26 @@ impl Rank {
     }
 }
 
+impl const IntoIterator for Rank {
+    type Item     = Square;
+    type IntoIter = std::ops::RangeInclusive<Square>;
+
+    #[inline]
+    #[must_use]
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            Self::_1 => Square::A1 ..= Square::H1,
+            Self::_2 => Square::A2 ..= Square::H2,
+            Self::_3 => Square::A3 ..= Square::H3,
+            Self::_4 => Square::A4 ..= Square::H4,
+            Self::_5 => Square::A5 ..= Square::H5,
+            Self::_6 => Square::A6 ..= Square::H6,
+            Self::_7 => Square::A7 ..= Square::H7,
+            Self::_8 => Square::A8 ..= Square::H8,
+        }
+    }
+}
+
 impl const From<Square> for Rank {
     #[inline]
     fn from(s: Square) -> Self {

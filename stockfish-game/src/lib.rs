@@ -67,5 +67,17 @@
 #![allow(clippy::missing_docs_in_private_items)]
 
 // Unstable Features
+#![feature(const_discriminant)]
+#![feature(derive_const)]
+#![feature(let_chains)]
 #![feature(rustdoc_missing_doc_code_examples)]
 #![feature(strict_provenance)]
+
+mod position;
+
+pub mod prelude {
+    #[doc(no_inline)]
+    pub use crate::position::Position;
+}
+
+pub use prelude::*;
