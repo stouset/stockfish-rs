@@ -134,6 +134,9 @@ pub mod prelude {
     pub use crate::core::Rank;
 
     #[doc(no_inline)]
+    pub use crate::core::Ruleset;
+
+    #[doc(no_inline)]
     pub use crate::core::Square;
 
     #[doc(no_inline)]

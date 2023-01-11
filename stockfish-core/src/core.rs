@@ -162,6 +162,7 @@ mod direction;
 mod file;
 mod piece;
 mod rank;
+mod ruleset;
 mod square;
 mod token;
 
@@ -172,5 +173,6 @@ pub use direction::Direction;
 pub use file::File;
 pub use piece::Piece;
 pub use rank::Rank;
+pub use ruleset::Ruleset;
 pub use square::Square;
 pub use token::Token;
