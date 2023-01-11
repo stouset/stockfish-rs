@@ -1,23 +1,17 @@
-use bitflags::bitflags;
+#![allow(clippy::module_name_repetitions)]
 
-bitflags! {
-    #[must_use]
-    pub struct Castling: u8 {
-        const NONE = 0;
+/// Implements logic for castling-related behavior.
+///
+/// As it turns out, castling is annoyingly finicky. Breaking it apart into
+/// smaller bits of functionality helps us use the type system to tease apart
+/// some of its finer details.
 
-        const WHITE_OO  = 1 << 0;
-        const WHITE_OOO = 1 << 1;
-        const BLACK_OO  = 1 << 2;
-        const BLACK_OOO = 1 << 3;
+mod castling_path;
+mod castling_rights;
+mod castling_side;
+mod castling_variety;
 
-        const WHITE      = Self::WHITE_OO .bits | Self::WHITE_OOO.bits;
-        const BLACK      = Self::BLACK_OO .bits | Self::BLACK_OOO.bits;
-        const KING_SIDE  = Self::WHITE_OO .bits | Self::BLACK_OO .bits;
-        const QUEEN_SIDE = Self::WHITE_OOO.bits | Self::BLACK_OOO.bits;
-        const ANY        = Self::WHITE    .bits | Self::BLACK    .bits;
-    }
-}
-
-impl Castling {
-    pub const COUNT: usize = Self::ANY.bits as usize + 1;
-}
+pub use castling_path::CastlingPath;
+pub use castling_rights::CastlingRights;
+pub use castling_side::CastlingSide;
+pub use castling_variety::CastlingVariety;

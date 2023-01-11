@@ -167,7 +167,7 @@ mod square;
 mod token;
 
 pub use board::Board;
-pub use castling::Castling;
+pub use castling::{CastlingVariety, CastlingPath, CastlingRights, CastlingSide};
 pub use color::Color;
 pub use direction::Direction;
 pub use file::File;

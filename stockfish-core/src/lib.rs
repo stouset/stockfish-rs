@@ -71,6 +71,7 @@
 // Unstable Features
 #![feature(const_cmp)]
 #![feature(const_convert)]
+#![feature(const_default_impls)]
 #![feature(const_discriminant)]
 #![feature(const_mut_refs)]
 #![feature(const_ops)]
@@ -116,7 +117,16 @@ pub mod prelude {
     pub use crate::core::Board;
 
     #[doc(no_inline)]
-    pub use crate::core::Castling;
+    pub use crate::core::CastlingPath;
+
+    #[doc(no_inline)]
+    pub use crate::core::CastlingRights;
+
+    #[doc(no_inline)]
+    pub use crate::core::CastlingSide;
+
+    #[doc(no_inline)]
+    pub use crate::core::CastlingVariety;
 
     #[doc(no_inline)]
     pub use crate::core::Color;
