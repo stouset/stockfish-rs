@@ -118,25 +118,6 @@ impl const std::ops::Add<Direction> for Square {
     }
 }
 
-// impl const std::ops::Add<i8> for Square {
-//     type Output = Self;
-
-//     #[must_use]
-//     fn add(self, rhs: i8) -> Self::Output {
-//         let from = self.as_u8();
-//         let to   = from.wrapping_add_signed(rhs) %
-//             (Square::SQUARES[Square::COUNT - 1].as_u8() + 1);
-
-//         Self::from_u8_unchecked(to)
-//     }
-// }
-
-// impl const std::ops::AddAssign<i8> for Square {
-//     fn add_assign(&mut self, rhs: i8) {
-//         *self = self.add(rhs);
-//     }
-// }
-
 impl const std::ops::Neg for Direction {
     type Output = Self;
 
