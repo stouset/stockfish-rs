@@ -108,6 +108,7 @@ macro_rules! refute {
 mod misc;
 
 pub mod accelerate;
+pub mod arch;
 pub mod bitboard;
 pub mod core;
 

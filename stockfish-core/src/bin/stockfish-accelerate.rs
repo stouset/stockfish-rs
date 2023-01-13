@@ -1,5 +1,6 @@
 use stockfish_core::prelude::*;
 use stockfish_core::accelerate::computed;
+use stockfish_core::arch::{self, TARGET_BITS, TARGET_ENDIAN};
 use stockfish_core::bitboard::magic::Magic;
 
 use std::io::prelude::Write;
@@ -9,28 +10,37 @@ use std::path::{Path, PathBuf};
 fn main() -> std::io::Result<()> {
     let output_root = PathBuf::from("./stockfish-core/share/cached");
 
+    let pext = Some(arch::pext_status());
+
     fs::create_dir_all(&output_root)?;
 
-    accelerate("square_distance", &output_root, &generate_square_distance());
-    accelerate("line",            &output_root, &generate_line());
-    accelerate("between",         &output_root, &generate_between());
-    accelerate("pseudo_attacks",  &output_root, &generate_pseudo_attacks());
-    accelerate("pawn_attacks",    &output_root, &generate_pawn_attacks());
+    accelerate("square_distance", None, &output_root, &generate_square_distance());
+    accelerate("line",            None, &output_root, &generate_line());
+    accelerate("between",         None, &output_root, &generate_between());
+    accelerate("pseudo_attacks",  None, &output_root, &generate_pseudo_attacks());
+    accelerate("pawn_attacks",    None, &output_root, &generate_pawn_attacks());
 
     let bishop_magics = Magic::new_bishop();
-    accelerate("bishop_magic_numbers", &output_root, &bishop_magics.magics);
-    accelerate("bishop_magic_attacks", &output_root, &bishop_magics.attacks);
+    accelerate("bishop_magic_numbers", pext, &output_root, &bishop_magics.magics);
+    accelerate("bishop_magic_attacks", pext, &output_root, &bishop_magics.attacks);
 
     let rook_magics = Magic::new_rook();
-    accelerate("rook_magic_numbers", &output_root, &rook_magics.magics);
-    accelerate("rook_magic_attacks", &output_root, &rook_magics.attacks);
+    accelerate("rook_magic_numbers", pext, &output_root, &rook_magics.magics);
+    accelerate("rook_magic_attacks", pext, &output_root, &rook_magics.attacks);
 
     Ok(())
 }
 
-fn accelerate<P: AsRef<Path>, T: bytemuck::Pod>(name: &str, root: P, data: &T) {
-    let path  = root.as_ref().join(name.to_lowercase() + ".bin");
-    let bytes = bytemuck::bytes_of(data);
+fn accelerate<P: AsRef<Path>, T: bytemuck::Pod>(
+    name: &str,
+    tag:  Option<&str>,
+    root: P,
+    data: &T
+) {
+    let tag      = tag.map_or("".into(), |t| format!("-{t}"));
+    let filename = format!("{name}.{TARGET_ENDIAN}{TARGET_BITS}{tag}.bin");
+    let path     = root.as_ref().join(filename);
+    let bytes    = bytemuck::bytes_of(data);
 
     File::options()
         .create(true)

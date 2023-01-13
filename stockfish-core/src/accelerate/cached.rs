@@ -1,17 +1,51 @@
 use crate::prelude::*;
 use crate::bitboard::magic::Magic;
 
+// TODO: rewrite this entire approach to figuring out the filename for
+// architecture-dependent cached computations
 macro_rules! cached {
     ( $name:literal ) => {{
+        cached!($name, "", "")
+    }};
+
+    ( $name:literal, $tag:literal ) => {{
+        cached!($name, "-", $tag)
+    }};
+
+    ( $name:literal, $sep:literal, $tag:literal ) => {{
         // TODO: replace with a const version of bytemuck::from_bytes to better
         // ensure this is actually safe
         #[allow(unsafe_code)]
-        unsafe {
-            std::mem::transmute(*include_bytes!(
-                concat!("../../share/cached/", $name, ".bin")
-            ))
-        }
-    }}
+        unsafe { std::mem::transmute(*include_bytes!(cached_filename!($name, $sep, $tag))) }
+    }};
+}
+
+#[cfg(all(target_pointer_width = "64", target_endian = "little"))]
+macro_rules! cached_filename {
+    ( $name:literal, $sep:literal, $tag:literal ) => {
+        concat!("../../share/cached/", $name, ".le64", $sep, $tag, ".bin")
+    };
+}
+
+#[cfg(all(target_pointer_width = "64", target_endian = "big"))]
+macro_rules! cached_filename {
+    ( $name:literal, $sep:literal, $tag:literal ) => {
+        concat!("../../share/cached/", $name, ".be64", $sep, $tag, ".bin")
+    }
+}
+
+#[cfg(all(target_pointer_width = "32", target_endian = "little"))]
+macro_rules! cached_filename {
+    ( $name:literal, $sep:literal, $tag:literal ) => {
+        concat!("../../share/cached/", $name, ".le32", $sep, $tag, ".bin")
+    }
+}
+
+#[cfg(all(target_pointer_width = "32", target_endian = "big"))]
+macro_rules! cached_filename {
+    ( $name:literal, $sep:literal, $tag:literal ) => {
+        concat!("../../share/cached/", $name, ".be32", $sep, $tag, ".bin")
+    }
 }
 
 /// Precomputed disatnces between [`Square`]s.
@@ -31,14 +65,14 @@ const PAWN_ATTACKS: [[Bitboard; Square::COUNT]; Color::COUNT] = cached!("pawn_at
 
 /// Precomputed "magic bitboard" of Bishop attacks.
 const BISHOP_MAGICS: Magic<0x1480> = Magic {
-    magics:  cached!("bishop_magic_numbers"),
-    attacks: cached!("bishop_magic_attacks"),
+    magics:  cached!("bishop_magic_numbers", "pext_off"),
+    attacks: cached!("bishop_magic_attacks", "pext_off"),
 };
 
 /// Precomputed "magic bitboard" of Rook attacks.
 const ROOK_MAGICS: Magic<0x19000> = Magic {
-    magics:  cached!("rook_magic_numbers"),
-    attacks: cached!("rook_magic_attacks")
+    magics:  cached!("rook_magic_numbers", "pext_off"),
+    attacks: cached!("rook_magic_attacks", "pext_off"),
 };
 
 /// Returns the number of moves a king would require to move from the origin
