@@ -298,7 +298,7 @@ impl const BitAnd<Self> for Bitboard {
 impl const BitAndAssign<Self> for Bitboard {
     #[inline]
     fn bitand_assign(&mut self, rhs: Self) {
-        *self = (*self).bitand(rhs);
+        self.0 &= rhs.0;
     }
 }
 
@@ -314,7 +314,7 @@ impl const BitAnd<Square> for Bitboard {
 impl const BitAndAssign<Square> for Bitboard {
     #[inline]
     fn bitand_assign(&mut self, rhs: Square) {
-        *self = (*self).bitand(rhs);
+        self.bitand_assign(Self::from(rhs));
     }
 }
 
@@ -327,6 +327,13 @@ impl const BitOr<Self> for Bitboard {
     }
 }
 
+impl const BitOrAssign<Self> for Bitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.0 |= rhs.0;
+    }
+}
+
 impl const BitOr<Square> for Bitboard {
     type Output = Self;
 
@@ -336,17 +343,10 @@ impl const BitOr<Square> for Bitboard {
     }
 }
 
-impl const BitOrAssign<Self> for Bitboard {
-    #[inline]
-    fn bitor_assign(&mut self, rhs: Self) {
-        *self = (*self).bitor(rhs);
-    }
-}
-
 impl const BitOrAssign<Square> for Bitboard {
     #[inline]
     fn bitor_assign(&mut self, rhs: Square) {
-        *self = (*self).bitor(rhs);
+        self.bitor_assign(Self::from(rhs));
     }
 }
 
@@ -355,7 +355,14 @@ impl const BitXor<Self> for Bitboard {
 
     #[inline]
     fn bitxor(self, rhs: Self) -> Self::Output {
-        (self.0 ^ rhs.0).into()
+        self.0.bitxor(rhs.0).into()
+    }
+}
+
+impl const BitXorAssign<Self> for Bitboard {
+    #[inline]
+    fn bitxor_assign(&mut self, rhs: Self) {
+        self.0 ^= rhs.0;
     }
 }
 
@@ -368,10 +375,10 @@ impl const BitXor<Square> for Bitboard {
     }
 }
 
-impl const BitXorAssign<Self> for Bitboard {
+impl const BitXorAssign<Square> for Bitboard {
     #[inline]
-    fn bitxor_assign(&mut self, rhs: Self) {
-        *self = (*self).bitxor(rhs);
+    fn bitxor_assign(&mut self, rhs: Square) {
+        self.bitxor_assign(Self::from(rhs));
     }
 }
 
