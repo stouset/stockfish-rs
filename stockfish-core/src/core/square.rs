@@ -117,6 +117,38 @@ impl Square {
     pub const fn distance(self, rhs: Self) -> u8 {
         crate::accelerate::square_distance(self, rhs)
     }
+
+    /// Performs wrapping addition of a [`Direction`] to a [`Square`]. Note that
+    /// this wraps around files *and* ranks.
+    ///
+    /// # Examples:
+    ///
+    /// ```rust
+    /// # use stockfish_core::prelude::*;
+    ///
+    /// assert_eq!(Square::C4, Square::A3.wrapping_add(Direction::ENE));
+    /// assert_eq!(Square::A5, Square::H5.wrapping_add(Direction::E));
+    /// assert_eq!(Square::D2, Square::D8.wrapping_add(Direction::NN));
+    /// assert_eq!(Square::H8, Square::A2.wrapping_add(Direction::SSW));
+    /// ```
+    #[allow(clippy::missing_panics_doc)] // false positive
+    #[inline]
+    pub fn wrapping_add(self, dir: Direction) -> Self {
+        // TODO: can this logic be implemented faster?
+        let lateral  = self.as_u8().wrapping_add_signed(dir.lateral_part() .as_i8());
+        let vertical = self.as_u8().wrapping_add_signed(dir.vertical_part().as_i8());
+
+        let sum = (lateral & 0b0000_0111) + (vertical & 0b0011_1000);
+
+        unsafe_optimization!(
+            Self::from_u8(sum).unwrap(),
+            Self::from_u8_unchecked(sum),
+        )
+    }
+
+    pub fn wrapping_sub(self, dir: Direction) -> Self {
+        self.wrapping_add(dir.mirrored())
+    }
 }
 
 impl const BitAnd for Square {

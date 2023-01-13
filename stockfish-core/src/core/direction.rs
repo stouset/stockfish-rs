@@ -89,6 +89,29 @@ impl Direction {
         }
     }
 
+    #[inline]
+    pub const fn lateral_part(self) -> Self {
+        // TODO: there might be a faster way of doign this
+        Self(self.0 - self.vertical_part().0)
+    }
+
+    #[inline]
+    pub const fn vertical_part(self) -> Self {
+        // Naïvely, the vertical part is the 5 most significant bits. However,
+        // if the lateral part was negative, we subtracted one from this part so
+        // need to add it back. We do a saturating add so a carry bit isn't
+        // brought around.
+        //
+        // TODO: there might be a faster way of doing this
+        Self((self.0 & -8_i8).saturating_add((self.0 & 4_i8) << 1))
+    }
+
+    #[inline]
+    pub const fn mirrored(self) -> Self {
+        Self(-self.0)
+    }
+
+    #[inline]
     pub(crate) const fn as_i8(self) -> i8 {
         self.0
     }
@@ -186,6 +209,31 @@ mod tests {
         for (before, direction, after) in tests {
             assert_eq!(after, before + direction);
         }
+    }
 
+    #[test]
+    fn lateral_part() {
+        assert_eq!(Direction::NONE, Direction::NONE.lateral_part());
+        assert_eq!(Direction::NONE, Direction::S   .lateral_part());
+        assert_eq!(Direction::E,    Direction::NE  .lateral_part());
+        assert_eq!(Direction::WW,   Direction::WSW .lateral_part());
+    }
+
+    #[test]
+    fn vertical_part() {
+        assert_eq!(Direction::NONE, Direction::NONE.vertical_part());
+        assert_eq!(Direction::NONE, Direction::W   .vertical_part());
+        assert_eq!(Direction::N,    Direction::NE  .vertical_part());
+        assert_eq!(Direction::NN,   Direction::NNW .vertical_part());
+        assert_eq!(Direction::SS,   Direction::SSW .vertical_part());
+    }
+
+    #[test]
+    fn mirrored() {
+        assert_eq!(Direction::NONE, Direction::NONE.mirrored());
+        assert_eq!(Direction::S,    Direction::N   .mirrored());
+        assert_eq!(Direction::E,    Direction::W   .mirrored());
+        assert_eq!(Direction::NE,   Direction::SW  .mirrored());
+        assert_eq!(Direction::SSW,  Direction::NNE .mirrored());
     }
 }
