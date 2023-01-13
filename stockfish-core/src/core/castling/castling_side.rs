@@ -1,15 +1,15 @@
 use crate::prelude::*;
 
 enumeration! {
-    pub CastlingSide, [ Kingside, Queenside ]
+    pub CastlingSide, [ King, Queen ]
 }
 
 impl CastlingSide {
     #[inline]
-    pub const fn detect(king: File, rook: File) -> Self {
+    pub const fn new(king: File, rook: File) -> Self {
         debug_assert!(king != rook);
 
-        if king < rook { Self::Kingside } else { Self::Queenside }
+        if king < rook { Self::King } else { Self::Queen }
     }
 }
 
@@ -19,10 +19,9 @@ mod tests {
 
     #[test]
     fn detect() {
-        assert_eq!(CastlingSide::Kingside, CastlingSide::detect(File::_F, File::_G));
-        assert_eq!(CastlingSide::Kingside, CastlingSide::detect(File::_A, File::_B));
-
-        assert_eq!(CastlingSide::Queenside, CastlingSide::detect(File::_H, File::_C));
-        assert_eq!(CastlingSide::Queenside, CastlingSide::detect(File::_F, File::_E));
+        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_F, File::_G));
+        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_A, File::_B));
+        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_H, File::_C));
+        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_F, File::_E));
     }
 }

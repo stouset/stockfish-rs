@@ -34,3 +34,19 @@ impl BitAnd<Color> for CastlingRights {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default() {
+        assert_eq!(CastlingRights::NONE, CastlingRights::default());
+    }
+
+    #[test]
+    fn bitand_color() {
+        assert_eq!(CastlingRights::WHITE_OOO, CastlingRights::QUEEN_SIDE & Color::White);
+        assert_eq!(CastlingRights::BLACK_OO,  CastlingRights::KING_SIDE  & Color::Black);
+    }
+}

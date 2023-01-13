@@ -25,6 +25,11 @@ impl CastlingVariety {
         [ Self::BlackKingside, Self::BlackQueenside ],
     ];
 
+    const SIDES: [CastlingSide; Self::COUNT] = [
+        CastlingSide::King, CastlingSide::Queen,
+        CastlingSide::King, CastlingSide::Queen,
+    ];
+
     const RIGHTS: [CastlingRights; Self::COUNT] = [
         CastlingRights::WHITE_OO, CastlingRights::WHITE_OOO,
         CastlingRights::BLACK_OO, CastlingRights::BLACK_OOO,
@@ -38,6 +43,11 @@ impl CastlingVariety {
     #[inline]
     pub const fn color(self) -> Color {
         Self::COLORS[self]
+    }
+
+    #[inline]
+    pub const fn side(self) -> CastlingSide {
+        Self::SIDES[self]
     }
 
     #[inline]
@@ -66,6 +76,14 @@ mod tests {
         assert_eq!(Color::White, CastlingVariety::WhiteQueenside.color());
         assert_eq!(Color::Black, CastlingVariety::BlackKingside .color());
         assert_eq!(Color::Black, CastlingVariety::BlackQueenside.color());
+    }
+
+    #[test]
+    fn side() {
+        assert_eq!(CastlingSide::King,  CastlingVariety::WhiteKingside .side());
+        assert_eq!(CastlingSide::Queen, CastlingVariety::WhiteQueenside.side());
+        assert_eq!(CastlingSide::King,  CastlingVariety::BlackKingside .side());
+        assert_eq!(CastlingSide::Queen, CastlingVariety::BlackQueenside.side());
     }
 
 
