@@ -68,6 +68,23 @@ impl Position {
     }
 
     #[inline]
+    pub fn remove(&mut self, square: Square) -> Option<Token> {
+        let token = self.board[square].take()?;
+
+        self.bb_all                     ^= square;
+        self.bb_by_piece[token.piece()] ^= square;
+        self.bb_by_color[token.color()] ^= square;
+
+        self.count_by_color[token.color()] -= 1;
+        self.count_by_token[token]         -= 1;
+
+        // TODO: piece-square tables
+        // psq -= PSQT::psq[pc][s];
+
+        Some(token)
+    }
+
+    #[inline]
     pub const fn bitboard(&self) -> Bitboard {
         self.bb_all
     }
