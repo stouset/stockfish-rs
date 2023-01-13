@@ -34,7 +34,7 @@ impl Direction {
     pub const WNW: Self = Self(Self::WW.0 + Self::N.0);
 
     /// The maximum distance a Direction can cover.
-    pub const MAX: u8 = 2;
+    pub const MAX_STEPS: u8 = 2;
 
     /// Returns a bitboard of files that will be pushed off the board by
     /// shifting it in this direction.
@@ -57,7 +57,7 @@ impl Direction {
         // (`Distance(7)`) is encoded the same way, but requires a left shift by
         // seven while masking the contents of files B through H.
         #![allow(clippy::assertions_on_constants)]
-        debug_assert!(Direction::MAX < 4,
+        debug_assert!(Direction::MAX_STEPS < 4,
             "direction assumptions are no longer sound");
 
         debug_assert!(self.0 & 0b111 != 0b100,
@@ -110,7 +110,7 @@ impl const std::ops::Add<Direction> for Square {
         let to     = from.wrapping_add_signed(step);
         let square = Self::from_u8(to)?;
 
-        if self.distance(square) <= Direction::MAX {
+        if self.distance(square) <= Direction::MAX_STEPS {
             return Some(square);
         }
 
