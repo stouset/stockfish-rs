@@ -13,6 +13,11 @@ use std::ops::{
     Add,
 };
 
+/// A fast bitboard for representing chess positions. Bitboards compactly
+/// represent a subset of squares on a chess board in a way that allows fast
+/// bitwise operations to be performed.
+///
+/// They only indicate whether or not a particular square is included in a set.
 #[derive(Copy, Eq)]
 #[derive_const(Clone, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
@@ -98,10 +103,10 @@ impl Bitboard {
         (Self::FILE_D | Self::FILE_E) &
         (Self::RANK_4 | Self::RANK_5);
 
-    // A board with the edge files (A and H) occupied.
+    /// A board with the edge files (A and H) occupied.
     pub const EDGE_FILES: Bitboard = Self::FILE_A | Self::FILE_H;
 
-    // A board with the edge ranks (1 and 8) occupied;
+    /// A board with the edge ranks (1 and 8) occupied;
     pub const EDGE_RANKS: Bitboard = Self::RANK_1 | Self::RANK_8;
 
     /// A board with all of the edges occupied.
@@ -415,6 +420,8 @@ impl const Add<Direction> for Bitboard {
     }
 }
 
+/// An [`Iterator`] that enumerates over every combination of [`Square`]s
+/// contained in a [`Bitboard`].
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[must_use]
 pub struct Powerset {
