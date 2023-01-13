@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{BitAnd, BitOr, BitXor, Not};
+use std::ops::{BitAnd, BitOr, Not};
 
 enumeration! {
     /// A square on a chess board.
@@ -64,14 +64,26 @@ impl Square {
         !self.is_dark()
     }
 
+    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_file(self) -> Self {
-        self ^ Square::H1
+        let s = self.as_u8() ^ Self::H1.as_u8();
+
+        unsafe_optimization! {
+            Self::from_u8(s).unwrap(),
+            Self::from_u8_unchecked(s),
+        }
     }
 
+    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_rank(self) -> Self {
-        self ^ Square::A8
+        let s = self.as_u8() ^ Self::A8.as_u8();
+
+        unsafe_optimization! {
+            Self::from_u8(s).unwrap(),
+            Self::from_u8_unchecked(s),
+        }
     }
 
     /// If `color` is [`Color::White`], returns the original square. If `color`
@@ -166,19 +178,6 @@ impl const BitOr for Square {
 
     fn bitor(self, rhs: Self) -> Self::Output {
         Bitboard::from(self) | rhs
-    }
-}
-
-impl const BitXor for Square {
-    type Output = Self;
-
-    fn bitxor(self, rhs: Self) -> Self::Output {
-        let s = self.as_u8() ^ rhs.as_u8();
-
-        unsafe_optimization! {
-            Self::from_u8(s).unwrap(),
-            Self::from_u8_unchecked(s),
-        }
     }
 }
 
