@@ -3,7 +3,7 @@ use crate::prelude::*;
 use std::iter::IntoIterator;
 use std::ops::{Index, IndexMut};
 
-#[derive(Copy, Debug, Eq, PartialEq)]
+#[derive(Copy, Eq, PartialEq)]
 #[derive_const(Clone)]
 #[must_use]
 pub struct Board([Option<Token>; Square::COUNT]);
@@ -58,6 +58,120 @@ impl const IndexMut<Square> for Board {
         self.index_mut(index.as_usize())
     }
 }
+
+impl std::fmt::Debug for Board {
+    #[cfg_attr(coverage, no_coverage)]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f)?;
+        writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
+
+        for rank in Rank::iter().rev() {
+            write!(f, "{} |", char::from(rank))?;
+
+            for file in File::iter() {
+                let square = Square::new(file, rank);
+                let token  = self[square];
+
+                match token {
+                    Some(t) => write!(f, " {} |", char::from(t))?,
+                    None    => write!(f, "   |")?,
+                }
+            }
+
+            writeln!(f)?;
+
+            writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
+        }
+
+        writeln!(f, "    A   B   C   D   E   F   G   H")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn derives() {
+        let board = board!(
+            r n b q k b n r
+            p p p p p p p p
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            P P P P P P P P
+            R N B Q K B N R
+        );
+
+        assert_eq!(board, board.clone());
+    }
+
+    #[test]
+    fn debug() {
+        let board = board!(
+            r n b q k b n r
+            p p p p p p p p
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            P P P P P P P P
+            R N B Q K B N R
+        );
+
+        assert_eq!(
+            concat!(
+                "\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "8 | r | n | b | q | k | b | n | r |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "7 | p | p | p | p | p | p | p | p |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "6 |   |   |   |   |   |   |   |   |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "5 |   |   |   |   |   |   |   |   |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "4 |   |   |   |   |   |   |   |   |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "3 |   |   |   |   |   |   |   |   |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "2 | P | P | P | P | P | P | P | P |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "1 | R | N | B | Q | K | B | N | R |\n",
+                "  +---+---+---+---+---+---+---+---+\n",
+                "    A   B   C   D   E   F   G   H\n",
+            ),
+
+            format!("{board:?}"),
+        );
+    }
+
+    #[test]
+    fn iter() {
+        let board = board!(
+            _ _ b _ _ _ k r
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            p _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ K _ _ _
+        );
+
+        assert_eq!(
+            vec![
+                (Square::E1, Token::WhiteKing),
+                (Square::A5, Token::BlackPawn),
+                (Square::C8, Token::BlackBishop),
+                (Square::G8, Token::BlackKing),
+                (Square::H8, Token::BlackRook),
+            ],
+
+            board.iter().collect::<Vec<(Square, Token)>>()
+        );
+    }
 
     #[test]
     fn search() {

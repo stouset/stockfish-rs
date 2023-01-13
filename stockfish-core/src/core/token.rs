@@ -122,6 +122,26 @@ impl Token {
     }
 }
 
+impl const From<Token> for char {
+    #[inline]
+    fn from(token: Token) -> Self {
+        match token {
+            Token::WhitePawn   => 'P',
+            Token::WhiteKnight => 'N',
+            Token::WhiteBishop => 'B',
+            Token::WhiteRook   => 'R',
+            Token::WhiteQueen  => 'Q',
+            Token::WhiteKing   => 'K',
+            Token::BlackPawn   => 'p',
+            Token::BlackKnight => 'n',
+            Token::BlackBishop => 'b',
+            Token::BlackRook   => 'r',
+            Token::BlackQueen  => 'q',
+            Token::BlackKing   => 'k',
+        }
+    }
+}
+
 impl const From<Token> for Color {
     #[inline]
     fn from(token: Token) -> Self {
