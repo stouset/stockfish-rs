@@ -23,10 +23,15 @@ pub struct Position {
     // internal metrics
     count_by_token: [u8; Token::MAX + 1],
     count_by_color: [u8; Color::COUNT],
+
+    // TODO: stuff from the StateInfo stockfish struct that eventually doesn't
+    // go here
+    castling_rights: CastlingRights,
+    en_passant:      Option<Square>,
 }
 
 impl Position {
-    fn empty(ruleset: Ruleset) -> Self {
+    pub fn empty(ruleset: Ruleset) -> Self {
         Self {
             ruleset,
             turn:  Color::White,
@@ -41,11 +46,14 @@ impl Position {
 
             count_by_token: [0; Token::MAX + 1],
             count_by_color: [0; Color::COUNT],
+
+            castling_rights: CastlingRights::NONE,
+            en_passant:      None,
         }
     }
 
     #[inline]
-    fn emplace(&mut self, token: Token, square: Square) {
+    pub fn emplace(&mut self, token: Token, square: Square) {
         self.board[square] = Some(token);
 
         self.bb_all                     |= square;
@@ -57,5 +65,30 @@ impl Position {
 
         // TODO: piece-square tables
         // psq += PSQT::psq[pc][s];
+    }
+
+    #[inline]
+    pub fn bitboard(&self) -> Bitboard {
+        self.bb_all
+    }
+
+    #[inline]
+    pub fn bitboard_for_color(&self, color: Color) -> Bitboard {
+        self.bb_by_color[color]
+    }
+
+    #[inline]
+    pub fn bitboard_for_piece(&self, piece: Piece) -> Bitboard {
+        self.bb_by_piece[piece]
+    }
+
+    #[inline]
+    pub fn bitboard_for_token(&self, token: Token) -> Bitboard {
+        self.bb_by_color[token.color()] & self.bb_by_piece[token.piece()]
+    }
+
+    #[inline]
+    pub fn as_bitboard(&self) -> Bitboard {
+        self.bb_all
     }
 }

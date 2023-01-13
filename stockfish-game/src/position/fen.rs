@@ -47,21 +47,56 @@ impl Position {
         let mut position = Position::empty(ruleset);
         let mut fields   = fen.split(|b| *b == b' ');
 
-        let board    = parse_board(fields.next().unwrap_or_default());
-        let turn     = parse_turn(fields.next().unwrap_or_default());
-        let castling = parse_castling(fields.next().unwrap_or_default(), &board);
+        let board      = parse_board(fields.next().unwrap_or_default());
+        let turn       = parse_turn(fields.next().unwrap_or_default());
+        let castling   = parse_castling(fields.next().unwrap_or_default(), board);
+        let en_passant = parse_en_passant(fields.next().unwrap_or_default(), turn);
 
         for (square, token) in board.iter() {
             position.emplace(token, square);
         }
 
-        position.turn           = turn;
-        position.castling_paths = castling;
+        position.turn            = turn;
+
+        position.castling_paths  = castling;
+        position.castling_rights = castling
+            .iter()
+            .flatten()
+            .fold(CastlingRights::NONE, |rights, path| rights | path.rights() );
 
         for path in castling.iter().flatten() {
             position.castling_by_square[path.king_origin()] |= path.rights();
             position.castling_by_square[path.rook_origin()] |= path.rights();
         }
+
+        // the en passant square is the square *behind* the pawn that moved last
+        // turn, so it will only be considered if:
+        //
+        // a) side to move has a pawn threatening the en passant square,
+        // b) there is an enemy pawn in front of the en passant square, and
+        // c) there is no piece on or behind the en passant square
+        position.en_passant = en_passant.filter(|square| {
+            let good_turn = turn;
+            let evil_turn = !turn;
+            let good_pawn = Token::new(good_turn, Piece::Pawn);
+            let evil_pawn = Token::new(evil_turn, Piece::Pawn);
+
+            // "the active side having a pawn threatening the en passant square"
+            // is identical to "a hypothetical opposing pawn *on* the en passant
+            // square threatening one of the active side's pawns"
+            evil_pawn.attacks(*square, position.bitboard())
+                .overlaps(position.bitboard_for_token(good_pawn)) &&
+
+                // if we take one step further from the en passant square, do we
+                // find the enemy pawn that just moved?
+                position.bitboard_for_token(evil_pawn)
+                    .contains(square.wrapping_add(evil_turn.direction())) &&
+
+                // if we take one step backwards from the en passant square, do
+                // we find an empty square where the pawn moved from?
+                position.bitboard()
+                    .omits(square.wrapping_sub(evil_turn.direction()))
+        });
 
         position
     }
@@ -118,7 +153,7 @@ fn parse_turn(bytes: &[u8]) -> Color {
     }
 }
 
-fn parse_castling(bytes: &[u8], board: &Board) -> [Option<CastlingPath>; 4] {
+fn parse_castling(bytes: &[u8], board: Board) -> [Option<CastlingPath>; 4] {
     let mut paths = [None; 4];
 
     for byte in bytes {
@@ -158,6 +193,19 @@ fn parse_castling(bytes: &[u8], board: &Board) -> [Option<CastlingPath>; 4] {
     }
 
     paths
+}
+
+fn parse_en_passant(fen: &[u8], turn: Color) -> Option<Square> {
+    let file = fen.first().copied().and_then(File::from_fen);
+    let rank = fen.get(1) .copied().and_then(Rank::from_fen);
+
+    // we only accept rank 3 if white just moved or rank 6 if black just moved,
+    // as those are the only ranks where a pawn would have jumped a square
+    file.zip(rank)
+        .filter(|(_, r)| {
+            (turn.is_white() && *r == Rank::_6) ||
+            (turn.is_black() && *r == Rank::_3)
+        }).map (|(f, r)| Square::new(f, r))
 }
 
 #[cfg(test)]
@@ -340,7 +388,7 @@ mod tests {
         let fen_b    = b"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
         let fen_c    = b"KQkq";
         let board    = parse_board(fen_b);
-        let castling = parse_castling(fen_c, &board);
+        let castling = parse_castling(fen_c, board);
 
         assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_E, File::_H)));
         assert_eq!(castling[CastlingVariety::WhiteQueenside], Some(CastlingPath::new(Color::White, File::_E, File::_A)));
@@ -353,7 +401,7 @@ mod tests {
         let fen_b    = b"rn1q1rk1/1p2bppp/p2pbn2/4p3/4P3/1NN1BP2/PPPQ2PP/2KR1B1R";
         let fen_c    = b"";
         let board    = parse_board(fen_b);
-        let castling = parse_castling(fen_c, &board);
+        let castling = parse_castling(fen_c, board);
 
         assert_eq!(castling[CastlingVariety::WhiteKingside],  None);
         assert_eq!(castling[CastlingVariety::WhiteQueenside], None);
@@ -366,7 +414,7 @@ mod tests {
         let fen_b    = b"nrk12r1/ppp1pp1p/3p2p1/5bn1/P7/2N2B2/1PPPPP2/2KBN1RR";
         let fen_c    = b"Gkq";
         let board    = parse_board(fen_b);
-        let castling = parse_castling(fen_c, &board);
+        let castling = parse_castling(fen_c, board);
 
         assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_C, File::_G)));
         assert_eq!(castling[CastlingVariety::WhiteQueenside], None);
@@ -379,11 +427,31 @@ mod tests {
         let fen_b    = b"nrk121r/ppp1pp1p/3p2p1/5bn1/P7/2N2B2/1PPPPP2/2KBN1RR";
         let fen_c    = b"Hkq";
         let board    = parse_board(fen_b);
-        let castling = parse_castling(fen_c, &board);
+        let castling = parse_castling(fen_c, board);
 
         assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_C, File::_H)));
         assert_eq!(castling[CastlingVariety::WhiteQueenside], None);
         assert_eq!(castling[CastlingVariety::BlackKingside],  Some(CastlingPath::new(Color::Black, File::_C, File::_H)));
         assert_eq!(castling[CastlingVariety::BlackQueenside], Some(CastlingPath::new(Color::Black, File::_C, File::_B)));
+    }
+
+    #[test]
+    fn parse_en_passant_good_rank() {
+        assert_eq!(Some(Square::E6), parse_en_passant(b"e6", Color::White));
+        assert_eq!(Some(Square::A6), parse_en_passant(b"a6", Color::White));
+        assert_eq!(Some(Square::D3), parse_en_passant(b"d3", Color::Black));
+        assert_eq!(Some(Square::H3), parse_en_passant(b"h3", Color::Black));
+    }
+
+    #[test]
+    fn parse_en_passant_bad_rank() {
+        assert_eq!(None, parse_en_passant(b"a1", Color::White));
+        assert_eq!(None, parse_en_passant(b"c2", Color::White));
+        assert_eq!(None, parse_en_passant(b"e3", Color::White));
+        assert_eq!(None, parse_en_passant(b"d4", Color::Black));
+        assert_eq!(None, parse_en_passant(b"h5", Color::Black));
+        assert_eq!(None, parse_en_passant(b"g6", Color::Black));
+        assert_eq!(None, parse_en_passant(b"f7", Color::Black));
+        assert_eq!(None, parse_en_passant(b"b8", Color::Black));
     }
 }
