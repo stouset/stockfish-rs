@@ -16,8 +16,7 @@ keywords.workspace   = true
 repository.workspace = true
 
 [[bin]]
-name              = 'stockfish-accelerate'
-required-features = ['unaccelerated']
+name = 'stockfish-accelerate'
 
 [features]
 default       = []
