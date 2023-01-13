@@ -35,16 +35,17 @@ impl Rank {
 impl const From<Rank> for char {
     #[inline]
     fn from(value: Rank) -> Self {
-        match value {
-            Rank::_1 => '1',
-            Rank::_2 => '2',
-            Rank::_3 => '3',
-            Rank::_4 => '4',
-            Rank::_5 => '5',
-            Rank::_6 => '6',
-            Rank::_7 => '7',
-            Rank::_8 => '8',
-        }
+        (value.as_u8() + b'1') as _
+    }
+}
+
+impl const From<Square> for Rank {
+    #[inline]
+    fn from(s: Square) -> Self {
+        unsafe_optimization!(
+            Self::from_u8(s.rank_index()).unwrap(),
+            Self::from_u8_unchecked(s.rank_index()),
+        )
     }
 }
 
@@ -65,16 +66,6 @@ impl const IntoIterator for Rank {
             Self::_7 => Square::A7 ..= Square::H7,
             Self::_8 => Square::A8 ..= Square::H8,
         }
-    }
-}
-
-impl const From<Square> for Rank {
-    #[inline]
-    fn from(s: Square) -> Self {
-        unsafe_optimization!(
-            Self::from_u8(s.rank_index()).unwrap(),
-            Self::from_u8_unchecked(s.rank_index()),
-        )
     }
 }
 

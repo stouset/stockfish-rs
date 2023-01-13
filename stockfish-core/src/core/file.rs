@@ -33,16 +33,7 @@ impl File {
 impl const From<File> for char {
     #[inline]
     fn from(value: File) -> Self {
-        match value {
-            File::_A => 'A',
-            File::_B => 'B',
-            File::_C => 'C',
-            File::_D => 'D',
-            File::_E => 'E',
-            File::_F => 'F',
-            File::_G => 'G',
-            File::_H => 'H',
-        }
+        (value.as_u8() + b'A') as _
     }
 }
 
