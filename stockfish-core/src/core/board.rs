@@ -22,7 +22,7 @@ impl Board {
     /// until the piece is found. It should be used judiciously (or not at all)
     /// in performance-sensitive situations.
     #[must_use]
-    pub fn search<I: Iterator<Item = Square>>(&self, squares: I, token: Token) -> Option<Square> {
+    pub fn search<I: IntoIterator<Item = Square>>(&self, squares: I, token: Token) -> Option<Square> {
         squares.into_iter().find(|s| self[*s] == Some(token))
     }
 }
@@ -56,6 +56,25 @@ impl const Index<Square> for Board {
 impl const IndexMut<Square> for Board {
     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
         self.index_mut(index.as_usize())
+    }
+}
+
+    #[test]
+    fn search() {
+        let board = board!(
+            r n b q k b n r
+            p p p p p p p p
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            P P P P P P P P
+            R N B Q K B N R
+        );
+
+        assert_eq!(Some(Square::B2), board.search([Square::B2],           Token::WhitePawn));
+        assert_eq!(Some(Square::A7), board.search(Square::A1..Square::H8, Token::BlackPawn));
+        assert_eq!(None,             board.search(Square::A2..Square::H2, Token::BlackKing));
     }
 }
 
