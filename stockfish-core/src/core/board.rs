@@ -3,14 +3,18 @@ use crate::prelude::*;
 use std::iter::IntoIterator;
 use std::ops::{Index, IndexMut};
 
+/// A [`Board`] is an array of [`Square`]s (A1, B1, C1, ..., F8, G8, H8) that
+/// may optionally contain a [`Token`].
 #[derive(Copy, Eq, PartialEq)]
 #[derive_const(Clone)]
 #[must_use]
 pub struct Board([Option<Token>; Square::COUNT]);
 
 impl Board {
+    /// An empty chess board containing no [`Token`]s.
     pub const EMPTY: Self = Self([None; Square::COUNT]);
 
+    /// Returns an iterator over all occupied squares on the board.
     pub fn iter(&self) -> impl Iterator<Item = (Square, Token)> + '_ {
         Square::iter().filter_map(|s| self[s].map(|t| (s, t)))
     }
@@ -192,6 +196,36 @@ mod tests {
     }
 }
 
+/// Allows constructing a [`Board`] from a human-readable format.
+///
+/// # Example:
+///
+/// ```rust
+/// use stockfish_core::prelude::*;
+/// use stockfish_core::board;
+///
+/// board!(
+///     r n b q k b n r
+///     p p p p p p p p
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     P P P P P P P P
+///     R N B Q K B N R
+/// );
+///
+/// board!(
+///     _ _ _ _ _ _ K _
+///     _ _ _ _ _ _ q _
+///     _ _ _ _ _ k _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+///     _ _ _ _ _ _ _ _
+/// );
+/// ```
 #[macro_export]
 macro_rules! board {
     (

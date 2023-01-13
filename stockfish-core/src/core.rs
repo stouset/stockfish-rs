@@ -8,7 +8,7 @@ macro_rules! enumeration {
         #[must_use]
         #[repr(u8)]
         $vis enum $name {
-            $($var = ${index()}),+
+            $(#[allow(missing_docs)] $var = ${index()}),+
         }
 
         #[allow(dead_code)]

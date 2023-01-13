@@ -1,7 +1,12 @@
 use crate::prelude::*;
 
 enumeration! {
-    pub CastlingVariety, [ WhiteKingside, WhiteQueenside, BlackKingside, BlackQueenside ]
+    /// Represents a complete type of castling, including the color to castle
+    /// and the side to which castling will occur.
+    pub CastlingVariety, [
+        WhiteKingside, WhiteQueenside,
+        BlackKingside, BlackQueenside,
+    ]
 }
 
 impl CastlingVariety {
@@ -35,31 +40,38 @@ impl CastlingVariety {
         CastlingRights::BLACK_OO, CastlingRights::BLACK_OOO,
     ];
 
+    /// Returns the variety of castling for the given `color` and `side`.
     #[inline]
     pub const fn new(color: Color, side: CastlingSide) -> Self {
         Self::KINDS[color][side]
     }
 
+    /// Returns the color of the player involved in this castling variety
     #[inline]
     pub const fn color(self) -> Color {
         Self::COLORS[self]
     }
 
+    /// Returns the side of the board this castling variety will occur towards.
     #[inline]
     pub const fn side(self) -> CastlingSide {
         Self::SIDES[self]
     }
 
+    /// Returns the square the king finishes on.
     #[inline]
     pub const fn king_destination(self) -> Square {
         Self::KING_DESTINATIONS[self]
     }
 
+    /// Returns the square the rook finishes on.
     #[inline]
     pub const fn rook_destination(self) -> Square {
         Self::ROOK_DESTINATIONS[self]
     }
 
+    /// Returns the individual rights required for this castling variety to be
+    /// eligible.
     #[inline]
     pub const fn rights(self) -> CastlingRights {
         Self::RIGHTS[self]

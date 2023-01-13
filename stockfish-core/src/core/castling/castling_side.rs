@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
 enumeration! {
+    /// Represents a side to which castling may occur, kingside or queenside.
     pub CastlingSide, [ King, Queen ]
 }
 
@@ -8,6 +9,7 @@ impl CastlingSide {
     /// Determines the appropriate [`CastlingSide`] from the [`File`]s the king and
     /// rook are on. If the king is to the left of the rook,
     #[inline]
+    #[must_use]
     pub const fn new(king: File, rook: File) -> Option<Self> {
         match king.cmp(&rook) {
             std::cmp::Ordering::Less    => Some(Self::King),

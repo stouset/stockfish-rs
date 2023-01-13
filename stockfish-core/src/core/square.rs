@@ -17,6 +17,7 @@ enumeration! {
 }
 
 impl Square {
+    /// Creates a new square of the provided `file` and `rank`.
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(file: File, rank: Rank) -> Self {
@@ -36,6 +37,7 @@ impl Square {
         self.as_u8() & 0b0111
     }
 
+    /// Returns the file the square is on.
     #[inline]
     pub const fn file(self) -> File {
         self.into()
@@ -47,23 +49,28 @@ impl Square {
         self.as_u8() >> 3
     }
 
+    /// Returns the rank the square is on.
     #[inline]
     pub const fn rank(self) -> Rank {
         self.into()
     }
 
+    /// Returns [`true`] if this is a dark-colored square.
     #[inline]
     #[must_use]
     pub const fn is_dark(self) -> bool {
         (Bitboard::from(self) & Bitboard::DARK_SQUARES).is_any()
     }
 
+    /// Returns [`true`] if this is a light-colored square.
     #[inline]
     #[must_use]
     pub const fn is_light(self) -> bool {
         !self.is_dark()
     }
 
+    /// Returns this square from the perspective of flipping the board
+    /// left-to-right.
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_file(self) -> Self {
@@ -75,6 +82,8 @@ impl Square {
         }
     }
 
+    /// Returns this square from the perspective of flipping the board
+    /// top-to-bottom.
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_rank(self) -> Self {
@@ -112,22 +121,28 @@ impl Square {
         )
     }
 
+    /// The number of steps a king would have to move in order to be on the file
+    /// of the `other` square.
     #[inline]
     #[must_use]
     pub const fn distance_files(self, other: Self) -> u8 {
         self.file().distance(other.file())
     }
 
+    /// The number of steps a king would have to move in order to be on the rank
+    /// of the `other` square.
     #[inline]
     #[must_use]
     pub const fn distance_ranks(self, other: Self) -> u8 {
         self.rank().distance(other.rank())
     }
 
+    /// The number of steps a king would have to move in order to wind up on the
+    /// `other` square.
     #[inline]
     #[must_use]
-    pub const fn distance(self, rhs: Self) -> u8 {
-        crate::accelerate::square_distance(self, rhs)
+    pub const fn distance(self, other: Self) -> u8 {
+        crate::accelerate::square_distance(self, other)
     }
 
     /// Performs wrapping addition of a [`Direction`] to a [`Square`]. Note that
@@ -158,6 +173,8 @@ impl Square {
         )
     }
 
+    /// Performs wrapping addition of a [`Direction`] from a [`Square`]. Note that
+    /// this wraps around files *and* ranks.
     pub fn wrapping_sub(self, dir: Direction) -> Self {
         self.wrapping_add(dir.mirrored())
     }

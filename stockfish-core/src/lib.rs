@@ -64,9 +64,7 @@
 #![cfg_attr(test, allow(clippy::missing_const_for_fn))]
 
 // TODO: remove
-#![allow(missing_docs)]
 #![allow(meta_variable_misuse)] // false positive with `count()`
-#![allow(unused_macro_rules)]
 #![allow(rustdoc::missing_doc_code_examples)]
 #![allow(clippy::missing_docs_in_private_items)]
 
@@ -104,16 +102,25 @@ macro_rules! unsafe_optimization {
 #[cfg(test)]
 macro_rules! refute {
     ($cond:expr $(,)?)        => { assert!(!$cond) };
-    ($cond:expr, $($arg:tt)+) => { assert!(!$cond, $($arg)+) };
+    // ($cond:expr, $($arg:tt)+) => { assert!(!$cond, $($arg)+) };
 }
 
 mod misc;
 
-pub mod accelerate;
+#[doc(hidden)]
 pub mod arch;
+
+#[doc(hidden)]
+pub mod accelerate;
+
+/// Fast bitboards.
 pub mod bitboard;
+
+/// Types for representing fundamental aspects of chess.
 pub mod core;
 
+/// The `stockfish_core` prelude. Re-exports most types useful for implementing
+/// the fundamental workings of a chess engine.
 pub mod prelude {
     pub use crate::{board, board_tokens};
 

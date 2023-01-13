@@ -8,6 +8,9 @@ use crate::prelude::*;
 pub struct Direction(i8);
 
 impl Direction {
+    // disable requiring documentation for self-documenting constants
+    #![allow(missing_docs)]
+
     pub const NONE: Self = Self(0);
 
     pub const N: Self = Self(8);
@@ -35,7 +38,9 @@ impl Direction {
 
     /// The maximum distance a Direction can cover.
     pub const MAX_STEPS: u8 = 2;
+}
 
+impl Direction {
     /// Returns a bitboard of files that will be pushed off the board by
     /// shifting it in this direction.
     ///
@@ -89,12 +94,14 @@ impl Direction {
         }
     }
 
+    /// Returns only the east-west component of this direction.
     #[inline]
     pub const fn lateral_part(self) -> Self {
         // TODO: there might be a faster way of doign this
         Self(self.0 - self.vertical_part().0)
     }
 
+    /// Returns only the north-south component of this direction.
     #[inline]
     pub const fn vertical_part(self) -> Self {
         // Naïvely, the vertical part is the 5 most significant bits. However,
@@ -106,6 +113,7 @@ impl Direction {
         Self((self.0 & -8_i8).saturating_add((self.0 & 4_i8) << 1))
     }
 
+    /// Returns the direct opposite of this direction.
     #[inline]
     pub const fn mirrored(self) -> Self {
         Self(-self.0)

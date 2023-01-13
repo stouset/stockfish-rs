@@ -10,12 +10,14 @@ enumeration! {
 impl Color {
     const RANKS: [Rank; Self::COUNT] = [ Rank::_1, Rank::_8 ];
 
+    /// Returns [`true`] if this color is white.
     #[inline]
     #[must_use]
     pub fn is_white(self) -> bool {
         self == Self::White
     }
 
+    /// Returns [`true`] if this color is black.
     #[inline]
     #[must_use]
     pub fn is_black(self) -> bool {

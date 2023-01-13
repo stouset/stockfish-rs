@@ -1,18 +1,31 @@
 use crate::prelude::*;
 
+/// Encodes the full amount of infromation necessary to perform a castling
+/// operation between a particular rook and king.
 #[derive(Copy, Debug, Eq)]
 #[derive_const(Clone, PartialEq)]
 #[must_use]
 pub struct CastlingPath {
+    /// The variety of castling to be performed.
     pub variety: CastlingVariety,
-    pub path:    Bitboard,
+
+    /// The path between the king and the rook. This is compatible with both
+    /// standard chess as well as Fischer random chess (Chess960). Includes all
+    /// squares both the king and rook must transit to reach their destination.
+    /// This is *inclusive* of their final resting squares and *exclusive* of
+    /// their starting squares.
+    pub path: Bitboard,
 
     king: Square,
     rook: Square,
 }
 
 impl CastlingPath {
+    /// Constructs a new [`CastlingPath`] between a `king` and `rook` of a given
+    /// `color` beginning on the given files. The pieces are assumed to be on
+    /// the home row for their color.
     #[inline]
+    #[must_use]
     pub const fn new(color: Color, king: File, rook: File) -> Option<Self> {
         let side    = CastlingSide::new(king, rook)?;
         let variety = CastlingVariety::new(color, side);
@@ -37,36 +50,45 @@ impl CastlingPath {
         })
     }
 
+    /// Returns the color of the player involved in this castling operation.
     #[inline]
     pub const fn color(self) -> Color {
         self.variety.color()
     }
 
+    /// Returns the side of the board this castling operation will occur
+    /// towards.
     #[inline]
     pub const fn side(self) -> CastlingSide {
         self.variety.side()
     }
 
+    /// Returns the square the king begins on.
     #[inline]
     pub const fn king_origin(self) -> Square {
         self.king
     }
 
+    /// Returns the square the king finishes on.
     #[inline]
     pub const fn king_destination(self) -> Square {
         self.variety.king_destination()
     }
 
+    /// Returns the square the rook begins on.
     #[inline]
     pub const fn rook_origin(self) -> Square {
         self.rook
     }
 
+    /// Returns the square the rook finishes on.
     #[inline]
     pub const fn rook_destination(self) -> Square {
         self.variety.rook_destination()
     }
 
+    /// Returns the individual rights required for this castling operation to be
+    /// eligible.
     #[inline]
     pub const fn rights(self) -> CastlingRights {
         self.variety.rights()
@@ -85,6 +107,7 @@ mod tests {
         assert_ne!("", format!("{path:?}"));
     }
 
+    #[test]
     fn new_same_file() {
         assert_eq!(None, CastlingPath::new(Color::White, File::_D, File::_D));
     }

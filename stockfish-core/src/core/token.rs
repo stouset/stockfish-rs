@@ -45,6 +45,7 @@ impl Token {
         })
     }
 
+    /// Instantiates a [`Token`] from a [`Color`] and [`Piece`].
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(color: Color, piece: Piece) -> Self {
@@ -56,6 +57,7 @@ impl Token {
         )
     }
 
+    /// Returns the [`Color`] of the [`Token`].
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn color(self) -> Color {
@@ -67,6 +69,7 @@ impl Token {
         }
     }
 
+    /// Returns the type of [`Piece`] of the [`Token`].
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn piece(self) -> Piece {
@@ -78,12 +81,15 @@ impl Token {
         }
     }
 
+    /// Returns a bitboard containing the squares the token attacks from the
+    /// given `position`, given a `board` containing the pieces that might
+    /// interfere with its attack.
     #[inline]
-    pub const fn attacks(self, from: Square, board: Bitboard) -> Bitboard {
+    pub const fn attacks(self, position: Square, board: Bitboard) -> Bitboard {
         accelerate::attacks(
             self.color(),
             self.piece(),
-            from,
+            position,
             board,
         )
     }
@@ -110,16 +116,3 @@ impl const From<Token> for Piece {
     }
 }
 
-impl<T> const Index<Token> for [T; Token::MAX + 1] {
-    type Output = T;
-
-    fn index(&self, index: Token) -> &Self::Output {
-        self.index(index.as_usize())
-    }
-}
-
-impl<T> const IndexMut<Token> for [T; Token::MAX + 1] {
-    fn index_mut(&mut self, index: Token) -> &mut Self::Output {
-        self.index_mut(index.as_usize())
-    }
-}
