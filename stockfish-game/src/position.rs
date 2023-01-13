@@ -22,7 +22,7 @@ pub struct Position {
 
     // internal metrics
     count_by_color: [u8; Color::COUNT],
-    count_by_token: [u8; Token::MAX + 1],
+    count_by_token: [u8; Token::COUNT],
 
     // TODO: stuff from the StateInfo stockfish struct that eventually doesn't
     // go here
@@ -44,7 +44,7 @@ impl Position {
             bb_by_color: [Bitboard::EMPTY; Color::COUNT],
             bb_by_piece: [Bitboard::EMPTY; Piece::COUNT],
 
-            count_by_token: [0; Token::MAX + 1],
+            count_by_token: [0; Token::COUNT],
             count_by_color: [0; Color::COUNT],
 
             castling_rights: CastlingRights::NONE,

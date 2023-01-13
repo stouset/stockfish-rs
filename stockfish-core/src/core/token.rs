@@ -1,57 +1,32 @@
 use crate::prelude::*;
 use crate::accelerate;
 
-use std::ops::{Index, IndexMut};
-
-/// A token placed on a chess board. Combines a piece with its color.
-///
-/// To keep this in a single byte, we pack both the color and the type of piece
-/// directly into an enum. Making a struct of two values or an enum with
-/// `White(piece)` and `Black(piece)` variants would both push it to two bytes.
-#[derive(Copy, Debug, Eq)]
-#[derive_const(Clone, PartialEq)]
-#[must_use]
-#[repr(u8)]
-pub enum Token {
-    WhitePawn = 0, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
-    BlackPawn = 8, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
+enumeration! {
+    /// A token to be placed on a chess board. Combines a color with a type of
+    /// piece.
+    ///
+    /// Under the hood, the color is stored as the LSB while the type of piece
+    /// is stored as the three next bits. The upper four bits of the byte are
+    /// unused.
+    pub Token, [
+        WhitePawn,   BlackPawn,
+        WhiteKnight, BlackKnight,
+        WhiteBishop, BlackBishop,
+        WhiteRook,   BlackRook,
+        WhiteQueen,  BlackQueen,
+        WhiteKing,   BlackKing,
+    ]
 }
 
 impl Token {
-    // TODO: `COUNT` feels wrong for expressing what this needs to since there
-    // aren't actually 14 variants, but `MAX` requires adding one; is there a
-    // better word for "the number of array spaces needed to hold all variants"
-    pub const MAX: usize = Self::BlackKing.as_u8() as _;
-
-    #[allow(unsafe_code)]
-    const unsafe fn from_u8_unchecked(repr: u8) -> Self {
-        debug_assert!(
-            (repr >= Self::WhitePawn.as_u8() && repr <= Self::WhiteKing.as_u8()) ||
-            (repr >= Self::BlackPawn.as_u8() && repr <= Self::BlackKing.as_u8())
-        );
-
-        std::mem::transmute(repr)
-    }
-
-    #[allow(unsafe_code)]
-    const fn from_u8(repr: u8) -> Option<Self> {
-        Some(match repr {
-            0x0 => Self::WhitePawn,
-            0x1 => Self::WhiteKnight,
-            0x2 => Self::WhiteBishop,
-            0x3 => Self::WhiteRook,
-            0x4 => Self::WhiteQueen,
-            0x5 => Self::WhiteKing,
-            0x8 => Self::BlackPawn,
-            0x9 => Self::BlackKnight,
-            0xa => Self::BlackBishop,
-            0xb => Self::BlackRook,
-            0xc => Self::BlackQueen,
-            0xd => Self::BlackKing,
-
-            _   => return None,
-        })
-    }
+    const FEN: [char; Self::COUNT] = [
+        'P', 'p',
+        'N', 'n',
+        'B', 'b',
+        'R', 'r',
+        'Q', 'q',
+        'K', 'k',
+    ];
 
     /// Parses a FEN byte ('P' is a white pawn, `n` is a black knight, etc.)
     /// into a [`Token`]. Returns [`None`] if
@@ -59,18 +34,12 @@ impl Token {
     #[must_use]
     pub const fn from_fen(byte: u8) -> Option<Self> {
         Some(match byte {
-            b'P' => Self::WhitePawn,
-            b'N' => Self::WhiteKnight,
-            b'B' => Self::WhiteBishop,
-            b'R' => Self::WhiteRook,
-            b'Q' => Self::WhiteQueen,
-            b'K' => Self::WhiteKing,
-            b'p' => Self::BlackPawn,
-            b'n' => Self::BlackKnight,
-            b'b' => Self::BlackBishop,
-            b'r' => Self::BlackRook,
-            b'q' => Self::BlackQueen,
-            b'k' => Self::BlackKing,
+            b'P' => Self::WhitePawn,   b'p' => Self::BlackPawn,
+            b'N' => Self::WhiteKnight, b'n' => Self::BlackKnight,
+            b'B' => Self::WhiteBishop, b'b' => Self::BlackBishop,
+            b'R' => Self::WhiteRook,   b'r' => Self::BlackRook,
+            b'Q' => Self::WhiteQueen,  b'q' => Self::BlackQueen,
+            b'K' => Self::WhiteKing,   b'k' => Self::BlackKing,
 
             _ => return None,
         })
@@ -79,7 +48,7 @@ impl Token {
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(color: Color, piece: Piece) -> Self {
-        let repr = color.as_u8() << 3 | piece.as_u8();
+        let repr = piece.as_u8() << 1 | color.as_u8();
 
         unsafe_optimization!(
             Self::from_u8(repr).unwrap(),
@@ -90,7 +59,7 @@ impl Token {
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn color(self) -> Color {
-        let color = self.as_u8() >> 3;
+        let color = self.as_u8() & 0b1;
 
         unsafe_optimization! {
             Color::from_u8(color).unwrap(),
@@ -101,7 +70,7 @@ impl Token {
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn piece(self) -> Piece {
-        let piece = self.as_u8() & 0b111;
+        let piece = self.as_u8() >> 1;
 
         unsafe_optimization! {
             Piece::from_u8(piece).unwrap(),
@@ -118,37 +87,12 @@ impl Token {
             board,
         )
     }
-
-    #[inline]
-    #[must_use]
-    pub const fn as_u8(self) -> u8 {
-        self as _
-    }
-
-    #[inline]
-    #[must_use]
-    pub const fn as_usize(self) -> usize {
-        self as _
-    }
 }
 
 impl const From<Token> for char {
     #[inline]
-    fn from(token: Token) -> Self {
-        match token {
-            Token::WhitePawn   => 'P',
-            Token::WhiteKnight => 'N',
-            Token::WhiteBishop => 'B',
-            Token::WhiteRook   => 'R',
-            Token::WhiteQueen  => 'Q',
-            Token::WhiteKing   => 'K',
-            Token::BlackPawn   => 'p',
-            Token::BlackKnight => 'n',
-            Token::BlackBishop => 'b',
-            Token::BlackRook   => 'r',
-            Token::BlackQueen  => 'q',
-            Token::BlackKing   => 'k',
-        }
+    fn from(value: Token) -> Self {
+        Token::FEN[value]
     }
 }
 
