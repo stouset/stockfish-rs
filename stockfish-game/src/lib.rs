@@ -51,6 +51,7 @@
 #![warn(clippy::if_then_some_else_none)]
 #![warn(clippy::map_err_ignore)]
 #![warn(clippy::mem_forget)]
+#![warn(clippy::missing_const_for_fn)]
 #![warn(clippy::missing_docs_in_private_items)]
 #![warn(clippy::panic)]
 #![warn(clippy::panic_in_result_fn)]
@@ -60,6 +61,7 @@
 
 // Lint Exceptions
 #![allow(unstable_features)]
+#![cfg_attr(test, allow(clippy::missing_const_for_fn))]
 
 // TODO: remove
 #![allow(missing_docs)]
