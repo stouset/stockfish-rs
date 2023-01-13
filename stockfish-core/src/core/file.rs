@@ -17,8 +17,7 @@ impl File {
         match byte {
             b'A'..=b'H' => Self::from_u8(byte - b'A'),
             b'a'..=b'h' => Self::from_u8(byte - b'a'),
-
-            _ => None,
+            _           => None,
         }
     }
 
@@ -28,6 +27,22 @@ impl File {
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
         self.as_u8().abs_diff(other.into())
+    }
+}
+
+impl const From<File> for char {
+    #[inline]
+    fn from(value: File) -> Self {
+        match value {
+            File::_A => 'A',
+            File::_B => 'B',
+            File::_C => 'C',
+            File::_D => 'D',
+            File::_E => 'E',
+            File::_F => 'F',
+            File::_G => 'G',
+            File::_H => 'H',
+        }
     }
 }
 

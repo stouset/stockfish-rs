@@ -12,12 +12,39 @@ enumeration! {
 }
 
 impl Rank {
+    /// Returns a [`File`] parsed from a FEN name. `None` if it isn't a valid
+    /// file name.
+    #[inline]
+    #[must_use]
+    pub const fn from_fen(byte: u8) -> Option<Self> {
+        match byte {
+            b'1'..=b'8' => Self::from_u8(byte - b'1'),
+            _           => None,
+        }
+    }
+
     /// The number of steps it would take a king to move from one rank to the
     /// other.
     #[inline]
     #[must_use]
     pub const fn distance(self, other: Self) -> u8 {
         self.as_u8().abs_diff(other.as_u8())
+    }
+}
+
+impl const From<Rank> for char {
+    #[inline]
+    fn from(value: Rank) -> Self {
+        match value {
+            Rank::_1 => '1',
+            Rank::_2 => '2',
+            Rank::_3 => '3',
+            Rank::_4 => '4',
+            Rank::_5 => '5',
+            Rank::_6 => '6',
+            Rank::_7 => '7',
+            Rank::_8 => '8',
+        }
     }
 }
 
