@@ -43,8 +43,8 @@ fn accelerate<P: AsRef<Path>, T: bytemuck::Pod>(name: &str, root: P, data: &T) {
 fn generate_square_distance() -> [[u8; Square::COUNT]; Square::COUNT] {
     let mut distances = [[0; Square::COUNT]; Square::COUNT];
 
-    for s1 in Square::into_iter() {
-        for s2 in Square::into_iter() {
+    for s1 in Square::iter() {
+        for s2 in Square::iter() {
             distances[s1][s2] = computed::square_distance(s1, s2);
         }
     }
@@ -55,8 +55,8 @@ fn generate_square_distance() -> [[u8; Square::COUNT]; Square::COUNT] {
 fn generate_line() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
     let mut line = [[Bitboard::EMPTY; Square::COUNT]; Square::COUNT];
 
-    for s1 in Square::into_iter() {
-        for s2 in Square::into_iter() {
+    for s1 in Square::iter() {
+        for s2 in Square::iter() {
             line[s1][s2] = computed::line(s1, s2);
         }
     }
@@ -67,8 +67,8 @@ fn generate_line() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
 fn generate_between() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
     let mut between = [[Bitboard::EMPTY; Square::COUNT]; Square::COUNT];
 
-    for s1 in Square::into_iter() {
-        for s2 in Square::into_iter() {
+    for s1 in Square::iter() {
+        for s2 in Square::iter() {
             between[s1][s2] = computed::between(s1, s2);
         }
     }
@@ -79,8 +79,8 @@ fn generate_between() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
 fn generate_pseudo_attacks() -> [[Bitboard; Square::COUNT]; Piece::COUNT] {
     let mut pseudo_attacks = [[Bitboard::EMPTY; Square::COUNT]; Piece::COUNT];
 
-    for piece in Piece::into_iter().skip(1) {
-        for square in Square::into_iter() {
+    for piece in Piece::iter().skip(1) {
+        for square in Square::iter() {
             pseudo_attacks[piece][square] = computed::pseudo_attacks(piece, square);
         }
     }
@@ -91,8 +91,8 @@ fn generate_pseudo_attacks() -> [[Bitboard; Square::COUNT]; Piece::COUNT] {
 fn generate_pawn_attacks() -> [[Bitboard; Square::COUNT]; Color::COUNT] {
     let mut pawn_attacks = [[Bitboard::EMPTY; Square::COUNT]; Color::COUNT];
 
-    for color in Color::into_iter() {
-        for square in Square::into_iter() {
+    for color in Color::iter() {
+        for square in Square::iter() {
             pawn_attacks[color][square] = computed::pawn_attacks(color, square);
         }
     }

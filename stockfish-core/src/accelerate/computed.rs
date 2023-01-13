@@ -17,14 +17,19 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
 
 /// Returns a [`Bitboard`] containing all the [`Square`]s on the same file,
 /// rank, or diagonal as both `s1` and `s2`. Includes `s1` and `s2`.
-pub fn line(s1: Square, s2: Square) -> Bitboard {
-    for piece in [Piece::Bishop, Piece::Rook] {
-        if pseudo_attacks(piece, s1).contains(s2) {
-            return (s1 | s2) | (
-                pseudo_attacks(piece, s1) &
-                pseudo_attacks(piece, s2)
-            );
-        }
+pub const fn line(s1: Square, s2: Square) -> Bitboard {
+    if pseudo_attacks(Piece::Bishop, s1).contains(s2) {
+        return (s1 | s2) | (
+            pseudo_attacks(Piece::Bishop, s1) &
+            pseudo_attacks(Piece::Bishop, s2)
+        );
+    }
+
+    if pseudo_attacks(Piece::Rook, s1).contains(s2) {
+        return (s1 | s2) | (
+            pseudo_attacks(Piece::Rook, s1) &
+            pseudo_attacks(Piece::Rook, s2)
+        );
     }
 
     Bitboard::EMPTY
@@ -37,14 +42,19 @@ pub fn line(s1: Square, s2: Square) -> Bitboard {
 /// This can allow us to generate non-king evasion moves faster: a defending
 /// piece must either interpose itself to cover the check or capture the
 /// checking piece.
-pub fn between(s1: Square, s2: Square) -> Bitboard {
-    for piece in [Piece::Bishop, Piece::Rook] {
-        if pseudo_attacks(piece, s1).contains(s2) {
-            return
-                sliding_attacks(piece, s1, s2.into()) &
-                sliding_attacks(piece, s2, s1.into()) |
-                s2;
-        }
+pub const fn between(s1: Square, s2: Square) -> Bitboard {
+    if pseudo_attacks(Piece::Bishop, s1).contains(s2) {
+        return
+            sliding_attacks(Piece::Bishop, s1, s2.into()) &
+            sliding_attacks(Piece::Bishop, s2, s1.into()) |
+            s2;
+    }
+
+    if pseudo_attacks(Piece::Rook, s1).contains(s2) {
+        return
+            sliding_attacks(Piece::Rook, s1, s2.into()) &
+            sliding_attacks(Piece::Rook, s2, s1.into()) |
+            s2;
     }
 
     s2.into()
