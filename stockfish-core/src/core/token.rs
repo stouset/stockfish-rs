@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::accelerate;
 
 use std::ops::{Index, IndexMut};
 
@@ -75,7 +76,6 @@ impl Token {
         })
     }
 
-
     #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(color: Color, piece: Piece) -> Self {
@@ -107,6 +107,16 @@ impl Token {
             Piece::from_u8(piece).unwrap(),
             Piece::from_u8_unchecked(piece),
         }
+    }
+
+    #[inline]
+    pub const fn attacks(self, from: Square, board: Bitboard) -> Bitboard {
+        accelerate::attacks(
+            self.color(),
+            self.piece(),
+            from,
+            board,
+        )
     }
 
     #[inline]
