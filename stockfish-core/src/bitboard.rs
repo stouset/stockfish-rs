@@ -14,7 +14,6 @@ use std::ops::{
 };
 
 #[derive(Copy, Eq)]
-#[derive(bytemuck::Pod, bytemuck::Zeroable)]
 #[derive_const(Clone, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
 #[must_use]

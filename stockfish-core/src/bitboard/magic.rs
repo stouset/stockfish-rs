@@ -4,7 +4,6 @@ use crate::misc::Prng;
 
 #[must_use]
 #[derive(Clone, Debug, Eq, PartialEq)]
-#[derive(bytemuck::Zeroable)]
 pub struct Magic<const N: usize> {
     pub magics:  [MagicSquare; Square::COUNT],
     pub attacks: [Bitboard; N],
@@ -14,7 +13,6 @@ pub struct Magic<const N: usize> {
 #[allow(clippy::module_name_repetitions)]
 #[must_use]
 #[derive(Copy, Debug, Eq)]
-#[derive(bytemuck::Pod, bytemuck::Zeroable)]
 #[derive_const(Clone, PartialEq)]
 #[repr(C)]
 pub struct MagicSquare {
@@ -149,6 +147,20 @@ impl Magic<0x19000> {
     pub fn new_rook() -> Box<Self> {
         Self::new(Piece::Rook)
     }
+}
+
+mod bytemuck_impl {
+    // all of these types may implement bytemuck::{Pod, Zeroable}
+    #![allow(unsafe_code)]
+
+    use super::{Bitboard, Magic, MagicSquare};
+
+    unsafe impl                 bytemuck::Zeroable for Bitboard {}
+    unsafe impl<const N: usize> bytemuck::Zeroable for Magic<N> {}
+    unsafe impl                 bytemuck::Zeroable for MagicSquare {}
+
+    unsafe impl bytemuck::Pod for Bitboard {}
+    unsafe impl bytemuck::Pod for MagicSquare {}
 }
 
 impl MagicSquare {

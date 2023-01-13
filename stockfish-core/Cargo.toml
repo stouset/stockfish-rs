@@ -25,7 +25,7 @@ unaccelerated = []
 
 [dependencies]
 bitflags = '1'
-bytemuck = { version = '1', features = ['derive', 'extern_crate_alloc', 'min_const_generics'] }
+bytemuck = { version = '1', features = ['extern_crate_alloc', 'min_const_generics'] }
 
 [dev-dependencies]
 criterion = { version = '0.4', features = ['html_reports'] }
