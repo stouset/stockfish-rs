@@ -15,7 +15,7 @@ use std::ops::{
 
 #[derive(Copy, Eq)]
 #[derive(bytemuck::Pod, bytemuck::Zeroable)]
-#[derive_const(Clone, PartialEq)]
+#[derive_const(Clone, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
 #[must_use]
 pub struct Bitboard(u64);
@@ -162,6 +162,13 @@ impl Bitboard {
         self.overlaps(s.into())
     }
 
+    /// Returns [`true`] if the [`Bitboard`] does not contain the given square.
+    #[inline]
+    #[must_use]
+    pub const fn omits(self, s: Square) -> bool {
+        (!self).overlaps(s.into())
+    }
+
     /// Returns [`true`] if the [`Bitboard`] has any squares in common with the
     /// given [`Bitboard`].
     #[inline]
@@ -196,49 +203,16 @@ impl Bitboard {
 
     /// Returns an iterator over every possible subset of squares on the
     /// bitboard.
-    const fn powerset(self) -> PowerSetIter {
-        PowerSetIter::new(self)
+    ///
+    /// Use caution with this function. For boards with larger numbers of bits
+    /// this function may require longer than the age of the universe to
+    /// complete.
+    const fn powerset(self) -> Powerset {
+        debug_assert!(self.0.count_ones() < 24);
+
+        Powerset::new(self)
     }
 }
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-#[must_use]
-pub struct PowerSetIter {
-    source: Bitboard,
-    next:   Option<Bitboard>,
-}
-
-impl PowerSetIter {
-    const fn new(bitboard: Bitboard) -> Self {
-        Self {
-            source: bitboard,
-            next:   Some(Bitboard::EMPTY),
-        }
-    }
-}
-
-impl Iterator for PowerSetIter {
-    type Item = Bitboard;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        // use Carry-Ripler trick to enumerate all subsets of the source
-        // bitboard
-        let next  = self.next;
-        self.next = self.next
-            .map(|bb| bb.0.wrapping_sub(self.source.0) & self.source.0)
-            .map(Bitboard::from)
-            .filter(|bb| bb.is_any());
-
-        next
-    }
-
-    // TODO: more accurately estimate the bounds
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (0, Some(2_usize.pow(self.source.0.count_ones())))
-    }
-}
-
-impl FusedIterator for PowerSetIter {}
 
 impl std::fmt::Debug for Bitboard {
     #[cfg_attr(coverage, no_coverage)]
@@ -435,9 +409,56 @@ impl const Add<Direction> for Bitboard {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[must_use]
+pub struct Powerset {
+    source: Bitboard,
+    next:   Option<Bitboard>,
+}
+
+impl Powerset {
+    const fn new(bitboard: Bitboard) -> Self {
+        Self {
+            source: bitboard,
+            next:   Some(Bitboard::EMPTY),
+        }
+    }
+}
+
+impl Iterator for Powerset {
+    type Item = Bitboard;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // use Carry-Ripler trick to enumerate all subsets of the source
+        // bitboard
+        let next  = self.next;
+        self.next = self.next
+            .map(|bb| bb.0.wrapping_sub(self.source.0) & self.source.0)
+            .map(Bitboard::from)
+            .filter(|bb| bb.is_any());
+
+        next
+    }
+
+    // TODO: more accurately estimate the bounds
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(2_usize.pow(self.source.0.count_ones())))
+    }
+}
+
+impl FusedIterator for Powerset {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn derives() {
+        assert_eq!(
+            std::cmp::Ord::cmp(&Bitboard::ALL, &Bitboard::ALL),
+            std::cmp::Ordering::Equal
+        );
+    }
 
     #[test]
     fn clone() {
@@ -512,6 +533,18 @@ mod tests {
     }
 
     #[test]
+    fn omits() {
+        assert!(Bitboard::LIGHT_SQUARES.omits(Square::A1));
+        refute!(Bitboard::LIGHT_SQUARES.omits(Square::A2));
+        assert!(Bitboard::LIGHT_SQUARES.omits(Square::A3));
+        refute!(Bitboard::LIGHT_SQUARES.omits(Square::A4));
+        assert!(Bitboard::LIGHT_SQUARES.omits(Square::A5));
+        refute!(Bitboard::LIGHT_SQUARES.omits(Square::A6));
+        assert!(Bitboard::LIGHT_SQUARES.omits(Square::A7));
+        refute!(Bitboard::LIGHT_SQUARES.omits(Square::A8));
+    }
+
+    #[test]
     fn overlaps() {
         assert!(Bitboard::FILE_H.overlaps(Bitboard::RANK_2));
     }
@@ -537,6 +570,48 @@ mod tests {
         assert_eq!(8, Bitboard::FILE_H.count());
         assert_eq!(8, Bitboard::RANK_3.count());
         assert_eq!(8, Bitboard::RANK_6.count());
+    }
+
+    #[test]
+    fn powerset_derives() {
+        let set1 = Bitboard::EMPTY.powerset();
+        let set2 = set1.clone();
+
+        assert_eq!(set1, set2);
+
+        assert!(format!("{set1:?}").is_ascii());
+    }
+
+    #[test]
+    fn powerset() {
+        use Square::{D4, D5, E4, E5};
+
+        let mut powerset = Bitboard::CENTER.powerset().collect::<Vec<Bitboard>>();
+        let mut expected = [
+            Bitboard::EMPTY,
+
+            Bitboard::from(D4), Bitboard::from(E4),
+            Bitboard::from(D5), Bitboard::from(E5),
+
+            D4 | E4,
+            D4 | D5,
+            D4 | E5,
+            E4 | D5,
+            E4 | E5,
+            D5 | E5,
+
+            D4 | E4 | D5,
+            D4 | E4 | E5,
+            D4 | D5 | E5,
+            D5 | E4 | E5,
+
+            Bitboard::CENTER,
+        ];
+
+        powerset.sort();
+        expected.sort();
+
+        assert_eq!(expected, &powerset[..]);
     }
 
     #[test]
@@ -664,6 +739,18 @@ mod tests {
     }
 
     #[test]
+    fn bitand_assign() {
+        let mut bb1 = Bitboard::EMPTY;
+        let mut bb2 = Bitboard::from(Square::C2);
+
+        bb1 &= Square::C3;
+        bb2 &= Bitboard::LIGHT_SQUARES;
+
+        assert_eq!(Bitboard::EMPTY,            bb1);
+        assert_eq!(Bitboard::from(Square::C2), bb2);
+    }
+
+    #[test]
     fn bitor() {
         assert_eq!(Bitboard::EMPTY,  Bitboard::EMPTY         | Bitboard::EMPTY);
         assert_eq!(Bitboard::FILE_A, Bitboard::FILE_A        & Bitboard::FILE_A);
@@ -671,10 +758,45 @@ mod tests {
     }
 
     #[test]
+    fn bitor_square() {
+        assert_eq!(Bitboard::from(Square::D4),  Bitboard::EMPTY  | Square::D4);
+        assert_eq!(Bitboard::FILE_A,            Bitboard::FILE_A | Square::A1);
+        assert_eq!(Square::A1 | Square::H8,     Bitboard::EMPTY  | Square::A1 | Square::H8);
+    }
+
+    #[test]
+    fn bitor_assign() {
+        let mut bb1 = Bitboard::CENTER_FILES;
+        let mut bb2 = Bitboard::RANK_2;
+
+        bb1 |= Square::C3;
+        bb2 |= Bitboard::FILE_A;
+
+        assert_eq!(bb1, Bitboard::CENTER_FILES | Square::C3);
+        assert_eq!(bb2, Bitboard::FILE_A | Bitboard::RANK_2);
+    }
+
+    #[test]
     fn bitxor() {
         assert_eq!(Bitboard::EMPTY,  Bitboard::EMPTY         ^ Bitboard::EMPTY);
         assert_eq!(Bitboard::EMPTY,  Bitboard::FILE_A        ^ Bitboard::FILE_A);
         assert_eq!(Bitboard::ALL,    Bitboard::LIGHT_SQUARES ^ Bitboard::DARK_SQUARES);
+    }
+
+    #[test]
+    fn bitxor_square() {
+        assert_eq!(Bitboard::from(Square::D4),     Bitboard::EMPTY  ^ Square::D4);
+        assert_eq!(Bitboard::FILE_A & !Square::A1, Bitboard::FILE_A ^ Square::A1);
+        assert_eq!(Square::A1 | Square::H8,        Bitboard::EMPTY  ^ Square::A1 ^ Square::H8);
+    }
+
+    #[test]
+    fn bitxor_assign() {
+        let mut bb = Bitboard::CENTER_FILES;
+
+        bb ^= Bitboard::FILE_D;
+
+        assert_eq!(bb, Bitboard::CENTER_FILES ^ Bitboard::FILE_D);
     }
 
     #[test]
