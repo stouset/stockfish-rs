@@ -5,11 +5,15 @@ enumeration! {
 }
 
 impl CastlingSide {
+    /// Determines the appropriate [`CastlingSide`] from the [`File`]s the king and
+    /// rook are on. If the king is to the left of the rook,
     #[inline]
-    pub const fn new(king: File, rook: File) -> Self {
-        debug_assert!(king != rook);
-
-        if king < rook { Self::King } else { Self::Queen }
+    pub const fn new(king: File, rook: File) -> Option<Self> {
+        match king.cmp(&rook) {
+            std::cmp::Ordering::Less    => Some(Self::King),
+            std::cmp::Ordering::Equal   => None,
+            std::cmp::Ordering::Greater => Some(Self::Queen),
+        }
     }
 }
 
@@ -19,9 +23,9 @@ mod tests {
 
     #[test]
     fn detect() {
-        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_F, File::_G));
-        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_A, File::_B));
-        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_H, File::_C));
-        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_F, File::_E));
+        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_F, File::_G).unwrap());
+        assert_eq!(CastlingSide::King,  CastlingSide::new(File::_A, File::_B).unwrap());
+        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_H, File::_C).unwrap());
+        assert_eq!(CastlingSide::Queen, CastlingSide::new(File::_F, File::_E).unwrap());
     }
 }

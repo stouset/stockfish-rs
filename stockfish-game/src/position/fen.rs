@@ -186,8 +186,8 @@ fn parse_castling(bytes: &[u8], board: Board) -> [Option<CastlingPath>; 4] {
         let Some(k) = k_file else { continue };
         let Some(r) = r_file else { continue };
 
-        let path    = CastlingPath::new(color, k, r);
-        let variety = path.variety;
+        let Some(path) = CastlingPath::new(color, k, r) else { continue };
+        let variety    = path.variety;
 
         paths[variety] = Some(path);
     }
@@ -390,10 +390,10 @@ mod tests {
         let board    = parse_board(fen_b);
         let castling = parse_castling(fen_c, board);
 
-        assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_E, File::_H)));
-        assert_eq!(castling[CastlingVariety::WhiteQueenside], Some(CastlingPath::new(Color::White, File::_E, File::_A)));
-        assert_eq!(castling[CastlingVariety::BlackKingside],  Some(CastlingPath::new(Color::Black, File::_E, File::_H)));
-        assert_eq!(castling[CastlingVariety::BlackQueenside], Some(CastlingPath::new(Color::Black, File::_E, File::_A)));
+        assert_eq!(castling[CastlingVariety::WhiteKingside],  CastlingPath::new(Color::White, File::_E, File::_H));
+        assert_eq!(castling[CastlingVariety::WhiteQueenside], CastlingPath::new(Color::White, File::_E, File::_A));
+        assert_eq!(castling[CastlingVariety::BlackKingside],  CastlingPath::new(Color::Black, File::_E, File::_H));
+        assert_eq!(castling[CastlingVariety::BlackQueenside], CastlingPath::new(Color::Black, File::_E, File::_A));
     }
 
     #[test]
@@ -416,10 +416,10 @@ mod tests {
         let board    = parse_board(fen_b);
         let castling = parse_castling(fen_c, board);
 
-        assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_C, File::_G)));
+        assert_eq!(castling[CastlingVariety::WhiteKingside],  CastlingPath::new(Color::White, File::_C, File::_G));
         assert_eq!(castling[CastlingVariety::WhiteQueenside], None);
-        assert_eq!(castling[CastlingVariety::BlackKingside],  Some(CastlingPath::new(Color::Black, File::_C, File::_G)));
-        assert_eq!(castling[CastlingVariety::BlackQueenside], Some(CastlingPath::new(Color::Black, File::_C, File::_B)));
+        assert_eq!(castling[CastlingVariety::BlackKingside],  CastlingPath::new(Color::Black, File::_C, File::_G));
+        assert_eq!(castling[CastlingVariety::BlackQueenside], CastlingPath::new(Color::Black, File::_C, File::_B));
     }
 
     #[test]
@@ -429,10 +429,10 @@ mod tests {
         let board    = parse_board(fen_b);
         let castling = parse_castling(fen_c, board);
 
-        assert_eq!(castling[CastlingVariety::WhiteKingside],  Some(CastlingPath::new(Color::White, File::_C, File::_H)));
+        assert_eq!(castling[CastlingVariety::WhiteKingside],  CastlingPath::new(Color::White, File::_C, File::_H));
         assert_eq!(castling[CastlingVariety::WhiteQueenside], None);
-        assert_eq!(castling[CastlingVariety::BlackKingside],  Some(CastlingPath::new(Color::Black, File::_C, File::_H)));
-        assert_eq!(castling[CastlingVariety::BlackQueenside], Some(CastlingPath::new(Color::Black, File::_C, File::_B)));
+        assert_eq!(castling[CastlingVariety::BlackKingside],  CastlingPath::new(Color::Black, File::_C, File::_H));
+        assert_eq!(castling[CastlingVariety::BlackQueenside], CastlingPath::new(Color::Black, File::_C, File::_B));
     }
 
     #[test]

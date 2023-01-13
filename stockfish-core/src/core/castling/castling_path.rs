@@ -13,8 +13,8 @@ pub struct CastlingPath {
 
 impl CastlingPath {
     #[inline]
-    pub const fn new(color: Color, king: File, rook: File) -> Self {
-        let side    = CastlingSide::new(king, rook);
+    pub const fn new(color: Color, king: File, rook: File) -> Option<Self> {
+        let side    = CastlingSide::new(king, rook)?;
         let variety = CastlingVariety::new(color, side);
 
         // reassign king and rook to their actual square
@@ -29,12 +29,12 @@ impl CastlingPath {
             crate::accelerate::between(rook, variety.rook_destination())
         ) & !(king | rook);
 
-        Self {
+        Some(Self {
             variety,
             path,
             king,
             rook,
-        }
+        })
     }
 
     #[inline]
@@ -85,10 +85,14 @@ mod tests {
         assert_ne!("", format!("{path:?}"));
     }
 
+    fn new_same_file() {
+        assert_eq!(None, CastlingPath::new(Color::White, File::_D, File::_D));
+    }
+
     #[test]
     fn color() {
         let color = Color::Black;
-        let path  = CastlingPath::new(color, File::_A, File::_H);
+        let path  = CastlingPath::new(color, File::_A, File::_H).unwrap();
 
         assert_eq!(color, path.color());
     }
@@ -97,12 +101,12 @@ mod tests {
     fn side() {
         assert_eq!(
             CastlingSide::King,
-            CastlingPath::new(Color::White, File::_A, File::_H).side()
+            CastlingPath::new(Color::White, File::_A, File::_H).unwrap().side()
         );
 
         assert_eq!(
             CastlingSide::Queen,
-            CastlingPath::new(Color::White, File::_B, File::_A).side()
+            CastlingPath::new(Color::White, File::_B, File::_A).unwrap().side()
         );
     }
 
@@ -112,8 +116,8 @@ mod tests {
         let rook = File::_H;
         let path = CastlingPath::new(Color::White, king, rook);
 
-        assert_eq!(king | Rank::_1, path.king_origin());
-        assert_eq!(rook | Rank::_1, path.rook_origin());
+        assert_eq!(king | Rank::_1, path.unwrap().king_origin());
+        assert_eq!(rook | Rank::_1, path.unwrap().rook_origin());
     }
 
     #[test]
@@ -122,14 +126,14 @@ mod tests {
         let rook = File::_A;
         let path = CastlingPath::new(Color::Black, king, rook);
 
-        assert_eq!(Square::C8, path.king_destination());
-        assert_eq!(Square::D8, path.rook_destination());
+        assert_eq!(Square::C8, path.unwrap().king_destination());
+        assert_eq!(Square::D8, path.unwrap().rook_destination());
     }
 
     #[test]
     fn rights() {
         let path = CastlingPath::new(Color::White, File::_A, File::_H);
 
-        assert_eq!(CastlingRights::WHITE_OO, path.rights());
+        assert_eq!(CastlingRights::WHITE_OO, path.unwrap().rights());
     }
 }
