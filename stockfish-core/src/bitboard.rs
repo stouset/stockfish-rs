@@ -112,6 +112,11 @@ impl Bitboard {
     /// A board with all of the edges occupied.
     pub const EDGES: Bitboard = Self::EDGE_FILES | Self::EDGE_RANKS;
 
+    /// A board with all the corner squares occupied.
+    pub const CORNERS: Bitboard =
+        Square::A1 | Square::A8 |
+        Square::H1 | Square::H8;
+
     // pub const KING_FLANK: [Bitboard; File::COUNT] = [
     //     Self::QUEEN_SIDE ^ Self::FILE_D, Self::QUEEN_SIDE,
     //     Self::QUEEN_SIDE,                Self::CENTER_FILES,

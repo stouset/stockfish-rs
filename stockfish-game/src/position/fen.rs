@@ -501,4 +501,74 @@ mod tests {
         assert_eq!(0, parse_move_number(b"a1b"));
         assert_eq!(0, parse_move_number(b"4a"));
     }
+
+    #[test]
+    fn parse_fen_start_position() {
+        let position = Position::from_fen(
+            b"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            Ruleset::Standard,
+        );
+
+        assert_eq!(Ruleset::Standard, position.ruleset);
+
+        assert_eq!(Token::WhitePawn,   position[Square::A2].unwrap());
+        assert_eq!(Token::BlackBishop, position[Square::F8].unwrap());
+
+        assert!(position.turn.is_white());
+
+        assert_eq!(CastlingRights::ANY, position.castling_rights);
+
+        assert_eq!(None, position.en_passant);
+        assert_eq!(0,    position.ply);
+        assert_eq!(0,    position.halfmoves);
+
+        assert_eq!(32, position.bitboard().count());
+
+        assert_eq!(Rank::_1 | Rank::_2,        position.bitboard_for_color(Color::White));
+        assert_eq!(Rank::_7 | Rank::_8,        position.bitboard_for_color(Color::Black));
+        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Piece::Rook));
+        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Token::BlackQueen));
+
+        assert_eq!(16, position.count_by_color[Color::White]);
+        assert_eq!(16, position.count_by_color[Color::Black]);
+        assert_eq!(1,  position.count_by_token[Token::WhiteKing]);
+        assert_eq!(8,  position.count_by_token[Token::WhitePawn]);
+    }
+
+    #[test]
+    fn parse_fen_petrov() {
+        let position = Position::from_fen(
+            b"rnbqkb1r/ppp2ppp/8/3pP3/3Qn3/5N2/PPP2PPP/RNB1KB1R w KQkq d6 0 6",
+            Ruleset::Standard,
+        );
+
+        assert_eq!(Ruleset::Standard, position.ruleset);
+
+        assert_eq!(Token::WhitePawn,   position[Square::E5].unwrap());
+        assert_eq!(Token::BlackKnight, position[Square::E4].unwrap());
+
+        assert!(position.turn.is_white());
+
+        assert_eq!(CastlingRights::ANY, position.castling_rights);
+
+        assert_eq!(Square::D6, position.en_passant.unwrap());
+        assert_eq!(10,         position.ply);
+        assert_eq!(0,          position.halfmoves);
+
+        assert_eq!(30, position.bitboard().count());
+
+        assert_eq!(position.bitboard_for_color(Color::White),
+            (Rank::_1 | Rank::_2)
+                & (!Square::D1 & !Square::D2 & !Square::E2 & !Square::G1)
+                | (Square::D4 | Square::E5 | Square::F3)
+        );
+
+        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Piece::Rook));
+        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Token::BlackQueen));
+
+        assert_eq!(15, position.count_by_color[Color::White]);
+        assert_eq!(15, position.count_by_color[Color::Black]);
+        assert_eq!(1,  position.count_by_token[Token::WhiteKing]);
+        assert_eq!(7,  position.count_by_token[Token::WhitePawn]);
+    }
 }

@@ -2,6 +2,8 @@ mod fen;
 
 use stockfish_core::prelude::*;
 
+use std::ops::Index;
+
 #[allow(missing_copy_implementations)] // type is too large to want copying
 #[must_use]
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -106,5 +108,13 @@ impl Position {
     #[inline]
     pub fn bitboard_for_token(&self, token: Token) -> Bitboard {
         self.bb_by_color[token.color()] & self.bb_by_piece[token.piece()]
+    }
+}
+
+impl Index<Square> for Position {
+    type Output = Option<Token>;
+
+    fn index(&self, index: Square) -> &Self::Output {
+        self.board.index(index)
     }
 }
