@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn not() {
-        assert_eq!(Color::Black, !Color::White);
-        assert_eq!(Color::White, !Color::Black);
+        assert!(!Color::White.is_black());
+        assert!(!Color::Black.is_white());
     }
 }

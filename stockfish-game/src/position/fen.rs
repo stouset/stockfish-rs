@@ -377,7 +377,7 @@ mod tests {
         let fen  = b"w";
         let turn = parse_turn(fen);
 
-        assert_eq!(Color::White, turn);
+        assert!(turn.is_white());
     }
 
     #[test]

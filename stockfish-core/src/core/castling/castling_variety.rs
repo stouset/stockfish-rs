@@ -84,10 +84,10 @@ mod tests {
 
     #[test]
     fn color() {
-        assert_eq!(Color::White, CastlingVariety::WhiteKingside .color());
-        assert_eq!(Color::White, CastlingVariety::WhiteQueenside.color());
-        assert_eq!(Color::Black, CastlingVariety::BlackKingside .color());
-        assert_eq!(Color::Black, CastlingVariety::BlackQueenside.color());
+        assert!(CastlingVariety::WhiteKingside .color().is_white());
+        assert!(CastlingVariety::WhiteQueenside.color().is_white());
+        assert!(CastlingVariety::BlackKingside .color().is_black());
+        assert!(CastlingVariety::BlackQueenside.color().is_black());
     }
 
     #[test]
