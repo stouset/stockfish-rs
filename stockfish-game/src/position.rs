@@ -7,9 +7,11 @@ use stockfish_core::prelude::*;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Position {
     // basic board state
-    ruleset: Ruleset,
-    turn:    Color,
-    board:   Board,
+    ruleset:   Ruleset,
+    turn:      Color,
+    board:     Board,
+    ply:       u8,
+    halfmoves: u8,
 
     // castling state
     castling_paths:     [Option<CastlingPath>; CastlingVariety::COUNT],
@@ -34,8 +36,10 @@ impl Position {
     pub fn empty(ruleset: Ruleset) -> Self {
         Self {
             ruleset,
-            turn:  Color::White,
-            board: Board::EMPTY,
+            turn:      Color::White,
+            board:     Board::EMPTY,
+            ply:       0,
+            halfmoves: 0,
 
             castling_paths:     Default::default(),
             castling_by_square: [CastlingRights::default(); Square::COUNT],

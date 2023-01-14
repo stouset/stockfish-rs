@@ -8,6 +8,12 @@ impl Position {
     /// try to do our best, but no guarantee is made that the board state will
     /// be legal or consistent.
     pub fn from_fen(fen: &[u8], ruleset: Ruleset) -> Self {
+        // TODO: Implement a real parser with something like nom that actually
+        // implements the spec. We can't really return an error back to the user
+        // per the UCI protocol, but that's fine. We can error out in debug
+        // builds and just use the standard chess start position for release
+        // builds.
+
         // A FEN string defines a particular position using only the ASCII
         // character set.
         //
@@ -51,6 +57,8 @@ impl Position {
         let turn       = parse_turn(fields.next().unwrap_or_default());
         let castling   = parse_castling(fields.next().unwrap_or_default(), board);
         let en_passant = parse_en_passant(fields.next().unwrap_or_default(), turn);
+        let halfmoves  = parse_move_number(fields.next().unwrap_or_default());
+        let fullmoves  = parse_move_number(fields.next().unwrap_or_default());
 
         for (square, token) in board.iter() {
             position.emplace(token, square);
@@ -97,6 +105,10 @@ impl Position {
                 position.bitboard()
                     .omits(square.wrapping_sub(evil_turn.direction()))
         });
+
+        position.halfmoves = halfmoves;
+        position.ply       = fullmoves.saturating_sub(1) * 2
+            + u8::from(turn.is_black());
 
         position
     }
@@ -206,6 +218,13 @@ fn parse_en_passant(fen: &[u8], turn: Color) -> Option<Square> {
             (turn.is_white() && *r == Rank::_6) ||
             (turn.is_black() && *r == Rank::_3)
         }).map (|(f, r)| Square::new(f, r))
+}
+
+fn parse_move_number(fen: &[u8]) -> u8 {
+    // TODO: this parses values like "08", which is not to spec
+    str::parse(
+        std::str::from_utf8(fen).unwrap_or_default()
+    ).unwrap_or(0)
 }
 
 #[cfg(test)]
@@ -436,6 +455,11 @@ mod tests {
     }
 
     #[test]
+    fn parse_en_passant_none() {
+        assert_eq!(None, parse_en_passant(b"-", Color::Black));
+    }
+
+    #[test]
     fn parse_en_passant_good_rank() {
         assert_eq!(Some(Square::E6), parse_en_passant(b"e6", Color::White));
         assert_eq!(Some(Square::A6), parse_en_passant(b"a6", Color::White));
@@ -453,5 +477,28 @@ mod tests {
         assert_eq!(None, parse_en_passant(b"g6", Color::Black));
         assert_eq!(None, parse_en_passant(b"f7", Color::Black));
         assert_eq!(None, parse_en_passant(b"b8", Color::Black));
+    }
+
+    #[test]
+    fn parse_move_number_empty() {
+        assert_eq!(0, parse_move_number(b""));
+    }
+
+    #[test]
+    fn parse_move_number_digit() {
+        assert_eq!(4, parse_move_number(b"4"));
+    }
+
+    #[test]
+    fn parse_move_number_digits() {
+        assert_eq!(99, parse_move_number(b"99"));
+    }
+
+    #[test]
+    fn parse_move_number_malformed() {
+        assert_eq!(0, parse_move_number(b"x"));
+        assert_eq!(0, parse_move_number(b" "));
+        assert_eq!(0, parse_move_number(b"a1b"));
+        assert_eq!(0, parse_move_number(b"4a"));
     }
 }
