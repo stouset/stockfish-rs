@@ -7,13 +7,13 @@ adheres to [Semantic Versioning][semver].
 
 ## [Unreleased][https://github.com/stouset/stockfish-rs/tree/main]
 
-## [0.1.1][https://github.com/stouset/stockfish-rs/tree/v0.1.1] - 2023-01-13
+## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
 
 ### Fixed
 
 - Various fixes to the project README
 
-## [0.1.0][https://github.com/stouset/stockfish-rs/tree/v0.1.0] - 2023-01-13
+## [0.1.0][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.0] - 2023-01-13
 
 ### Added
 
