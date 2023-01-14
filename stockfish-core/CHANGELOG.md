@@ -7,6 +7,11 @@ adheres to [Semantic Versioning][semver].
 
 ## [Unreleased][https://github.com/stouset/stockfish-rs/tree/main]
 
+### Added
+
+- `File` and `Rank` now implement `BitOr` against themselves
+- `Bitboard` can now `BitAnd`, `BitOr`, and `BitXor` against `File` and `Rank`
+
 ## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
 
 ### Fixed

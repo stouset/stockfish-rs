@@ -323,6 +323,38 @@ impl const BitAndAssign<Square> for Bitboard {
     }
 }
 
+impl const BitAnd<File> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitand(self, rhs: File) -> Self::Output {
+        self.bitand(Self::from(rhs))
+    }
+}
+
+impl const BitAndAssign<File> for Bitboard {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: File) {
+        self.bitand_assign(Self::from(rhs));
+    }
+}
+
+impl const BitAnd<Rank> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitand(self, rhs: Rank) -> Self::Output {
+        self.bitand(Self::from(rhs))
+    }
+}
+
+impl const BitAndAssign<Rank> for Bitboard {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: Rank) {
+        self.bitand_assign(Self::from(rhs));
+    }
+}
+
 impl const BitOr<Self> for Bitboard {
     type Output = Self;
 
@@ -355,6 +387,38 @@ impl const BitOrAssign<Square> for Bitboard {
     }
 }
 
+impl const BitOr<File> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitor(self, rhs: File) -> Self::Output {
+        self.bitor(Self::from(rhs))
+    }
+}
+
+impl const BitOrAssign<File> for Bitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: File) {
+        self.bitor_assign(Self::from(rhs));
+    }
+}
+
+impl const BitOr<Rank> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitor(self, rhs: Rank) -> Self::Output {
+        self.bitor(Self::from(rhs))
+    }
+}
+
+impl const BitOrAssign<Rank> for Bitboard {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Rank) {
+        self.bitor_assign(Self::from(rhs));
+    }
+}
+
 impl const BitXor<Self> for Bitboard {
     type Output = Self;
 
@@ -383,6 +447,38 @@ impl const BitXor<Square> for Bitboard {
 impl const BitXorAssign<Square> for Bitboard {
     #[inline]
     fn bitxor_assign(&mut self, rhs: Square) {
+        self.bitxor_assign(Self::from(rhs));
+    }
+}
+
+impl const BitXor<File> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitxor(self, rhs: File) -> Self::Output {
+        self.bitxor(Self::from(rhs))
+    }
+}
+
+impl const BitXorAssign<File> for Bitboard {
+    #[inline]
+    fn bitxor_assign(&mut self, rhs: File) {
+        self.bitxor_assign(Self::from(rhs));
+    }
+}
+
+impl const BitXor<Rank> for Bitboard {
+    type Output = Self;
+
+    #[inline]
+    fn bitxor(self, rhs: Rank) -> Self::Output {
+        self.bitxor(Self::from(rhs))
+    }
+}
+
+impl const BitXorAssign<Rank> for Bitboard {
+    #[inline]
+    fn bitxor_assign(&mut self, rhs: Rank) {
         self.bitxor_assign(Self::from(rhs));
     }
 }

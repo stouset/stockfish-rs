@@ -47,6 +47,14 @@ impl const From<Square> for File {
     }
 }
 
+impl const BitOr<Self> for File {
+    type Output = Bitboard;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) | rhs
+    }
+}
+
 impl const BitOr<Rank> for File {
     type Output = Square;
 

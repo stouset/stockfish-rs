@@ -69,6 +69,14 @@ impl const IntoIterator for Rank {
     }
 }
 
+impl const BitOr<Self> for Rank {
+    type Output = Bitboard;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Bitboard::from(self) | rhs
+    }
+}
+
 impl const BitOr<File> for Rank {
     type Output = Square;
 
