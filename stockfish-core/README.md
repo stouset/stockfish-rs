@@ -1,13 +1,13 @@
 # stockfish-core
 
-Highly-optimized the core building blocks for implementing a chess engine.
+Highly-optimized core building blocks for implementing a chess engine.
 
-![Crate][badge-crate] ![Docs][badge-docs] ![License][badge-license] ![CI][badge-ci]
+[![Crate][badge-crate]][project-crate] [![Docs][badge-docs]][project-docs] [![License][badge-license]][project-license] [![CI][badge-ci]][project-ci]
 
 # Overview
 
-This is a component of `stockfish_rs`, which is an attempt to port the
-[Stockfish][stockfish] chess engine to Rust.
+This is a component of [stockfish-rs][stockfish-rs], which is an attempt to port
+the [Stockfish][stockfish] chess engine to Rust.
 
 Unlike other similar efforts, the goal of this project is to express as much of
 the logic in idiomatic Rust as possible. To this end, significant creative
@@ -27,16 +27,20 @@ stable version of Rust.
 
 # License
 
-This project is licensed under the [GNU GPL, Version 3][licence-gpl3].
+This project is licensed under the [GNU GPL, Version 3][project-license].
 
 The choice of license is required due to this project's origins as a port of
 [Stockfish][stockfish].
 
+[project-ci]:      https://app.codecov.io/gh/stouset/stockfish-rs/tree/main/stockfish-core
+[project-crate]:   https://crates.io/crates/stockfish-core
+[project-docs]:    https://docs.rs/stockfish-core
+[project-license]: https://github.com/stouset/stockfish-rs/blob/main/LICENSE
+
 [badge-ci]:      https://img.shields.io/codecov/c/github/stouset/stockfish-rs
-[badge-crate]:   https://img.shields.io/crates/v/stockfish_core
-[badge-docs]:    https://img.shields.io/docsrs/stockfish_core
-[badge-license]: https://img.shields.io/crates/l/stockfish_core
+[badge-crate]:   https://img.shields.io/crates/v/stockfish-core
+[badge-docs]:    https://img.shields.io/docsrs/stockfish-core
+[badge-license]: https://img.shields.io/crates/l/stockfish-core
 
-[license-gpl3]: https://github.com/stouset/stockfish-rs/blob/main/LICENSE
-
-[stockfish]: http://github.com/official-stockfish/Stockfish/
+[stockfish]:    http://github.com/official-stockfish/Stockfish/
+[stockfish-rs]: http://github.com/stouset/stockfish-rs
