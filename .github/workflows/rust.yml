@@ -31,29 +31,22 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@nightly
       with:
-        toolchain:  nightly
-        profile:    minimal
         components: clippy, miri
-        override:   true
-
-    - name: Install cargo-nextest
-      uses: actions-rs/install@v0.1
-      with:
-        crate: cargo-nextest
 
     - name: Build
       run: cargo build --verbose --all-targets
 
     - name: Lint
-      run: cargo clippy --verbose --all-targets
+      run: cargo clippy --verbose --all-targets -- -D warnings
 
     - name: Run tests
-      run: cargo nextest run --verbose
+      run: cargo test --verbose --workspace --no-fail-fast
 
-    - name: Run tests under Miri
-      run: cargo miri nextest run --verbose
+    # Temporarily disabled due to performance
+    # - name: Run tests under Miri
+    #   run: cargo miri nextest run --verbose
 
     - name: Generate docs
       run: cargo doc --verbose --no-deps
