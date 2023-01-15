@@ -5,6 +5,7 @@ use std::ops::{BitOr, Not};
 enumeration! {
     /// A file, A through H, on a chess board. The variants for this enum are
     /// prefixed with an underscore to mimic those of [`Rank`].
+    #[derive_const(Ord, PartialOrd)]
     pub File, [ _A, _B, _C, _D, _E, _F, _G, _H ]
 }
 

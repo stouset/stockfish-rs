@@ -4,7 +4,7 @@ macro_rules! enumeration {
     ($(#[$outer:meta])* $vis:vis $name:ident, [$($var:ident),+ $(,)?]) => {
         $(#[$outer])*
         #[derive(Copy, Debug, Eq)]
-        #[derive_const(Clone, PartialEq, Ord, PartialOrd)]
+        #[derive_const(Clone, PartialEq)]
         #[must_use]
         #[repr(u8)]
         $vis enum $name {
@@ -124,13 +124,6 @@ macro_rules! enumeration {
                 for v1 in $name::iter() {
                     assert_eq!(v1.clone(), v1);
                     assert_eq!(v1.name(),  format!("{:?}", v1));
-
-                    for v2 in $name::iter() {
-                        assert_eq!(
-                            v1.partial_cmp(&v2).unwrap(),
-                            v1.cmp(&v2)
-                        );
-                    }
                 }
             }
 

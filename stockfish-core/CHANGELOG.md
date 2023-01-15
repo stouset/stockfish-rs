@@ -21,6 +21,8 @@ adheres to [Semantic Versioning][semver].
 ### Removed
 
 - `Square` no longer implements `std::iter::Step`
+- Core types other than `File` and `Rank` no longer implement `PartialOrd` and
+  `Ord`
 
 ## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
 

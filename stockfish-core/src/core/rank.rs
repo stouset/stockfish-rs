@@ -6,6 +6,7 @@ enumeration! {
     /// A rank, 1 through 8, on a chess board. The variants for this enum are
     /// prefixed with an underscore since identifiers may not begin with a
     /// number.
+    #[derive_const(Ord, PartialOrd)]
     pub Rank, [
         _1, _2, _3, _4, _5, _6, _7, _8,
     ]
