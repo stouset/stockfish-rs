@@ -18,6 +18,10 @@ adheres to [Semantic Versioning][semver].
   but the type of their `IntoIterator` is changed to
   `std::array::IntoIter<Square, 8>`
 
+### Removed
+
+- `Square` no longer implements `std::iter::Step`
+
 ## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
 
 ### Fixed

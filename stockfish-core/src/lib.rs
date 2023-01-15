@@ -84,7 +84,6 @@
 #![feature(macro_metavar_expr)]
 #![feature(no_coverage)]
 #![feature(rustdoc_missing_doc_code_examples)]
-#![feature(step_trait)]
 #![feature(strict_provenance)]
 
 #[cfg(test)]
