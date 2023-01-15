@@ -190,9 +190,9 @@ mod tests {
             R N B Q K B N R
         );
 
-        assert_eq!(Some(Square::B2), board.search([Square::B2],           Token::WhitePawn));
-        assert_eq!(Some(Square::A7), board.search(Square::A1..Square::H8, Token::BlackPawn));
-        assert_eq!(None,             board.search(Square::A2..Square::H2, Token::BlackKing));
+        assert_eq!(Some(Square::B2), board.search([Square::B2],         Token::WhitePawn));
+        assert_eq!(Some(Square::A7), board.search(Square::iter(),       Token::BlackPawn));
+        assert_eq!(None,             board.search(Rank::_2.into_iter(), Token::BlackKing));
     }
 }
 
@@ -239,7 +239,7 @@ macro_rules! board {
         $a1:tt $b1:tt $c1:tt $d1:tt $e1:tt $f1:tt $g1:tt $h1:tt
     ) => ( {
         let mut board = Board::EMPTY;
-        let mut iter  = Square::A1..=Square::H8;
+        let mut iter  = Square::iter();
 
         board_tokens!(board, iter,
             $a1 $b1 $c1 $d1 $e1 $f1 $g1 $h1

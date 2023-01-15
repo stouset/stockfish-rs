@@ -30,6 +30,28 @@ impl File {
     }
 }
 
+impl IntoIterator for File {
+    type Item     = Square;
+    type IntoIter = std::array::IntoIter<Square, 8>;
+
+    #[inline]
+    #[must_use]
+    fn into_iter(self) -> Self::IntoIter {
+        use Square as S;
+
+        match self {
+            Self::_A => [S::A1, S::A2, S::A3, S::A4, S::A5, S::A6, S::A7, S::A8],
+            Self::_B => [S::B1, S::B2, S::B3, S::B4, S::B5, S::B6, S::B7, S::B8],
+            Self::_C => [S::C1, S::C2, S::C3, S::C4, S::C5, S::C6, S::C7, S::C8],
+            Self::_D => [S::D1, S::D2, S::D3, S::D4, S::D5, S::D6, S::D7, S::D8],
+            Self::_E => [S::E1, S::E2, S::E3, S::E4, S::E5, S::E6, S::E7, S::E8],
+            Self::_F => [S::F1, S::F2, S::F3, S::F4, S::F5, S::F6, S::F7, S::F8],
+            Self::_G => [S::G1, S::G2, S::G3, S::G4, S::G5, S::G6, S::G7, S::G8],
+            Self::_H => [S::H1, S::H2, S::H3, S::H4, S::H5, S::H6, S::H7, S::H8],
+        }.into_iter()
+    }
+}
+
 impl const From<File> for char {
     #[inline]
     fn from(value: File) -> Self {
@@ -98,6 +120,14 @@ mod tests {
     fn file_bitor_rank() {
         for square in Square::iter() {
             assert_eq!(square.file() | square.rank(), square);
+        }
+    }
+
+    #[test]
+    fn file_into_iter() {
+        for file in File::iter() {
+            assert_eq!(8, file.into_iter().count());
+            assert!(file.into_iter().is_sorted_by_key(Square::file));
         }
     }
 }

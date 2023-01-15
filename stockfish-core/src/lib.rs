@@ -80,6 +80,7 @@
 #![feature(const_try)]
 #![feature(const_slice_index)]
 #![feature(derive_const)]
+#![feature(is_sorted)]
 #![feature(macro_metavar_expr)]
 #![feature(no_coverage)]
 #![feature(rustdoc_missing_doc_code_examples)]
