@@ -18,7 +18,6 @@ enumeration! {
 
 impl Square {
     /// Creates a new square of the provided `file` and `rank`.
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(file: File, rank: Rank) -> Self {
         let f: u8 = file.into();
@@ -71,7 +70,6 @@ impl Square {
 
     /// Returns this square from the perspective of flipping the board
     /// left-to-right.
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_file(self) -> Self {
         let s = self.as_u8() ^ Self::H1.as_u8();
@@ -84,7 +82,6 @@ impl Square {
 
     /// Returns this square from the perspective of flipping the board
     /// top-to-bottom.
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn flip_rank(self) -> Self {
         let s = self.as_u8() ^ Self::A8.as_u8();
@@ -108,7 +105,6 @@ impl Square {
     /// assert_eq!(Square::B6, Square::B3.from_perspective(Color::Black));
     /// assert_eq!(Square::C1, Square::C8.from_perspective(Color::Black));
     /// ```
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn from_perspective(self, color: Color) -> Self {
         // flip all the bits in the rank portion of the square if the color
@@ -158,7 +154,6 @@ impl Square {
     /// assert_eq!(Square::D2, Square::D8.wrapping_add(Direction::NN));
     /// assert_eq!(Square::H8, Square::A2.wrapping_add(Direction::SSW));
     /// ```
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub fn wrapping_add(self, dir: Direction) -> Self {
         // TODO: can this logic be implemented faster?

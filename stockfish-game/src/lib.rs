@@ -61,7 +61,8 @@
 
 // Lint Exceptions
 #![allow(unstable_features)]
-#![cfg_attr(test, allow(clippy::missing_const_for_fn))]
+#![cfg_attr(test,             allow(clippy::missing_const_for_fn))]
+#![cfg_attr(debug_assertions, allow(clippy::missing_panics_doc))]
 
 // TODO: remove
 #![allow(missing_docs)]

@@ -46,7 +46,6 @@ impl Token {
     }
 
     /// Instantiates a [`Token`] from a [`Color`] and [`Piece`].
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn new(color: Color, piece: Piece) -> Self {
         let repr = piece.as_u8() << 1 | color.as_u8();
@@ -58,7 +57,6 @@ impl Token {
     }
 
     /// Returns the [`Color`] of the [`Token`].
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn color(self) -> Color {
         let color = self.as_u8() & 0b1;
@@ -70,7 +68,6 @@ impl Token {
     }
 
     /// Returns the type of [`Piece`] of the [`Token`].
-    #[allow(clippy::missing_panics_doc)] // false positive
     #[inline]
     pub const fn piece(self) -> Piece {
         let piece = self.as_u8() >> 1;
