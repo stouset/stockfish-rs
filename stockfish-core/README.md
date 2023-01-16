@@ -2,7 +2,7 @@
 
 Highly-optimized core building blocks for implementing a chess engine.
 
-[![Crate][badge-crate]][project-crate] [![Docs][badge-docs]][project-docs] [![License][badge-license]][project-license] [![CI][badge-ci]][project-ci]
+[![Crate][badge-crate]][project-crate] [![Build][badge-ci]][project-ci] [![Docs][badge-docs]][project-docs] [![License][badge-license]][project-license] [![Coverage][badge-coverage]][project-coverage]
 
 # Overview
 
@@ -32,15 +32,17 @@ This project is licensed under the [GNU GPL, Version 3][project-license].
 The choice of license is required due to this project's origins as a port of
 [Stockfish][stockfish].
 
-[project-ci]:      https://app.codecov.io/gh/stouset/stockfish-rs/tree/main/stockfish-core
-[project-crate]:   https://crates.io/crates/stockfish-core
-[project-docs]:    https://docs.rs/stockfish-core
-[project-license]: https://github.com/stouset/stockfish-rs/blob/main/LICENSE
+[project-ci]:       https://github.com/stouset/stockfish-rs/actions/workflows/rust.yml
+[project-coverage]: https://app.codecov.io/gh/stouset/stockfish-rs/tree/main/stockfish-core
+[project-crate]:    https://crates.io/crates/stockfish-core
+[project-docs]:     https://docs.rs/stockfish-core
+[project-license]:  https://github.com/stouset/stockfish-rs/blob/main/LICENSE
 
-[badge-ci]:      https://img.shields.io/codecov/c/github/stouset/stockfish-rs
-[badge-crate]:   https://img.shields.io/crates/v/stockfish-core
-[badge-docs]:    https://img.shields.io/docsrs/stockfish-core
-[badge-license]: https://img.shields.io/crates/l/stockfish-core
+[badge-ci]:       https://img.shields.io/github/actions/workflow/status/stouset/stockfish-rs/rust.yml
+[badge-coverage]: https://img.shields.io/codecov/c/github/stouset/stockfish-rs
+[badge-crate]:    https://img.shields.io/crates/v/stockfish-core
+[badge-docs]:     https://img.shields.io/docsrs/stockfish-core
+[badge-license]:  https://img.shields.io/crates/l/stockfish-core
 
 [stockfish]:    http://github.com/official-stockfish/Stockfish/
 [stockfish-rs]: http://github.com/stouset/stockfish-rs
