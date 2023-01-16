@@ -78,9 +78,9 @@ impl Piece {
         }
     }
 
-    /// Returns a bitboard containing all for a piece on the given `square`.
-    /// This is equivalent to computing the piece's `attacks` on an empty
-    /// board.
+    /// Returns a bitboard containing all possible moves for a piece on a given
+    /// `square`. This is equivalent to computing the piece's `attacks` on an
+    /// empty board.
     #[inline]
     pub const fn moves(self, square: Square) -> Bitboard {
         self.attacks(square, Bitboard::EMPTY)
