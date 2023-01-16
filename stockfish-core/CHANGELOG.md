@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog], and this project
 adheres to [Semantic Versioning][semver].
 
-## [Unreleased][https://github.com/stouset/stockfish-rs/tree/main]
+## [Unreleased](https://github.com/stouset/stockfish-rs/tree/main/stockfish-core)
 
-## [0.2.0][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.2.0] - 2023-01-16
+### Fixed
+
+- Fixed errors in CHANGELOG formatting
+
+## [0.2.0](https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.2.0/stockfish-core) - 2023-01-16
 
 ### Changed
 
@@ -42,13 +46,13 @@ adheres to [Semantic Versioning][semver].
 
 - Stricter hygeine for `unsafe_optimization` and `enumeration` macros
 
-## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
+## [0.1.1](https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1/stockfish-core) - 2023-01-13
 
 ### Fixed
 
 - Various fixes to the project README
 
-## [0.1.0][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.0] - 2023-01-13
+## [0.1.0](https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.0/stockfish-core) - 2023-01-13
 
 ### Added
 
