@@ -28,6 +28,7 @@ bytemuck = { version = '1', features = ['extern_crate_alloc', 'min_const_generic
 
 [dev-dependencies]
 criterion = { version = '0.4', features = ['html_reports'] }
+paste     = '1'
 
 [[bench]]
 name = 'accelerate'

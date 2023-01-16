@@ -18,6 +18,10 @@ adheres to [Semantic Versioning][semver].
   but the type of their `IntoIterator` is changed to
   `std::array::IntoIter<Square, 8>`
 
+### Fixed
+
+- Stricter hygeine for `unsafe_optimization` and `enumeration` macros
+
 ### Removed
 
 - `Square` no longer implements `std::iter::Step`
