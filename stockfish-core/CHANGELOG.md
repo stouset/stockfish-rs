@@ -7,6 +7,8 @@ adheres to [Semantic Versioning][semver].
 
 ## [Unreleased][https://github.com/stouset/stockfish-rs/tree/main]
 
+## [0.2.0][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.2.0] - 2023-01-16
+
 ### Changed
 
 - `Token` and `Piece` have had their meanings swapped to better reflect the
