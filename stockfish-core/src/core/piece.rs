@@ -124,31 +124,3 @@ impl const From<Piece> for Token {
         piece.token()
     }
 }
-
-
-// impl const From<Token> for usize {
-//     fn from(p: Token) -> Self {
-//         let c:  usize = p.color().into();
-//         let pt: usize = p.piece_type().into();
-
-//         PieceType::COUNT * c + pt
-//     }
-// }
-
-// impl<T> const std::ops::Index<Token> for [T; Token::COUNT] {
-//     type Output = T;
-
-//     #[inline]
-//     #[must_use]
-//     fn index(&self, index: Token) -> &Self::Output {
-//         self.index(usize::from(index))
-//     }
-// }
-
-// impl<T> const std::ops::IndexMut<Token> for [T; Token::COUNT] {
-//     #[inline]
-//     #[must_use]
-//     fn index_mut(&mut self, index: Token) -> &mut Self::Output {
-//         self.index_mut(usize::from(index))
-//     }
-// }
