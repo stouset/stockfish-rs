@@ -1,0 +1,6 @@
+# update the CHANGELOG to indicate changes published in this release
+[[pre-release-replacements]]
+file    = "CHANGELOG.md"
+search  = "## \\[Unreleased\\]\\(https://github.com/stouset/stockfish-rs/tree/main/stockfish-core\\)"
+replace = "## [Unreleased](https://github.com/stouset/stockfish-rs/tree/main/stockfish-core)\n\n## [{{version}}](https://github.com/stouset/stockfish-rs/tree/{{tag_name}}/stockfish-core) - {{date}}"
+exactly = 1
