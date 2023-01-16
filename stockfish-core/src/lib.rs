@@ -150,6 +150,12 @@ pub mod prelude {
     pub use crate::core::File;
 
     #[doc(no_inline)]
+    pub use crate::core::Move;
+
+    #[doc(no_inline)]
+    pub use crate::core::MoveType;
+
+    #[doc(no_inline)]
     pub use crate::core::Piece;
 
     #[doc(no_inline)]

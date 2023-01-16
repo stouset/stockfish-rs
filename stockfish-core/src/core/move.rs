@@ -1,30 +1,41 @@
 use crate::prelude::*;
 
-// A move needs 16 bits to be stored
-//
-// bit  0- 5: destination square (from 0 to 63)
-// bit  6-11: origin square (from 0 to 63)
-// bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
-// bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
-// NOTE: en passant bit is set only when a pawn can be captured
-//
-// Special cases are MOVE_NONE and MOVE_NULL. We can sneak these in because in
-// any normal move destination square is always different from origin square
-// while MOVE_NONE and MOVE_NULL have the same origin and destination square.
+/// Encodes a move from one square to another on a chess board.
+///
+/// Users of this struct must be aware of and observe the following rules and
+/// behavior:
+///
+/// * a move *must not* go from an origin to the same destination
+/// * castling is encoded as a move from the king's starting square to the
+///   rook's starting square
+/// * the [`Move::promotion`] must not be called and for moves whose type is
+///   not [`MoveType::Promotion`]
 #[derive(Copy, Debug, Eq, PartialEq)]
 #[derive_const(Clone)]
 #[must_use]
 pub struct Move(u16);
 
 enumeration! {
+    /// Encodes the type of [`Move`] being made.
+    ///
+    /// Note that a [`MoveType::EnPassant`] represents the *capture* of a pawn
+    /// en passant, not a two square pawn movement.
     pub MoveType, [ Normal, Promotion, EnPassant, Castling ]
 }
 
 enumeration! {
+    /// Promotions can only result in four of the possible types of piece, so we
+    /// create an enum of them specifically for the sake of bit-packing.
     MovePromotion, [ Knight, Bishop, Rook, Queen ]
 }
 
 impl Move {
+    // A move needs 16 bits to be stored.
+    //
+    // * bit  0- 5: destination square (from 0 to 63)
+    // * bit  6-11: origin square (from 0 to 63)
+    // * bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
+    // * bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
     const DESTINATION_BITS: u8 = 6;
     const ORIGIN_BITS:      u8 = 6;
     const PROMOTION_BITS:   u8 = 2;
@@ -40,6 +51,7 @@ impl Move {
     const PROMOTION_MASK:   u8 = (1 << Self::PROMOTION_BITS) - 1;
     const MOVE_TYPE_MASK:   u8 = (1 << Self::MOVE_TYPE_BITS) - 1;
 
+    /// Encodes a normal move from an `origin` square to a `destination` square.
     pub const fn new(origin: Square, destination: Square) -> Self {
         // TODO: in release builds, if the origin is the destination, this will
         // produce logic errors; can we catch this without a performance
@@ -61,6 +73,8 @@ impl Move {
         )
     }
 
+    /// Encodes a move of a pawn from an `origin` square to a `destination`
+    /// square that results in promotion to a knight.
     pub const fn new_promote_knight(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -69,6 +83,8 @@ impl Move {
         )
     }
 
+    /// Encodes a move of a pawn from an `origin` square to a `destination`
+    /// square that results in promotion to a bishop.
     pub const fn new_promote_bishop(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -77,6 +93,8 @@ impl Move {
         )
     }
 
+    /// Encodes a move of a pawn from an `origin` square to a `destination`
+    /// square that results in promotion to a rook.
     pub const fn new_promote_rook(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -85,6 +103,8 @@ impl Move {
         )
     }
 
+    /// Encodes a move of a pawn from an `origin` square to a `destination`
+    /// square that results in promotion to a queen.
     pub const fn new_promote_queen(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -93,13 +113,18 @@ impl Move {
         )
     }
 
-    pub const fn new_en_passant(origin: Square, destination: Square) -> Self {
+    /// Encodes the capture of a pawn en passant by a piece starting on
+    /// `origin` and ending on the `pawn`'s square.
+    pub const fn new_en_passant(origin: Square, pawn: Square) -> Self {
         Self(
-            Self::new(origin, destination).0
+            Self::new(origin, pawn).0
                 | ((MoveType::EnPassant as u16) << Self::MOVE_TYPE_SHIFT)
         )
     }
 
+    /// Encodes castling between `king` and a `rook` on their respective
+    /// starting squares. The destination squares must be inferred by the rules
+    /// of castling.
     pub const fn new_castling(king: Square, rook: Square) -> Self {
         Self(
             Self::new(king, rook).0
@@ -107,6 +132,7 @@ impl Move {
         )
     }
 
+    /// Returns the square the moving piece began on.
     pub const fn origin(self) -> Square {
         let bits = self.extract(Self::ORIGIN_SHIFT, Self::ORIGIN_MASK);
 
@@ -116,6 +142,12 @@ impl Move {
         )
     }
 
+    /// For all types of move other than [`MoveType::Castling`], returns the
+    /// square the piece finishes on.
+    ///
+    /// For castling, encodes the position the rook begins on. The actual
+    /// destination square of the rook and king must be inferred by the rules of
+    /// castling.
     pub const fn destination(self) -> Square {
         let bits = self.extract(Self::DESTINATION_SHIFT, Self::DESTINATION_MASK);
 
@@ -125,6 +157,7 @@ impl Move {
         )
     }
 
+    /// Returns the type of move encoded.
     pub const fn move_type(self) -> MoveType {
         let bits = self.extract(Self::MOVE_TYPE_SHIFT, Self::MOVE_TYPE_MASK);
 
@@ -134,10 +167,24 @@ impl Move {
         )
     }
 
+    /// Returns the type of piece a pawn is being promoted to during this move.
+    ///
+    /// This method *must not* be called unless the move is a
+    /// [`MoveType::Promotion`]. For all other move types, the result of this
+    /// method is undefined and must not be expected to produce reliable
+    /// behavior.
     pub const fn promotion(self) -> Piece {
         debug_assert!(MoveType::Promotion == self.move_type());
 
-        let bits = self.extract(Self::PROMOTION_SHIFT, Self::PROMOTION_MASK) + 1;
+        // We exclude pawns and kings from the type of piece that may be
+        // promoted to (so that this information fits in two bits), so we need
+        // to add the value of a knight in order to get the value of the piece
+        // being promoted to.
+        //
+        // This conversion could/should be implemented on the MovePromotion enum
+        // itself, but given that it's *only* used here that's overkill.
+        let bits = self.extract(Self::PROMOTION_SHIFT, Self::PROMOTION_MASK)
+            + Piece::Knight.as_u8();
 
         unsafe_optimization!(
             Piece::from_u8(bits).unwrap(),
@@ -155,6 +202,14 @@ impl Move {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn derives() {
+        let mv = Move::new(Square::A1, Square::A2);
+
+        assert_eq!(mv, mv.clone());
+        assert_ne!("", format!("{mv:?}"));
+    }
 
     #[test]
     fn new() {

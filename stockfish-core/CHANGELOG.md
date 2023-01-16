@@ -11,6 +11,8 @@ adheres to [Semantic Versioning][semver].
 
 - `File` and `Rank` now implement `BitOr` against themselves
 - `Bitboard` can now `BitAnd`, `BitOr`, and `BitXor` against `File` and `Rank`
+- `Move` core type added, which encodes details about a move between two
+  squares.
 
 ### Changed
 
