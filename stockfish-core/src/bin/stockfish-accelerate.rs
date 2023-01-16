@@ -86,12 +86,12 @@ fn generate_between() -> [[Bitboard; Square::COUNT]; Square::COUNT] {
     between
 }
 
-fn generate_pseudo_attacks() -> [[Bitboard; Square::COUNT]; Piece::COUNT] {
-    let mut pseudo_attacks = [[Bitboard::EMPTY; Square::COUNT]; Piece::COUNT];
+fn generate_pseudo_attacks() -> [[Bitboard; Square::COUNT]; Token::COUNT] {
+    let mut pseudo_attacks = [[Bitboard::EMPTY; Square::COUNT]; Token::COUNT];
 
-    for piece in Piece::iter().skip(1) {
+    for token in Token::iter().skip(1) {
         for square in Square::iter() {
-            pseudo_attacks[piece][square] = computed::pseudo_attacks(piece, square);
+            pseudo_attacks[token][square] = computed::pseudo_attacks(token, square);
         }
     }
 

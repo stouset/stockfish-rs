@@ -60,8 +60,8 @@ impl Position {
         let halfmoves  = parse_move_number(fields.next().unwrap_or_default());
         let fullmoves  = parse_move_number(fields.next().unwrap_or_default());
 
-        for (square, token) in board.iter() {
-            position.emplace(token, square);
+        for (square, piece) in board.iter() {
+            position.emplace(piece, square);
         }
 
         position.turn            = turn;
@@ -86,8 +86,8 @@ impl Position {
         position.en_passant = en_passant.filter(|square| {
             let good_turn = turn;
             let evil_turn = !turn;
-            let good_pawn = Token::new(good_turn, Piece::Pawn);
-            let evil_pawn = Token::new(evil_turn, Piece::Pawn);
+            let good_pawn = Piece::new(good_turn, Token::Pawn);
+            let evil_pawn = Piece::new(evil_turn, Token::Pawn);
 
             // "the active side having a pawn threatening the en passant square"
             // is identical to "a hypothetical opposing pawn *on* the en passant
@@ -137,14 +137,14 @@ fn parse_board(bytes: &[u8]) -> Board {
             // number of files
             b'1'..=b'8' => (origin, square + (byte - b'0') as usize),
 
-            // any other token should be treated as a piece
+            // any other byte should be treated as a piece
             _ => {
                 // TODO: not overflowing the board or rank should be
                 // validated on release builds by returning a result
                 debug_assert!(square          < 64);
                 debug_assert!(square - origin < 8);
 
-                board[square] = Token::from_fen(byte);
+                board[square] = Piece::from_fen(byte);
 
                 (origin, square + 1)
             }
@@ -170,8 +170,8 @@ fn parse_castling(bytes: &[u8], board: Board) -> [Option<CastlingPath>; 4] {
 
     for byte in bytes {
         let color = if byte.is_ascii_uppercase() { Color::White } else { Color::Black };
-        let king  = Token::new(color, Piece::King);
-        let rook  = Token::new(color, Piece::Rook);
+        let king  = Piece::new(color, Token::King);
+        let rook  = Piece::new(color, Token::Rook);
         let rank  = color.rank();
 
         // TODO: this iterates over the board which is probably fine for setting
@@ -511,8 +511,8 @@ mod tests {
 
         assert_eq!(Ruleset::Standard, position.ruleset);
 
-        assert_eq!(Token::WhitePawn,   position[Square::A2].unwrap());
-        assert_eq!(Token::BlackBishop, position[Square::F8].unwrap());
+        assert_eq!(Piece::WhitePawn,   position[Square::A2].unwrap());
+        assert_eq!(Piece::BlackBishop, position[Square::F8].unwrap());
 
         assert!(position.turn.is_white());
 
@@ -526,13 +526,13 @@ mod tests {
 
         assert_eq!(Rank::_1 | Rank::_2,        position.bitboard_for_color(Color::White));
         assert_eq!(Rank::_7 | Rank::_8,        position.bitboard_for_color(Color::Black));
-        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Piece::Rook));
-        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Token::BlackQueen));
+        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Token::Rook));
+        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Piece::BlackQueen));
 
         assert_eq!(16, position.count_by_color[Color::White]);
         assert_eq!(16, position.count_by_color[Color::Black]);
-        assert_eq!(1,  position.count_by_token[Token::WhiteKing]);
-        assert_eq!(8,  position.count_by_token[Token::WhitePawn]);
+        assert_eq!(1,  position.count_by_token[Piece::WhiteKing]);
+        assert_eq!(8,  position.count_by_token[Piece::WhitePawn]);
     }
 
     #[test]
@@ -544,8 +544,8 @@ mod tests {
 
         assert_eq!(Ruleset::Standard, position.ruleset);
 
-        assert_eq!(Token::WhitePawn,   position[Square::E5].unwrap());
-        assert_eq!(Token::BlackKnight, position[Square::E4].unwrap());
+        assert_eq!(Piece::WhitePawn,   position[Square::E5].unwrap());
+        assert_eq!(Piece::BlackKnight, position[Square::E4].unwrap());
 
         assert!(position.turn.is_white());
 
@@ -563,12 +563,12 @@ mod tests {
                 | (Square::D4 | Square::E5 | Square::F3)
         );
 
-        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Piece::Rook));
-        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Token::BlackQueen));
+        assert_eq!(Bitboard::CORNERS,          position.bitboard_for_piece(Token::Rook));
+        assert_eq!(Bitboard::from(Square::D8), position.bitboard_for_token(Piece::BlackQueen));
 
         assert_eq!(15, position.count_by_color[Color::White]);
         assert_eq!(15, position.count_by_color[Color::Black]);
-        assert_eq!(1,  position.count_by_token[Token::WhiteKing]);
-        assert_eq!(7,  position.count_by_token[Token::WhitePawn]);
+        assert_eq!(1,  position.count_by_token[Piece::WhiteKing]);
+        assert_eq!(7,  position.count_by_token[Piece::WhitePawn]);
     }
 }

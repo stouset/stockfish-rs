@@ -4,37 +4,37 @@ use std::iter::IntoIterator;
 use std::ops::{Index, IndexMut};
 
 /// A [`Board`] is an array of [`Square`]s (A1, B1, C1, ..., F8, G8, H8) that
-/// may optionally contain a [`Token`].
+/// may optionally contain a [`Piece`].
 #[derive(Copy, Eq, PartialEq)]
 #[derive_const(Clone)]
 #[must_use]
-pub struct Board([Option<Token>; Square::COUNT]);
+pub struct Board([Option<Piece>; Square::COUNT]);
 
 impl Board {
-    /// An empty chess board containing no [`Token`]s.
+    /// An empty chess board containing no [`Piece`]s.
     pub const EMPTY: Self = Self([None; Square::COUNT]);
 
     /// Returns an iterator over all occupied squares on the board.
-    pub fn iter(&self) -> impl Iterator<Item = (Square, Token)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (Square, Piece)> + '_ {
         Square::iter().filter_map(|s| self[s].map(|t| (s, t)))
     }
 
-    /// If the given [`Token`] is on the [`Board`], returns the [`Square`] it
-    /// resides on. If no such piece exists, returns [`None`].
+    /// If the given [`Piece`] is on the [`Board`], returns the [`Square`] it
+    /// resides on. If no such token exists, returns [`None`].
     ///
     /// Note that this function by necessity iterates over every [`Square`]
-    /// until the piece is found. It should be used judiciously (or not at all)
+    /// until the token is found. It should be used judiciously (or not at all)
     /// in performance-sensitive situations.
     #[must_use]
-    pub fn search<I: IntoIterator<Item = Square>>(&self, squares: I, token: Token) -> Option<Square> {
-        squares.into_iter().find(|s| self[*s] == Some(token))
+    pub fn search<I: IntoIterator<Item = Square>>(&self, squares: I, piece: Piece) -> Option<Square> {
+        squares.into_iter().find(|s| self[*s] == Some(piece))
     }
 }
 
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it
 // allows for a convenient implementation of parsing a chess board from FEN
 impl const Index<usize> for Board {
-    type Output = Option<Token>;
+    type Output = Option<Piece>;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.0.index(index)
@@ -50,7 +50,7 @@ impl const IndexMut<usize> for Board {
 }
 
 impl const Index<Square> for Board {
-    type Output = Option<Token>;
+    type Output = Option<Piece>;
 
     fn index(&self, index: Square) -> &Self::Output {
         self.index(index.as_usize())
@@ -74,9 +74,9 @@ impl std::fmt::Debug for Board {
 
             for file in File::iter() {
                 let square = Square::new(file, rank);
-                let token  = self[square];
+                let piece  = self[square];
 
-                match token {
+                match piece {
                     Some(t) => write!(f, " {} |", char::from(t))?,
                     None    => write!(f, "   |")?,
                 }
@@ -166,14 +166,14 @@ mod tests {
 
         assert_eq!(
             vec![
-                (Square::E1, Token::WhiteKing),
-                (Square::A5, Token::BlackPawn),
-                (Square::C8, Token::BlackBishop),
-                (Square::G8, Token::BlackKing),
-                (Square::H8, Token::BlackRook),
+                (Square::E1, Piece::WhiteKing),
+                (Square::A5, Piece::BlackPawn),
+                (Square::C8, Piece::BlackBishop),
+                (Square::G8, Piece::BlackKing),
+                (Square::H8, Piece::BlackRook),
             ],
 
-            board.iter().collect::<Vec<(Square, Token)>>()
+            board.iter().collect::<Vec<(Square, Piece)>>()
         );
     }
 
@@ -190,9 +190,9 @@ mod tests {
             R N B Q K B N R
         );
 
-        assert_eq!(Some(Square::B2), board.search([Square::B2],         Token::WhitePawn));
-        assert_eq!(Some(Square::A7), board.search(Square::iter(),       Token::BlackPawn));
-        assert_eq!(None,             board.search(Rank::_2.into_iter(), Token::BlackKing));
+        assert_eq!(Some(Square::B2), board.search([Square::B2],         Piece::WhitePawn));
+        assert_eq!(Some(Square::A7), board.search(Square::iter(),       Piece::BlackPawn));
+        assert_eq!(None,             board.search(Rank::_2.into_iter(), Piece::BlackKing));
     }
 }
 
@@ -241,7 +241,7 @@ macro_rules! board {
         let mut board = Board::EMPTY;
         let mut iter  = Square::iter();
 
-        board_tokens!(board, iter,
+        board_pieces!(board, iter,
             $a1 $b1 $c1 $d1 $e1 $f1 $g1 $h1
             $a2 $b2 $c2 $d2 $e2 $f2 $g2 $h2
             $a3 $b3 $c3 $d3 $e3 $f3 $g3 $h3
@@ -259,15 +259,15 @@ macro_rules! board {
 #[allow(clippy::module_name_repetitions)]
 #[doc(hidden)]
 #[macro_export]
-macro_rules! board_tokens {
-    ( $board:ident, $iter:expr, _ $($tokens:tt)* ) => (
+macro_rules! board_pieces {
+    ( $board:ident, $iter:expr, _ $($pieces:tt)* ) => (
         $board[$iter.next().unwrap()] = None;
-        board_tokens!($board, $iter, $($tokens)*);
+        board_pieces!($board, $iter, $($pieces)*);
     );
 
-    ( $board:ident, $iter:expr, $token:tt $($tokens:tt)* ) => (
-        $board[$iter.next().unwrap()] = Token::from_fen(stringify!($token).as_bytes()[0]);
-        board_tokens!($board, $iter, $($tokens)*);
+    ( $board:ident, $iter:expr, $piece:tt $($pieces:tt)* ) => (
+        $board[$iter.next().unwrap()] = Piece::from_fen(stringify!($piece).as_bytes()[0]);
+        board_pieces!($board, $iter, $($pieces)*);
     );
 
     ( $board:ident, $index:expr, ) => ();

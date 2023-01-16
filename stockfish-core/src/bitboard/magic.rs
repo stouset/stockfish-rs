@@ -32,14 +32,14 @@ impl<const N: usize> Magic<N> {
     const SEEDS: [u64; 8] = [ 8977, 44560, 54343, 38998, 5731, 95205, 104912, 17020 ];
 
     /// [Magic bitboards](https://www.chessprogramming.org/Magic_Bitboards/) are
-    /// used to quickly look up attacks of sliding pieces. In particular, here
+    /// used to quickly look up attacks of sliding tokens. In particular, here
     /// we use the so- called "fancy" approach.
     #[must_use]
-    pub(crate) fn new(piece: Piece) -> Box<Self> {
+    pub(crate) fn new(token: Token) -> Box<Self> {
         let mut m = bytemuck::zeroed_box::<Magic<N>>();
 
         let size = Square::iter().fold(0, |offset, square| {
-            let mask  = MagicSquare::mask(piece, square);
+            let mask  = MagicSquare::mask(token, square);
             let shift = MagicSquare::shift(mask);
 
             // Set the size for the attacks table of the square. We have
@@ -56,11 +56,11 @@ impl<const N: usize> Magic<N> {
             let mut occupancy = [Bitboard::EMPTY; 2_usize.pow(12)];
             let mut reference = [Bitboard::EMPTY; 2_usize.pow(12)];
 
-            // calculate the attacks for every combination of pieces on the
-            // bitboard
+            // calculate the attacks for every combination of squares contained
+            // within the bitboard
             for (i, bitboard) in mask.powerset().enumerate() {
                 occupancy[i] = bitboard;
-                reference[i] = computed::sliding_attacks(piece, square, bitboard);
+                reference[i] = computed::sliding_attacks(token, square, bitboard);
 
                 #[cfg(use_pext)] {
                     attacks[std::arch::x86_64::_pext_u64(b.0, mask.0)] = reference[i];
@@ -138,14 +138,14 @@ impl<const N: usize> Magic<N> {
 impl Magic<0x1480> {
     #[must_use]
     pub fn new_bishop() -> Box<Self> {
-        Self::new(Piece::Bishop)
+        Self::new(Token::Bishop)
     }
 }
 
 impl Magic<0x19000> {
     #[must_use]
     pub fn new_rook() -> Box<Self> {
-        Self::new(Piece::Rook)
+        Self::new(Token::Rook)
     }
 }
 
@@ -164,12 +164,12 @@ mod bytemuck_impl {
 }
 
 impl MagicSquare {
-    /// Calculates the `mask` to be used for a particular [`Piece`] on a given
+    /// Calculates the `mask` to be used for a particular [`Token`] on a given
     /// [`Square`].
     ///
     /// The `mask` is the [`Bitboard`] of squares that would block
-    /// the piece from attacking if another piece were on it.
-    const fn mask(piece: Piece, square: Square) -> Bitboard {
+    /// the token from attacking if another token were on it.
+    const fn mask(token: Token, square: Square) -> Bitboard {
         // Board edges are not considered to be
         let edges =
             ((Bitboard::FILE_A | Bitboard::FILE_H) & !square.file()) |
@@ -180,7 +180,7 @@ impl MagicSquare {
         // to contain all the attacks for each possible subset of the mask
         // and so is 2 power the number of 1s of the mask. Hence we deduce
         // the size of the shift to apply to get the index.
-        computed::pseudo_attacks(piece, square) & !edges
+        computed::pseudo_attacks(token, square) & !edges
     }
 
     /// Calculates the `shift` sized to be used for a magic's `mask`.
@@ -249,13 +249,13 @@ mod tests {
 
     #[test]
     fn mask_passes_spot_check() {
-        for piece in [Piece::Bishop, Piece::Rook] {
+        for token in [Token::Bishop, Token::Rook] {
             for square in Square::iter() {
-                let mask = MagicSquare::mask(piece, square);
+                let mask = MagicSquare::mask(token, square);
 
-                let edges = if piece == Piece::Rook {
+                let edges = if token == Token::Rook {
                     // the mask shouldn't contain the edges, except when the
-                    // piece is a Rook and *on* an edge, in which case we should
+                    // token is a Rook and *on* an edge, in which case we should
                     // allow everything except the very first and last square on
                     // that edge
                     Bitboard::EDGES

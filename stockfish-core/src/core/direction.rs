@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// The cardinal directions on a chessboard plus the other individual steps a
-/// piece is capable of taking across a chess board.
+/// token is capable of taking across a chess board.
 #[derive(Copy, Debug, Eq)]
 #[derive_const(Clone, PartialEq)]
 #[must_use]

@@ -24,7 +24,7 @@ enumeration! {
 }
 
 enumeration! {
-    /// Promotions can only result in four of the possible types of piece, so we
+    /// Promotions can only result in four of the possible types of token, so we
     /// create an enum of them specifically for the sake of bit-packing.
     MovePromotion, [ Knight, Bishop, Rook, Queen ]
 }
@@ -34,7 +34,7 @@ impl Move {
     //
     // * bit  0- 5: destination square (from 0 to 63)
     // * bit  6-11: origin square (from 0 to 63)
-    // * bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
+    // * bit 12-13: promotion token type - 2 (from KNIGHT-2 to QUEEN-2)
     // * bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
     const DESTINATION_BITS: u8 = 6;
     const ORIGIN_BITS:      u8 = 6;
@@ -113,7 +113,7 @@ impl Move {
         )
     }
 
-    /// Encodes the capture of a pawn en passant by a piece starting on
+    /// Encodes the capture of a pawn en passant by a token starting on
     /// `origin` and ending on the `pawn`'s square.
     pub const fn new_en_passant(origin: Square, pawn: Square) -> Self {
         Self(
@@ -132,7 +132,7 @@ impl Move {
         )
     }
 
-    /// Returns the square the moving piece began on.
+    /// Returns the square the moving token began on.
     pub const fn origin(self) -> Square {
         let bits = self.extract(Self::ORIGIN_SHIFT, Self::ORIGIN_MASK);
 
@@ -143,7 +143,7 @@ impl Move {
     }
 
     /// For all types of move other than [`MoveType::Castling`], returns the
-    /// square the piece finishes on.
+    /// square the token finishes on.
     ///
     /// For castling, encodes the position the rook begins on. The actual
     /// destination square of the rook and king must be inferred by the rules of
@@ -167,28 +167,28 @@ impl Move {
         )
     }
 
-    /// Returns the type of piece a pawn is being promoted to during this move.
+    /// Returns the type of token a pawn is being promoted to during this move.
     ///
     /// This method *must not* be called unless the move is a
     /// [`MoveType::Promotion`]. For all other move types, the result of this
     /// method is undefined and must not be expected to produce reliable
     /// behavior.
-    pub const fn promotion(self) -> Piece {
+    pub const fn promotion(self) -> Token {
         debug_assert!(MoveType::Promotion == self.move_type());
 
-        // We exclude pawns and kings from the type of piece that may be
+        // We exclude pawns and kings from the type of token that may be
         // promoted to (so that this information fits in two bits), so we need
-        // to add the value of a knight in order to get the value of the piece
+        // to add the value of a knight in order to get the value of the token
         // being promoted to.
         //
         // This conversion could/should be implemented on the MovePromotion enum
         // itself, but given that it's *only* used here that's overkill.
         let bits = self.extract(Self::PROMOTION_SHIFT, Self::PROMOTION_MASK)
-            + Piece::Knight.as_u8();
+            + Token::Knight.as_u8();
 
         unsafe_optimization!(
-            Piece::from_u8(bits).unwrap(),
-            Piece::from_u8_unchecked(bits),
+            Token::from_u8(bits).unwrap(),
+            Token::from_u8_unchecked(bits),
         )
     }
 
@@ -227,7 +227,7 @@ mod tests {
         assert_eq!(Square::D6,          mv.origin());
         assert_eq!(Square::B1,          mv.destination());
         assert_eq!(MoveType::Promotion, mv.move_type());
-        assert_eq!(Piece::Knight,       mv.promotion());
+        assert_eq!(Token::Knight,       mv.promotion());
     }
 
     #[test]
@@ -237,7 +237,7 @@ mod tests {
         assert_eq!(Square::C6,          mv.origin());
         assert_eq!(Square::C7,          mv.destination());
         assert_eq!(MoveType::Promotion, mv.move_type());
-        assert_eq!(Piece::Bishop,       mv.promotion());
+        assert_eq!(Token::Bishop,       mv.promotion());
     }
 
 
@@ -248,7 +248,7 @@ mod tests {
         assert_eq!(Square::A8,          mv.origin());
         assert_eq!(Square::A7,          mv.destination());
         assert_eq!(MoveType::Promotion, mv.move_type());
-        assert_eq!(Piece::Rook,         mv.promotion());
+        assert_eq!(Token::Rook,         mv.promotion());
     }
 
 
@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(Square::C5,          mv.origin());
         assert_eq!(Square::C4,          mv.destination());
         assert_eq!(MoveType::Promotion, mv.move_type());
-        assert_eq!(Piece::Queen,        mv.promotion());
+        assert_eq!(Token::Queen,        mv.promotion());
     }
 
     #[test]

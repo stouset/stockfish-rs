@@ -46,16 +46,16 @@ fn bench_attacks(c: &mut Criterion) {
         Square::C4 | Square::D3 | Square::G6 | Square::H2 ;
 
     for color in Color::iter() {
-        for piece in Piece::iter() {
+        for token in Token::iter() {
             group.bench_with_input(
-                BenchmarkId::new("computed", format!("{color:?} {piece:?}")),
-                &(color, piece, square, occupancy),
+                BenchmarkId::new("computed", format!("{color:?} {token:?}")),
+                &(color, token, square, occupancy),
                 |b, i| b.iter(|| computed::attacks(i.0, i.1, i.2, i.3))
             );
 
             group.bench_with_input(
-                BenchmarkId::new("cached", format!("{color:?} {piece:?}")),
-                &(color, piece, square, occupancy),
+                BenchmarkId::new("cached", format!("{color:?} {token:?}")),
+                &(color, token, square, occupancy),
                 |b, i| b.iter(|| cached::attacks(i.0, i.1, i.2, i.3))
             );
         }

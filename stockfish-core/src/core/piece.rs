@@ -1,74 +1,150 @@
 use crate::prelude::*;
+use crate::accelerate;
 
 enumeration! {
-    /// A file, A through H, on a chess board. The variants for this enum are
-    /// prefixed an underscore to mimic those of [`Rank`].
+    /// A piece to be placed on a chess board. Combines a color with a type of
+    /// token.
+    ///
+    /// Under the hood, the color is stored as the LSB while the type of token
+    /// is stored as the three next bits. The upper four bits of the byte are
+    /// unused.
     pub Piece, [
-        Pawn, Knight, Bishop, Rook, Queen, King,
+        WhitePawn,   BlackPawn,
+        WhiteKnight, BlackKnight,
+        WhiteBishop, BlackBishop,
+        WhiteRook,   BlackRook,
+        WhiteQueen,  BlackQueen,
+        WhiteKing,   BlackKing,
     ]
 }
 
 impl Piece {
-    /// The single-step moves available to a given piece.
-    pub const STEPS: [&'static [Direction]; Self::COUNT] = [
-        // pawn
-        &[],
-
-        // knight
-        &[ Direction::NNW, Direction::NNE, Direction::ENE, Direction::ESE,
-           Direction::SSE, Direction::SSW, Direction::WSW, Direction::WNW ],
-
-        // bishop
-        &[ Direction::NW, Direction::NE, Direction::SE, Direction::SW ],
-
-        // rook
-        &[ Direction::N,  Direction::E,  Direction::S,  Direction::W ],
-
-        // queen
-        &[ Direction::NW, Direction::N, Direction::NE, Direction::E,
-           Direction::SE, Direction::S, Direction::SW, Direction::W ],
-
-        // king
-        &[ Direction::NW, Direction::N, Direction::NE, Direction::E,
-           Direction::SE, Direction::S, Direction::SW, Direction::W ],
+    const FEN: [char; Self::COUNT] = [
+        'P', 'p',
+        'N', 'n',
+        'B', 'b',
+        'R', 'r',
+        'Q', 'q',
+        'K', 'k',
     ];
 
-    /// Returns true if the [`Piece`] may jump over other pieces.
+    /// Parses a FEN byte ('P' is a white pawn, `n` is a black knight, etc.)
+    /// into a [`Piece`]. Returns [`None`] if
     #[inline]
     #[must_use]
-    pub const fn is_jumping(self) -> bool {
-        self == Self::Knight
+    pub const fn from_fen(byte: u8) -> Option<Self> {
+        Some(match byte {
+            b'P' => Self::WhitePawn,   b'p' => Self::BlackPawn,
+            b'N' => Self::WhiteKnight, b'n' => Self::BlackKnight,
+            b'B' => Self::WhiteBishop, b'b' => Self::BlackBishop,
+            b'R' => Self::WhiteRook,   b'r' => Self::BlackRook,
+            b'Q' => Self::WhiteQueen,  b'q' => Self::BlackQueen,
+            b'K' => Self::WhiteKing,   b'k' => Self::BlackKing,
+
+            _ => return None,
+        })
     }
 
-    /// Returns true if the [`Piece`] slides multiple squares across the board.
+    /// Instantiates a [`Piece`] from a [`Color`] and [`Token`].
     #[inline]
-    #[must_use]
-    pub const fn is_sliding(self) -> bool {
-        self == Self::Bishop || self == Self::Rook || self == Self::Queen
+    pub const fn new(color: Color, token: Token) -> Self {
+        let repr = token.as_u8() << 1 | color.as_u8();
+
+        unsafe_optimization!(
+            Self::from_u8(repr).unwrap(),
+            Self::from_u8_unchecked(repr),
+        )
+    }
+
+    /// Returns the [`Color`] of the [`Piece`].
+    #[inline]
+    pub const fn color(self) -> Color {
+        let color = self.as_u8() & 0b1;
+
+        unsafe_optimization! {
+            Color::from_u8(color).unwrap(),
+            Color::from_u8_unchecked(color),
+        }
+    }
+
+    /// Returns the type of [`Token`] of the [`Piece`].
+    #[inline]
+    pub const fn token(self) -> Token {
+        let token = self.as_u8() >> 1;
+
+        unsafe_optimization! {
+            Token::from_u8(token).unwrap(),
+            Token::from_u8_unchecked(token),
+        }
+    }
+
+    /// Returns a bitboard containing all for a piece on the given `square`.
+    /// This is equivalent to computing the piece's `attacks` on an empty
+    /// board.
+    #[inline]
+    pub const fn moves(self, square: Square) -> Bitboard {
+        self.attacks(square, Bitboard::EMPTY)
+    }
+
+    /// Returns a bitboard containing the squares the piece attacks from the
+    /// given `square`, given a `board` containing all of the squares with
+    /// pieces on them that might interfere with its attack.
+    #[inline]
+    pub const fn attacks(self, square: Square, board: Bitboard) -> Bitboard {
+        accelerate::attacks(
+            self.color(),
+            self.token(),
+            square,
+            board,
+        )
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn is_jumping() {
-        refute!(Piece::Pawn  .is_jumping());
-        assert!(Piece::Knight.is_jumping());
-        refute!(Piece::Bishop.is_jumping());
-        refute!(Piece::Rook  .is_jumping());
-        refute!(Piece::Queen .is_jumping());
-        refute!(Piece::King  .is_jumping());
-    }
-
-    #[test]
-    fn is_sliding() {
-        refute!(Piece::Pawn  .is_sliding());
-        refute!(Piece::Knight.is_sliding());
-        assert!(Piece::Bishop.is_sliding());
-        assert!(Piece::Rook  .is_sliding());
-        assert!(Piece::Queen .is_sliding());
-        refute!(Piece::King  .is_sliding());
+impl const From<Piece> for char {
+    #[inline]
+    fn from(value: Piece) -> Self {
+        Piece::FEN[value]
     }
 }
+
+impl const From<Piece> for Color {
+    #[inline]
+    fn from(piece: Piece) -> Self {
+        piece.color()
+    }
+}
+
+impl const From<Piece> for Token {
+    #[inline]
+    fn from(piece: Piece) -> Self {
+        piece.token()
+    }
+}
+
+
+// impl const From<Token> for usize {
+//     fn from(p: Token) -> Self {
+//         let c:  usize = p.color().into();
+//         let pt: usize = p.piece_type().into();
+
+//         PieceType::COUNT * c + pt
+//     }
+// }
+
+// impl<T> const std::ops::Index<Token> for [T; Token::COUNT] {
+//     type Output = T;
+
+//     #[inline]
+//     #[must_use]
+//     fn index(&self, index: Token) -> &Self::Output {
+//         self.index(usize::from(index))
+//     }
+// }
+
+// impl<T> const std::ops::IndexMut<Token> for [T; Token::COUNT] {
+//     #[inline]
+//     #[must_use]
+//     fn index_mut(&mut self, index: Token) -> &mut Self::Output {
+//         self.index_mut(usize::from(index))
+//     }
+// }

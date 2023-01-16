@@ -120,7 +120,7 @@ pub mod core;
 /// The `stockfish_core` prelude. Re-exports most types useful for implementing
 /// the fundamental workings of a chess engine.
 pub mod prelude {
-    pub use crate::{board, board_tokens};
+    pub use crate::{board, board_pieces};
 
     #[doc(no_inline)]
     pub use crate::core::Board;

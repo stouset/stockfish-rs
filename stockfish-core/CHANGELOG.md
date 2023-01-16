@@ -16,6 +16,13 @@ adheres to [Semantic Versioning][semver].
 
 ### Changed
 
+- `Token` and `Piece` have had their meanings swapped to better reflect the
+  naming conventions in the wider chess programming community as well as the
+  upstream Stockfish project.
+
+  A `Token` is now the abstract concept of a type of piece such as a king or a
+  knight. A `Piece` is now a physical, colored piece that may be placed on a
+  chess board such as a white pawn or a black queen.
 - `File` and `Rank` now *both* allow iteration over the squares they contain,
   but the type of their `IntoIterator` is changed to
   `std::array::IntoIter<Square, 8>`

@@ -57,8 +57,8 @@ const LINE: [[Bitboard; Square::COUNT]; Square::COUNT] = cached!("line");
 /// Precomputed lines between [`Square`]s.
 const BETWEEN: [[Bitboard; Square::COUNT]; Square::COUNT] = cached!("between");
 
-/// Precomputed attacks for any type of piece on an empty board.
-const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; Piece::COUNT] = cached!("pseudo_attacks");
+/// Precomputed attacks for any type of token on an empty board.
+const PSEUDO_ATTACKS: [[Bitboard; Square::COUNT]; Token::COUNT] = cached!("pseudo_attacks");
 
 /// Precomputed attacks for pawns of each color.
 const PAWN_ATTACKS: [[Bitboard; Square::COUNT]; Color::COUNT] = cached!("pawn_attacks");
@@ -95,29 +95,30 @@ pub const fn line(s1: Square, s2: Square) -> Bitboard {
 /// the same rank, file, or diagonal, returns `s2`.
 ///
 /// This can allow us to generate non-king evasion moves faster: a defending
-/// piece must either interpose itself to cover the check or capture the
-/// checking piece.
+/// token must either interpose itself to cover the check or capture the
+/// checking token.
 pub const fn between(s1: Square, s2: Square) -> Bitboard {
     BETWEEN[s1][s2]
 }
 
-/// Returns a bitboard of valid attacks given a board containing other pieces
-/// that may interfere with its movements.
+/// Returns a bitboard of valid attacks given an occupancy bitboard (a bitboard
+/// that includes squares which contain pieces that may interfere with the
+/// attacking piece's movement).
 ///
 /// TODO: relax requirements on occupancy bitboards so this function cannot
 /// produce incorrect results in release builds
 #[inline]
-pub const fn attacks(color: Color, piece: Piece, square: Square, occupied: Bitboard) -> Bitboard {
+pub const fn attacks(color: Color, token: Token, square: Square, occupied: Bitboard) -> Bitboard {
     debug_assert!((occupied & square).is_empty(),
-        "occupancy bitboard must not contain the attacking piece");
+        "occupancy bitboard must not contain the attacking token");
 
-    match piece {
-        Piece::Pawn   => PAWN_ATTACKS[color][square],
-        Piece::Bishop => BISHOP_MAGICS.attacks(square, occupied),
-        Piece::Rook   => ROOK_MAGICS  .attacks(square, occupied),
-        Piece::Queen  => BISHOP_MAGICS.attacks(square, occupied) |
+    match token {
+        Token::Pawn   => PAWN_ATTACKS[color][square],
+        Token::Bishop => BISHOP_MAGICS.attacks(square, occupied),
+        Token::Rook   => ROOK_MAGICS  .attacks(square, occupied),
+        Token::Queen  => BISHOP_MAGICS.attacks(square, occupied) |
                          ROOK_MAGICS  .attacks(square, occupied),
-        _             => PSEUDO_ATTACKS[piece][square]
+        _             => PSEUDO_ATTACKS[token][square]
     }
 }
 
@@ -175,11 +176,11 @@ mod tests {
             Square::B8 | Square::D8 | Square::F8 | Square::G8 | Square::H8;
 
         for color in Color::iter() {
-            for piece in Piece::iter() {
+            for token in Token::iter() {
                 for square in Square::iter() {
                     assert_eq!(
-                        computed::attacks(color, piece, square, occupied & !square),
-                        cached  ::attacks(color, piece, square, occupied & !square),
+                        computed::attacks(color, token, square, occupied & !square),
+                        cached  ::attacks(color, token, square, occupied & !square),
                     );
                 }
             }
@@ -187,8 +188,8 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "must not contain the attacking piece")]
+    #[should_panic(expected = "must not contain the attacking token")]
     fn attacks_includes_origin_square() {
-        let _ = cached::attacks(Color::White, Piece::King, Square::C7, Square::C7.into());
+        let _ = cached::attacks(Color::White, Token::King, Square::C7, Square::C7.into());
     }
 }

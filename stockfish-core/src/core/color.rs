@@ -3,7 +3,7 @@ use crate::prelude::*;
 use std::ops::Not;
 
 enumeration! {
-    /// A color of a chess piece, white or black.
+    /// A color of a chess token, white or black.
     pub Color, [ White, Black ]
 }
 
