@@ -42,6 +42,42 @@ bitflags! {
     }
 }
 
+impl CastlingRights {
+    /// The number of possible values a [`CastlingRights`] can take.
+    pub const COUNT: usize = Self::ANY.bits as usize + 1;
+
+    /// All possible variants of castling rights.
+    pub const VARIANTS: [CastlingRights; CastlingRights::COUNT] = [
+        Self::NONE,
+
+        Self::WHITE_OO,
+        Self::WHITE_OOO,
+        Self::BLACK_OO,
+        Self::BLACK_OOO,
+
+        Self::WHITE,
+        Self::BLACK,
+        Self::KING_SIDE,
+        Self::QUEEN_SIDE,
+
+        Self::from_bits_truncate(Self::WHITE_OO.bits  | Self::BLACK_OOO.bits),
+        Self::from_bits_truncate(Self::WHITE_OOO.bits | Self::BLACK_OO .bits),
+
+        Self::from_bits_truncate(Self::WHITE.bits | Self::BLACK_OO .bits),
+        Self::from_bits_truncate(Self::WHITE.bits | Self::BLACK_OOO.bits),
+        Self::from_bits_truncate(Self::BLACK.bits | Self::WHITE_OO .bits),
+        Self::from_bits_truncate(Self::BLACK.bits | Self::WHITE_OOO.bits),
+
+        Self::ANY,
+    ];
+
+    /// An iterator over all possible types of castling rights.
+    #[must_use]
+    pub fn iter() -> std::array::IntoIter<Self, 16> {
+        Self::VARIANTS.into_iter()
+    }
+}
+
 impl BitAnd<Color> for CastlingRights {
     type Output = Self;
 

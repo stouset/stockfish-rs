@@ -7,13 +7,6 @@ adheres to [Semantic Versioning][semver].
 
 ## [Unreleased][https://github.com/stouset/stockfish-rs/tree/main]
 
-### Added
-
-- `File` and `Rank` now implement `BitOr` against themselves
-- `Bitboard` can now `BitAnd`, `BitOr`, and `BitXor` against `File` and `Rank`
-- `Move` core type added, which encodes details about a move between two
-  squares.
-
 ### Changed
 
 - `Token` and `Piece` have had their meanings swapped to better reflect the
@@ -27,15 +20,23 @@ adheres to [Semantic Versioning][semver].
   but the type of their `IntoIterator` is changed to
   `std::array::IntoIter<Square, 8>`
 
-### Fixed
-
-- Stricter hygeine for `unsafe_optimization` and `enumeration` macros
-
 ### Removed
 
 - `Square` no longer implements `std::iter::Step`
 - Core types other than `File` and `Rank` no longer implement `PartialOrd` and
   `Ord`
+
+### Added
+
+- `File` and `Rank` now implement `BitOr` against themselves
+- `Bitboard` can now `BitAnd`, `BitOr`, and `BitXor` against `File` and `Rank`
+- `Move` core type added, which encodes details about a move between two
+  squares.
+- `CastlingRights::iter` now allows iterating over all possible variants.
+
+### Fixed
+
+- Stricter hygeine for `unsafe_optimization` and `enumeration` macros
 
 ## [0.1.1][https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.1.1] - 2023-01-13
 
