@@ -1,3 +1,5 @@
+//! Fast bitboards.
+
 #[doc(hidden)]
 pub mod magic;
 

@@ -1,3 +1,5 @@
+//! Types for representing fundamental aspects of chess.
+
 /// An internal macro that creates a c-style enum of the style used by many of
 /// the core types in this crate.
 macro_rules! enumeration {

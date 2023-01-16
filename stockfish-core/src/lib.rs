@@ -114,10 +114,7 @@ pub mod arch;
 #[doc(hidden)]
 pub mod accelerate;
 
-/// Fast bitboards.
 pub mod bitboard;
-
-/// Types for representing fundamental aspects of chess.
 pub mod core;
 
 /// The `stockfish_core` prelude. Re-exports most types useful for implementing
