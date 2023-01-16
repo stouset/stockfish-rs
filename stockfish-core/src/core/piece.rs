@@ -86,9 +86,13 @@ impl Piece {
         self.attacks(square, Bitboard::EMPTY)
     }
 
-    /// Returns a bitboard containing the squares the piece attacks from the
-    /// given `square`, given a `board` containing all of the squares with
-    /// pieces on them that might interfere with its attack.
+    /// Returns a bitboard containing the squares this piece attacks from the
+    /// given `square`, given an `occupancy` bitboard containing all of the
+    /// squares with pieces on them that might interfere with its attack.
+    ///
+    /// The `square` the `piece` is on *must not* be in the `occupancy`
+    /// bitboard. If this happens, this function is not guaranteed to produce
+    /// correct results.
     #[inline]
     pub const fn attacks(self, square: Square, board: Bitboard) -> Bitboard {
         accelerate::attacks(

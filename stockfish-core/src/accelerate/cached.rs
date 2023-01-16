@@ -101,23 +101,23 @@ pub const fn between(s1: Square, s2: Square) -> Bitboard {
     BETWEEN[s1][s2]
 }
 
-/// Returns a bitboard of valid attacks given an occupancy bitboard (a bitboard
-/// that includes squares which contain pieces that may interfere with the
-/// attacking piece's movement).
+/// Returns a bitboard of valid attacks given an `occupancy` bitboard (a
+/// bitboard that includes squares which contain pieces that may interfere with
+/// the attacking piece's movement).
 ///
-/// TODO: relax requirements on occupancy bitboards so this function cannot
-/// produce incorrect results in release builds
+/// The `square` the `token` is on *must not* be in the `occupancy` bitboard. If
+/// this happens, this function is not guaranteed to produce correct results.
 #[inline]
-pub const fn attacks(color: Color, token: Token, square: Square, occupied: Bitboard) -> Bitboard {
-    debug_assert!((occupied & square).is_empty(),
+pub const fn attacks(color: Color, token: Token, square: Square, occupancy: Bitboard) -> Bitboard {
+    debug_assert!((occupancy & square).is_empty(),
         "occupancy bitboard must not contain the attacking token");
 
     match token {
         Token::Pawn   => PAWN_ATTACKS[color][square],
-        Token::Bishop => BISHOP_MAGICS.attacks(square, occupied),
-        Token::Rook   => ROOK_MAGICS  .attacks(square, occupied),
-        Token::Queen  => BISHOP_MAGICS.attacks(square, occupied) |
-                         ROOK_MAGICS  .attacks(square, occupied),
+        Token::Bishop => BISHOP_MAGICS.attacks(square, occupancy),
+        Token::Rook   => ROOK_MAGICS  .attacks(square, occupancy),
+        Token::Queen  => BISHOP_MAGICS.attacks(square, occupancy) |
+                         ROOK_MAGICS  .attacks(square, occupancy),
         _             => PSEUDO_ATTACKS[token][square]
     }
 }
