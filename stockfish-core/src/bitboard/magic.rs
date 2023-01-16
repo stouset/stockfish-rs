@@ -25,10 +25,10 @@ pub struct MagicSquare {
 impl<const N: usize> Magic<N> {
     // TODO: is `target_pointer_width` guaranteed to be equivalent to the size
     // of `usize`?
-    #[cfg(target_pointer_width = "64")]
+    #[cfg(all(target_pointer_width = "64", not(use_pext)))]
     const SEEDS: [u64; 8] = [ 728, 10316, 55013, 32803, 12281, 15100, 16645, 255 ];
 
-    #[cfg(target_pointer_width = "32")]
+    #[cfg(all(target_pointer_width = "32", not(use_pext)))]
     const SEEDS: [u64; 8] = [ 8977, 44560, 54343, 38998, 5731, 95205, 104912, 17020 ];
 
     /// [Magic bitboards](https://www.chessprogramming.org/Magic_Bitboards/) are
