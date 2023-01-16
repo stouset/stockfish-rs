@@ -33,6 +33,8 @@ adheres to [Semantic Versioning][semver].
 - `Move` core type added, which encodes details about a move between two
   squares.
 - `CastlingRights::iter` now allows iterating over all possible variants.
+- An implementation of generating `Key`s through `Zobrist` hashing is now
+  available.
 
 ### Fixed
 

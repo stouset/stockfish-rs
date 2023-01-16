@@ -116,6 +116,7 @@ pub mod accelerate;
 
 pub mod bitboard;
 pub mod core;
+pub mod hash;
 
 /// The `stockfish_core` prelude. Re-exports most types useful for implementing
 /// the fundamental workings of a chess engine.
