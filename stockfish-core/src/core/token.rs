@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use std::ops::BitOr;
+
 enumeration! {
     /// A file, A through H, on a chess board. The variants for this enum are
     /// prefixed an underscore to mimic those of [`Rank`].
@@ -48,6 +50,15 @@ impl Token {
     }
 }
 
+impl const BitOr<Color> for Token {
+    type Output = Piece;
+
+    #[inline]
+    fn bitor(self, color: Color) -> Self::Output {
+        Piece::new(color, self)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -70,5 +81,11 @@ mod test {
         assert!(Token::Rook  .is_sliding());
         assert!(Token::Queen .is_sliding());
         refute!(Token::King  .is_sliding());
+    }
+
+    #[test]
+    fn bitor_color() {
+        assert_eq!(Piece::WhiteKing, Token::King | Color::White);
+        assert_eq!(Piece::BlackRook, Token::Rook | Color::Black);
     }
 }

@@ -15,6 +15,7 @@ adheres to [Semantic Versioning][semver].
 ### Added
 
 - `impl Default for Bitboard`
+- `impl BitOr<Color, Output = Piece> for Token`
 
 ## [0.2.0](https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.2.0/stockfish-core) - 2023-01-16
 
