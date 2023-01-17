@@ -23,13 +23,8 @@ pub struct Zobrist {
 }
 
 impl Zobrist {
-    // This constant was lifted from Stockfish. Presumably it was closen as
-    // having been verified to minimize (or eliminate) cuckoo hashing
-    // collisions.
-    const PRNG_SEED: u64 = 1_070_372;
-
-    pub(crate) const fn new() -> Self {
-        let mut prng = Prng::from(Self::PRNG_SEED);
+    pub(crate) const fn new(seed: u64) -> Self {
+        let mut prng = Prng::from(seed);
 
         let mut psq        = [[Key::default(); Square::COUNT]; Piece::COUNT];
         let mut en_passant = [Key::default(); File::COUNT];
@@ -134,6 +129,16 @@ impl Zobrist {
     }
 }
 
+impl const Default for Zobrist {
+    #[inline]
+    fn default() -> Self {
+        // The seed constant was lifted from Stockfish. Presumably it was closen as
+        // having been verified to minimize (or eliminate) cuckoo hashing
+        // collisions.
+        Self::new(1_070_372)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -143,7 +148,7 @@ mod tests {
     #[test]
     fn test_all_keys_unique() {
         let mut set     = HashSet::new();
-        let     zobrist = Zobrist::new();
+        let     zobrist = Zobrist::default();
 
         for piece in Piece::iter() {
             for square in Square::iter() {

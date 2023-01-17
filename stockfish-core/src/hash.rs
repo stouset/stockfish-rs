@@ -17,7 +17,7 @@ use std::ops::{BitXor, BitXorAssign};
 /// As the board state changes, it's fast and trivial to update an existing key
 /// by doing a bitwise XOR against components that are no longer relevant new
 /// new components which are.
-pub const ZOBRIST: Zobrist = Zobrist::new();
+pub const ZOBRIST: Zobrist = Zobrist::default();
 
 /// A computed lookup key for indexing into hash tables.
 #[derive(Copy, Debug, Eq, Hash)]
