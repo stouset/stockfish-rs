@@ -45,20 +45,18 @@ fn bench_attacks(c: &mut Criterion) {
         Square::A7 | Square::B2 | Square::B3 | Square::C6 |
         Square::C4 | Square::D3 | Square::G6 | Square::H2 ;
 
-    for color in Color::iter() {
-        for token in Token::iter() {
-            group.bench_with_input(
-                BenchmarkId::new("computed", format!("{color:?} {token:?}")),
-                &(color, token, square, occupancy),
-                |b, i| b.iter(|| computed::attacks(i.0, i.1, i.2, i.3))
-            );
+    for piece in Piece::iter() {
+        group.bench_with_input(
+            BenchmarkId::new("computed", format!("{piece:?}")),
+            &(piece, square, occupancy),
+            |b, i| b.iter(|| computed::attacks(i.0.color(), i.0.token(), i.1, i.2))
+        );
 
-            group.bench_with_input(
-                BenchmarkId::new("cached", format!("{color:?} {token:?}")),
-                &(color, token, square, occupancy),
-                |b, i| b.iter(|| cached::attacks(i.0, i.1, i.2, i.3))
-            );
-        }
+        group.bench_with_input(
+            BenchmarkId::new("cached", format!("{piece:?}")),
+            &(piece, square, occupancy),
+            |b, i| b.iter(|| cached::attacks(i.0.color(), i.0.token(), i.1, i.2))
+        );
     }
 }
 

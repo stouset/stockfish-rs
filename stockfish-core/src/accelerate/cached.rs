@@ -176,14 +176,12 @@ mod tests {
             Square::A7 | Square::H7 |
             Square::B8 | Square::D8 | Square::F8 | Square::G8 | Square::H8;
 
-        for color in Color::iter() {
-            for token in Token::iter() {
-                for square in Square::iter() {
-                    assert_eq!(
-                        computed::attacks(color, token, square, occupied & !square),
-                        cached  ::attacks(color, token, square, occupied & !square),
-                    );
-                }
+        for piece in Piece::iter() {
+            for square in Square::iter() {
+                assert_eq!(
+                    computed::attacks(piece.color(), piece.token(), square, occupied & !square),
+                    cached  ::attacks(piece.color(), piece.token(), square, occupied & !square),
+                );
             }
         }
     }
