@@ -12,6 +12,10 @@ adheres to [Semantic Versioning][semver].
 - Fixed errors in CHANGELOG formatting
 - Added some missing `#[inline]` attributes to functions
 
+### Changed
+
+- `Bitboard::into_some_square` is now `Into::<Option<Square>>::into`
+
 ### Added
 
 - `impl Default for Bitboard`

@@ -196,15 +196,6 @@ impl Bitboard {
         ! self.overlaps(rhs)
     }
 
-    /// Returns one of the [`Square`]s that is included in this [`Bitboard`].
-    /// There is no guarantee as to which [`Square`] will be returned or that
-    /// the same one will be returned from successive calls to this function.
-    #[inline]
-    #[must_use]
-    pub const fn into_some_square(self) -> Option<Square> {
-        Square::VARIANTS.get(self.0.trailing_zeros() as usize).copied()
-    }
-
     /// Returns the number of [`Square`]s set in this [`Bitboard`].
     #[inline]
     #[must_use]
@@ -249,6 +240,13 @@ impl std::fmt::Debug for Bitboard {
         }
 
         writeln!(f, "    A   B   C   D   E   F   G   H")
+    }
+}
+
+impl const From<Bitboard> for Option<Square> {
+    #[inline]
+    fn from(value: Bitboard) -> Self {
+        Square::VARIANTS.get(value.0.trailing_zeros() as usize).copied()
     }
 }
 
@@ -666,16 +664,6 @@ mod tests {
     }
 
     #[test]
-    fn into_some_square() {
-        for s in Square::iter() {
-            assert_eq!(Some(s), Bitboard::from(s).into_some_square());
-        }
-
-        assert_eq!(None, Bitboard::EMPTY.into_some_square());
-        assert!(Bitboard::DARK_SQUARES.into_some_square().is_some());
-    }
-
-    #[test]
     fn count() {
         assert_eq!(0,  Bitboard::EMPTY.count());
         assert_eq!(32, Bitboard::DARK_SQUARES.count());
@@ -686,6 +674,18 @@ mod tests {
         assert_eq!(8, Bitboard::FILE_H.count());
         assert_eq!(8, Bitboard::RANK_3.count());
         assert_eq!(8, Bitboard::RANK_6.count());
+    }
+
+    #[test]
+    fn into_option_square() {
+        for s in Square::iter() {
+            assert_eq!(Some(s), Bitboard::from(s).into());
+        }
+
+        assert_eq!(None, Option::<Square>::from(Bitboard::EMPTY));
+
+        assert!(Option::<Square>::from(Bitboard::DARK_SQUARES).is_some());
+        assert!(Option::<Square>::from(Bitboard::KING_SIDE)   .is_some());
     }
 
     #[test]
