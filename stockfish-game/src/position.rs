@@ -114,6 +114,7 @@ impl Position {
 impl Index<Square> for Position {
     type Output = Option<Piece>;
 
+    #[inline]
     fn index(&self, index: Square) -> &Self::Output {
         self.board.index(index)
     }

@@ -126,6 +126,7 @@ impl Direction {
 }
 
 impl const From<Direction> for i8 {
+    #[inline]
     fn from(value: Direction) -> Self {
         value.as_i8()
     }

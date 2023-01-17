@@ -26,6 +26,7 @@ pub const ZOBRIST: Zobrist = Zobrist::new();
 pub struct Key(u64);
 
 impl const From<u64> for Key {
+    #[inline]
     fn from(value: u64) -> Self {
         Self(value)
     }
@@ -34,12 +35,14 @@ impl const From<u64> for Key {
 impl const BitXor for Key {
     type Output = Self;
 
+    #[inline]
     fn bitxor(self, rhs: Self) -> Self::Output {
         Self(self.0.bitxor(rhs.0))
     }
 }
 
 impl const BitXorAssign for Key {
+    #[inline]
     fn bitxor_assign(&mut self, rhs: Self) {
         self.0.bitxor_assign(rhs.0);
     }

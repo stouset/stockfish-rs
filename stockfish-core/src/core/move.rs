@@ -52,6 +52,7 @@ impl Move {
     const MOVE_TYPE_MASK:   u8 = (1 << Self::MOVE_TYPE_BITS) - 1;
 
     /// Encodes a normal move from an `origin` square to a `destination` square.
+    #[inline]
     pub const fn new(origin: Square, destination: Square) -> Self {
         // TODO: in release builds, if the origin is the destination, this will
         // produce logic errors; can we catch this without a performance
@@ -75,6 +76,7 @@ impl Move {
 
     /// Encodes a move of a pawn from an `origin` square to a `destination`
     /// square that results in promotion to a knight.
+    #[inline]
     pub const fn new_promote_knight(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -85,6 +87,7 @@ impl Move {
 
     /// Encodes a move of a pawn from an `origin` square to a `destination`
     /// square that results in promotion to a bishop.
+    #[inline]
     pub const fn new_promote_bishop(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -95,6 +98,7 @@ impl Move {
 
     /// Encodes a move of a pawn from an `origin` square to a `destination`
     /// square that results in promotion to a rook.
+    #[inline]
     pub const fn new_promote_rook(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -105,6 +109,7 @@ impl Move {
 
     /// Encodes a move of a pawn from an `origin` square to a `destination`
     /// square that results in promotion to a queen.
+    #[inline]
     pub const fn new_promote_queen(origin: Square, destination: Square) -> Self {
         Self(
             Self::new(origin, destination).0
@@ -115,6 +120,7 @@ impl Move {
 
     /// Encodes the capture of a pawn en passant by a token starting on
     /// `origin` and ending on the `pawn`'s square.
+    #[inline]
     pub const fn new_en_passant(origin: Square, pawn: Square) -> Self {
         Self(
             Self::new(origin, pawn).0
@@ -125,6 +131,7 @@ impl Move {
     /// Encodes castling between `king` and a `rook` on their respective
     /// starting squares. The destination squares must be inferred by the rules
     /// of castling.
+    #[inline]
     pub const fn new_castling(king: Square, rook: Square) -> Self {
         Self(
             Self::new(king, rook).0
@@ -133,6 +140,7 @@ impl Move {
     }
 
     /// Returns the square the moving token began on.
+    #[inline]
     pub const fn origin(self) -> Square {
         let bits = self.extract(Self::ORIGIN_SHIFT, Self::ORIGIN_MASK);
 
@@ -148,6 +156,7 @@ impl Move {
     /// For castling, encodes the position the rook begins on. The actual
     /// destination square of the rook and king must be inferred by the rules of
     /// castling.
+    #[inline]
     pub const fn destination(self) -> Square {
         let bits = self.extract(Self::DESTINATION_SHIFT, Self::DESTINATION_MASK);
 
@@ -158,6 +167,7 @@ impl Move {
     }
 
     /// Returns the type of move encoded.
+    #[inline]
     pub const fn move_type(self) -> MoveType {
         let bits = self.extract(Self::MOVE_TYPE_SHIFT, Self::MOVE_TYPE_MASK);
 
@@ -173,6 +183,7 @@ impl Move {
     /// [`MoveType::Promotion`]. For all other move types, the result of this
     /// method is undefined and must not be expected to produce reliable
     /// behavior.
+    #[inline]
     pub const fn promotion(self) -> Token {
         debug_assert!(MoveType::Promotion == self.move_type());
 
@@ -192,6 +203,7 @@ impl Move {
         )
     }
 
+    #[inline]
     const fn extract(self, shift: u8, mask: u8) -> u8 {
         #[allow(clippy::cast_possible_truncation)] {
             (self.0 >> shift) as u8 & mask

@@ -16,6 +16,7 @@ pub const USE_PEXT: bool = true;
 #[cfg(not(use_pext))]
 pub const USE_PEXT: bool = false;
 
+#[inline]
 #[must_use]
 pub const fn pext_status() -> &'static str {
     if USE_PEXT { "pext_on" } else { "pext_off" }

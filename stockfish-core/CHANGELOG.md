@@ -10,6 +10,7 @@ adheres to [Semantic Versioning][semver].
 ### Fixed
 
 - Fixed errors in CHANGELOG formatting
+- Added some missing `#[inline]` attributes to functions
 
 ## [0.2.0](https://github.com/stouset/stockfish-rs/tree/stockfish-core-v0.2.0/stockfish-core) - 2023-01-16
 

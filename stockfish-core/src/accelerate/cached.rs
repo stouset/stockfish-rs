@@ -97,6 +97,7 @@ pub const fn line(s1: Square, s2: Square) -> Bitboard {
 /// This can allow us to generate non-king evasion moves faster: a defending
 /// token must either interpose itself to cover the check or capture the
 /// checking token.
+#[inline]
 pub const fn between(s1: Square, s2: Square) -> Bitboard {
     BETWEEN[s1][s2]
 }

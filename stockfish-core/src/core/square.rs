@@ -170,6 +170,7 @@ impl Square {
 
     /// Performs wrapping addition of a [`Direction`] from a [`Square`]. Note that
     /// this wraps around files *and* ranks.
+    #[inline]
     pub fn wrapping_sub(self, dir: Direction) -> Self {
         self.wrapping_add(dir.mirrored())
     }

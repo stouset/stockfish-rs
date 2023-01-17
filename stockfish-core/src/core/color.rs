@@ -41,6 +41,7 @@ impl Color {
 impl const Not for Color {
     type Output = Self;
 
+    #[inline]
     fn not(self) -> Self::Output {
         unsafe_optimization!(
             Self::from_u8(self.as_u8() ^ 1).unwrap(),

@@ -36,6 +36,7 @@ impl Board {
 impl const Index<usize> for Board {
     type Output = Option<Piece>;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         self.0.index(index)
     }
@@ -44,6 +45,7 @@ impl const Index<usize> for Board {
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it
 // allows for a convenient implementation of parsing a chess board from FEN
 impl const IndexMut<usize> for Board {
+    #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.0.index_mut(index)
     }
@@ -52,12 +54,14 @@ impl const IndexMut<usize> for Board {
 impl const Index<Square> for Board {
     type Output = Option<Piece>;
 
+    #[inline]
     fn index(&self, index: Square) -> &Self::Output {
         self.index(index.as_usize())
     }
 }
 
 impl const IndexMut<Square> for Board {
+    #[inline]
     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
         self.index_mut(index.as_usize())
     }
