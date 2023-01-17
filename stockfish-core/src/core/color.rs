@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::Not;
+use std::ops::{Not, BitOr};
 
 enumeration! {
     /// A color of a chess token, white or black.
@@ -50,6 +50,14 @@ impl const Not for Color {
     }
 }
 
+impl const BitOr<Token> for Color {
+    type Output = Piece;
+
+    fn bitor(self, token: Token) -> Self::Output {
+        Piece::new(self, token)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -64,5 +72,11 @@ mod tests {
     fn not() {
         assert!(!Color::White.is_black());
         assert!(!Color::Black.is_white());
+    }
+
+    #[test]
+    fn bitor_token() {
+        assert_eq!(Piece::WhiteQueen,  Color::White | Token::Queen);
+        assert_eq!(Piece::BlackKnight, Color::Black | Token::Knight);
     }
 }
