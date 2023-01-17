@@ -31,6 +31,13 @@ impl Board {
     }
 }
 
+impl const Default for Board {
+    #[inline]
+    fn default() -> Self {
+        Self::EMPTY
+    }
+}
+
 // TODO: this is an annoying detail to expose and breaks the abstraction, but it
 // allows for a convenient implementation of parsing a chess board from FEN
 impl const Index<usize> for Board {

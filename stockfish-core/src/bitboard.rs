@@ -21,7 +21,7 @@ use std::ops::{
 ///
 /// They only indicate whether or not a particular square is included in a set.
 #[derive(Copy, Eq)]
-#[derive_const(Clone, PartialEq, PartialOrd, Ord)]
+#[derive_const(Clone, Default, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
 #[must_use]
 pub struct Bitboard(u64);
