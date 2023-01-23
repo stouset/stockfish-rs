@@ -48,6 +48,46 @@ impl Token {
     pub const fn is_sliding(self) -> bool {
         self == Self::Bishop || self == Self::Rook || self == Self::Queen
     }
+
+    /// Returns all possible moves of the token from a given `square` on the
+    /// board.
+    #[inline]
+    pub const fn moves(self, square: Square) -> Bitboard {
+        // TODO: ensure this optimizes correctly in release builds and doesn't
+        // result in duplicated branching behind the function call
+        match self {
+            // pawns are the only piece that depend on their color for their
+            // direction of travel
+            Token::Pawn =>
+                (Color::White | self).moves(square) |
+                (Color::Black | self).moves(square),
+
+            // all other pieces travel in a direction independent of their
+            // color, so either color works
+            _ =>
+                (Color::White | self).moves(square),
+        }
+    }
+
+    /// Returns a bitboard containing the squares this piece attacks from the
+    /// given `square`, given an `occupancy` bitboard containing all of the
+    /// squares with pieces on them that might interfere with its attack.
+    #[inline]
+    pub const fn attacks(self, square: Square, occupancy: Bitboard) -> Bitboard {
+        // TODO: ensure this optimizes correctly in release builds and doesn't
+        // result in duplicated branching behind the function call
+        match self {
+            // pawns are the only piece that depend on their color for their
+            // direction of travel
+            Token::Pawn =>
+                (Color::White | self).attacks(square, occupancy) |
+                (Color::Black | self).attacks(square, occupancy),
+
+            // all other pieces travel in a direction independent of their
+            // color, so either color works
+            _ => (Color::White | self).attacks(square, occupancy),
+        }
+    }
 }
 
 impl const BitOr<Color> for Token {
