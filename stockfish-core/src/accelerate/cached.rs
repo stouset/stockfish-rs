@@ -102,6 +102,16 @@ pub const fn between(s1: Square, s2: Square) -> Bitboard {
     BETWEEN[s1][s2]
 }
 
+/// Returns a bitboard of all moves a `token` of the given `color` could make
+/// from a starting `square`, assuming an otherwise empty board.
+#[inline]
+pub const fn moves(color: Color, token: Token, square: Square) -> Bitboard {
+    match token {
+        Token::Pawn => PAWN_ATTACKS[color][square],
+        _           => PSEUDO_ATTACKS[token][square],
+    }
+}
+
 /// Returns a bitboard of valid attacks given an `occupancy` bitboard (a
 /// bitboard that includes squares which contain pieces that may interfere with
 /// the attacking piece's movement).

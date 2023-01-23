@@ -60,6 +60,13 @@ pub const fn between(s1: Square, s2: Square) -> Bitboard {
     s2.into()
 }
 
+pub const fn moves(color: Color, token: Token, square: Square) -> Bitboard {
+    match token {
+        Token::Pawn => pawn_attacks(color, square),
+        _           => pseudo_attacks(token, square),
+    }
+}
+
 pub const fn attacks(color: Color, token: Token, square: Square, occupied: Bitboard) -> Bitboard {
     // TODO: at some point I was convinced this was necessary, but it appears
     // not to be, identify where this belief came from and verify

@@ -83,7 +83,7 @@ impl Piece {
     /// empty board.
     #[inline]
     pub const fn moves(self, square: Square) -> Bitboard {
-        self.attacks(square, Bitboard::EMPTY)
+        accelerate::moves(self.color(), self.token(), square)
     }
 
     /// Returns a bitboard containing the squares this piece attacks from the
