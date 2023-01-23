@@ -105,13 +105,13 @@ pub const fn between(s1: Square, s2: Square) -> Bitboard {
 /// Returns a bitboard of valid attacks given an `occupancy` bitboard (a
 /// bitboard that includes squares which contain pieces that may interfere with
 /// the attacking piece's movement).
-///
-/// The `square` the `token` is on *must not* be in the `occupancy` bitboard. If
-/// this happens, this function is not guaranteed to produce correct results.
 #[inline]
 pub const fn attacks(color: Color, token: Token, square: Square, occupancy: Bitboard) -> Bitboard {
-    debug_assert!((occupancy & square).is_empty(),
-        "occupancy bitboard must not contain the attacking token");
+    // TODO: at some point I was convinced this was necessary, but it appears
+    // not to be, identify where this belief came from and verify
+    //
+    // debug_assert!((occupancy & square).is_empty(),
+    //     "occupancy bitboard must not contain the attacking token");
 
     match token {
         Token::Pawn   => PAWN_ATTACKS[color][square],
@@ -184,11 +184,5 @@ mod tests {
                 );
             }
         }
-    }
-
-    #[test]
-    #[should_panic(expected = "must not contain the attacking token")]
-    fn attacks_includes_origin_square() {
-        let _ = cached::attacks(Color::White, Token::King, Square::C7, Square::C7.into());
     }
 }

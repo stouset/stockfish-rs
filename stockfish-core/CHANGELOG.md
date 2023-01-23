@@ -15,6 +15,8 @@ adheres to [Semantic Versioning][semver].
 ### Changed
 
 - `Bitboard::into_some_square` is now `Into::<Option<Square>>::into`
+- `Piece::attacks` no longer requires the square to be outside the occupancy
+  bitboard.
 
 ### Added
 

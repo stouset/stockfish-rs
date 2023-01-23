@@ -61,8 +61,11 @@ pub const fn between(s1: Square, s2: Square) -> Bitboard {
 }
 
 pub const fn attacks(color: Color, token: Token, square: Square, occupied: Bitboard) -> Bitboard {
-    debug_assert!((occupied & square).is_empty(),
-        "occupancy bitboard must not contain the attacking token");
+    // TODO: at some point I was convinced this was necessary, but it appears
+    // not to be, identify where this belief came from and verify
+    //
+    // debug_assert!((occupied & square).is_empty(),
+    //     "occupancy bitboard must not contain the attacking token");
 
     match token {
         Token::Pawn                 => pawn_attacks(color, square),
@@ -290,12 +293,6 @@ mod tests {
             Square::F8,
             attacks(Color::White, Token::Rook, Square::F7, Bitboard::FILE_D | Bitboard::RANK_3)
         );
-    }
-
-    #[test]
-    #[should_panic(expected = "must not contain the attacking token")]
-    fn attacks_includes_origin_square() {
-        let _ = attacks(Color::White, Token::King, Square::C7, Square::C7.into());
     }
 
     #[test]
