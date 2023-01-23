@@ -30,6 +30,16 @@ enumeration! {
 }
 
 impl Move {
+    // (Ab)use the fact that a legitimate move must contain a distinct origin
+    // and destination Square.
+    //
+    // We *could* use `#[repr(transparent)]` around an internal `NonZeroU16` but
+    // doing so would result in a move with `origin` and `destination` both set
+    // to A1 to be undefined behavior. Doing it this way ensures that while
+    // there might be *logic errors* from setting the two, we don't have any
+    // chance of unsafety.
+    // pub(crate) const NONE: Self = Self(0);
+
     // A move needs 16 bits to be stored.
     //
     // * bit  0- 5: destination square (from 0 to 63)
