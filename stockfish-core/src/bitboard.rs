@@ -203,12 +203,19 @@ impl Bitboard {
         self.0.count_ones() as _
     }
 
+    /// Returns an iterator over every individual square in the bitboard.
+    #[inline]
+    pub const fn iter(self) -> Iter {
+        Iter::new(self)
+    }
+
     /// Returns an iterator over every possible subset of squares on the
     /// bitboard.
     ///
     /// Use caution with this function. For boards with larger numbers of bits
     /// this function may require longer than the age of the universe to
     /// complete.
+    #[inline]
     const fn powerset(self) -> Powerset {
         debug_assert!(self.0.count_ones() < 24);
 
@@ -240,6 +247,16 @@ impl std::fmt::Debug for Bitboard {
         }
 
         writeln!(f, "    A   B   C   D   E   F   G   H")
+    }
+}
+
+impl const IntoIterator for Bitboard {
+    type Item     = Square;
+    type IntoIter = Iter;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }
 
@@ -520,6 +537,44 @@ impl const Add<Direction> for Bitboard {
         }.into()
     }
 }
+
+/// An [`Iterator`] that enumerates over every [`Square`] contained in a
+/// [`Bitboard`].
+#[derive(Debug, Eq)]
+#[derive_const(Clone, PartialEq)]
+#[must_use]
+pub struct Iter {
+    bb: Bitboard,
+}
+
+impl Iter {
+    const fn new(bitboard: Bitboard) -> Self {
+        Self {
+            bb: bitboard,
+        }
+    }
+}
+
+impl Iterator for Iter {
+    type Item = Square;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let lsb = self.bb.0.trailing_zeros() as usize;
+        let s   = Square::VARIANTS.get(lsb).copied();
+
+        if s.is_some() {
+            self.bb &= Bitboard(self.bb.0 - 1);
+        }
+
+        s
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.bb.count(), Some(self.bb.count()))
+    }
+}
+
+impl FusedIterator for Iter {}
 
 /// An [`Iterator`] that enumerates over every combination of [`Square`]s
 /// contained in a [`Bitboard`].

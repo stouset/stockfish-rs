@@ -21,6 +21,7 @@ adheres to [Semantic Versioning][semver].
 ### Added
 
 - `impl Default for Bitboard`
+- `impl IntoIterator<Output = Square> for Bitboard`
 - `impl BitOr<Color, Output = Piece> for Token`
 - `impl BitOr<Token, Output = Piece> for Color`
 
