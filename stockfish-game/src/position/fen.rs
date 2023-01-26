@@ -1,13 +1,14 @@
 use crate::prelude::*;
 use stockfish_core::prelude::*;
 
+#[allow(clippy::multiple_inherent_impl)]
 impl Position {
     /// Parses a `fen` (Forsyth-Edward Notation) string into a [`Position`].
     ///
     /// The FEN string is assumed to be valid and meaningful. If it is not, we
     /// try to do our best, but no guarantee is made that the board state will
     /// be legal or consistent.
-    pub fn from_fen(fen: &[u8], ruleset: Ruleset) -> Self {
+    pub fn from_fen(ruleset: Ruleset, fen: &[u8]) -> Self {
         // TODO: Implement a real parser with something like nom that actually
         // implements the spec. We can't really return an error back to the user
         // per the UCI protocol, but that's fine. We can error out in debug
@@ -505,8 +506,8 @@ mod tests {
     #[test]
     fn parse_fen_start_position() {
         let position = Position::from_fen(
-            b"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
             Ruleset::Standard,
+            b"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         );
 
         assert_eq!(Ruleset::Standard, position.ruleset);
@@ -538,8 +539,8 @@ mod tests {
     #[test]
     fn parse_fen_petrov() {
         let position = Position::from_fen(
-            b"rnbqkb1r/ppp2ppp/8/3pP3/3Qn3/5N2/PPP2PPP/RNB1KB1R w KQkq d6 0 6",
             Ruleset::Standard,
+            b"rnbqkb1r/ppp2ppp/8/3pP3/3Qn3/5N2/PPP2PPP/RNB1KB1R w KQkq d6 0 6",
         );
 
         assert_eq!(Ruleset::Standard, position.ruleset);
