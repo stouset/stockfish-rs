@@ -13,10 +13,15 @@ macro_rules! cached {
     }};
 
     ( $name:literal, $sep:literal, $tag:literal ) => {{
+        #[allow(unsafe_code)]
+        // SAFETY: these are explicitly generated to be byte-compatible with the
+        // constants, and they're tagged with the endianness of the architecture
+        //
         // TODO: replace with a const version of bytemuck::from_bytes to better
         // ensure this is actually safe
-        #[allow(unsafe_code)]
-        unsafe { core::mem::transmute(*include_bytes!(cached_filename!($name, $sep, $tag))) }
+        unsafe {
+            core::mem::transmute(*include_bytes!(cached_filename!($name, $sep, $tag)))
+        }
     }};
 }
 

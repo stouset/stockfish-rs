@@ -155,11 +155,23 @@ mod bytemuck_impl {
 
     use super::{Bitboard, Magic, MagicSquare};
 
-    unsafe impl                 bytemuck::Zeroable for Bitboard {}
-    unsafe impl<const N: usize> bytemuck::Zeroable for Magic<N> {}
-    unsafe impl                 bytemuck::Zeroable for MagicSquare {}
+    // SAFETY: a bitboard is a u64, which is zeroable
+    unsafe impl bytemuck::Zeroable for Bitboard {}
 
+    // SAFETY: a Magic<N> consists only of zeroable types
+    unsafe impl<const N: usize> bytemuck::Zeroable for Magic<N> {}
+
+    // SAFETY: a MagicSquare consists only of zeroable types
+    unsafe impl bytemuck::Zeroable for MagicSquare {}
+
+    // SAFETY: this type was verified as Pod-compatible at one point by deriving
+    // this trait through `bytemuck_derive`, but the crate was removed to
+    // minimize dependencies
     unsafe impl bytemuck::Pod for Bitboard {}
+
+    // SAFETY: this type was verified as Pod-compatible at one point by deriving
+    // this trait through `bytemuck_derive`, but the crate was removed to
+    // minimize dependencies
     unsafe impl bytemuck::Pod for MagicSquare {}
 }
 
