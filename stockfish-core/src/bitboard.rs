@@ -1,11 +1,19 @@
 //! Fast bitboards.
 
 #[doc(hidden)]
+pub mod iter;
+
+#[doc(hidden)]
 pub mod magic;
+
+#[doc(hidden)]
+pub mod powerset;
+
+pub use iter::Iter;
+pub use powerset::Powerset;
 
 use crate::prelude::*;
 
-use core::iter::FusedIterator;
 use core::ops::{
     BitAnd, BitAndAssign,
     BitOr,  BitOrAssign,
@@ -527,85 +535,6 @@ impl const Add<Direction> for Bitboard {
         }.into()
     }
 }
-
-/// An [`Iterator`] that enumerates over every [`Square`] contained in a
-/// [`Bitboard`].
-#[derive(Debug, Eq)]
-#[derive_const(Clone, PartialEq)]
-#[must_use]
-pub struct Iter {
-    bb: Bitboard,
-}
-
-impl Iter {
-    const fn new(bitboard: Bitboard) -> Self {
-        Self {
-            bb: bitboard,
-        }
-    }
-}
-
-impl Iterator for Iter {
-    type Item = Square;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let lsb = self.bb.0.trailing_zeros() as usize;
-        let s   = Square::VARIANTS.get(lsb).copied();
-
-        if s.is_some() {
-            self.bb &= Bitboard(self.bb.0 - 1);
-        }
-
-        s
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (self.bb.count(), Some(self.bb.count()))
-    }
-}
-
-impl FusedIterator for Iter {}
-
-/// An [`Iterator`] that enumerates over every combination of [`Square`]s
-/// contained in a [`Bitboard`].
-#[derive(Clone, Debug, Eq, PartialEq)]
-#[must_use]
-pub struct Powerset {
-    source: Bitboard,
-    next:   Option<Bitboard>,
-}
-
-impl Powerset {
-    const fn new(bitboard: Bitboard) -> Self {
-        Self {
-            source: bitboard,
-            next:   Some(Bitboard::EMPTY),
-        }
-    }
-}
-
-impl Iterator for Powerset {
-    type Item = Bitboard;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        // use Carry-Ripler trick to enumerate all subsets of the source
-        // bitboard
-        let next  = self.next;
-        self.next = self.next
-            .map(|bb| bb.0.wrapping_sub(self.source.0) & self.source.0)
-            .map(Bitboard::from)
-            .filter(|bb| bb.is_any());
-
-        next
-    }
-
-    // TODO: more accurately estimate the bounds
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (0, Some(2_usize.pow(self.source.0.count_ones())))
-    }
-}
-
-impl FusedIterator for Powerset {}
 
 #[cfg(test)]
 mod tests {
