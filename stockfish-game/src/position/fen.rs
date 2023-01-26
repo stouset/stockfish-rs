@@ -159,10 +159,13 @@ fn parse_turn(bytes: &[u8]) -> Color {
     debug_assert_eq!(1, bytes.len());
     debug_assert!(bytes[0] == b'w' || bytes[0] == b'b');
 
+    #[allow(clippy::match_same_arms)] // additional clarity
     match bytes.first().copied().unwrap_or(b'w') {
         b'w' => Color::White,
         b'b' => Color::Black,
-        _    => unreachable!(),
+
+        // better to return some option rather than crashing
+        _    => Color::White,
     }
 }
 
@@ -187,7 +190,7 @@ fn parse_castling(bytes: &[u8], board: Board) -> [Option<CastlingPath>; 4] {
         //
         // (doing both of the above is surprisingly annoying and not really
         // worth it right now)
-        let r_file = match byte {
+        let r_file = match *byte {
             b'K' | b'k' => board.search(rank.into_iter().rev(), rook).map(Square::file),
             b'Q' | b'q' => board.search(rank.into_iter(),       rook).map(Square::file),
 
@@ -214,11 +217,10 @@ fn parse_en_passant(fen: &[u8], turn: Color) -> Option<Square> {
 
     // we only accept rank 3 if white just moved or rank 6 if black just moved,
     // as those are the only ranks where a pawn would have jumped a square
-    file.zip(rank)
-        .filter(|(_, r)| {
-            (turn.is_white() && *r == Rank::_6) ||
-            (turn.is_black() && *r == Rank::_3)
-        }).map (|(f, r)| Square::new(f, r))
+    file.zip(rank).filter(|&(_, r)| {
+        (turn.is_white() && r == Rank::_6) ||
+        (turn.is_black() && r == Rank::_3)
+    }).map (|(f, r)| Square::new(f, r))
 }
 
 fn parse_move_number(fen: &[u8]) -> u8 {

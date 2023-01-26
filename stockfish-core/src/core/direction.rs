@@ -42,6 +42,8 @@ impl Direction {
     pub const MAX_STEPS: u8 = 2;
 }
 
+// The above was isolated so we didn't have to document every constant.
+#[allow(clippy::multiple_inherent_impl)]
 impl Direction {
     /// Returns a bitboard of files that will be pushed off the board by
     /// shifting it in this direction.

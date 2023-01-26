@@ -15,6 +15,7 @@ impl Board {
     pub const EMPTY: Self = Self([None; Square::COUNT]);
 
     /// Returns an iterator over all occupied squares on the board.
+    #[allow(clippy::missing_inline_in_public_items)]
     pub fn iter(&self) -> impl Iterator<Item = (Square, Piece)> + '_ {
         Square::iter().filter_map(|s| self[s].map(|t| (s, t)))
     }
@@ -25,6 +26,7 @@ impl Board {
     /// Note that this function by necessity iterates over every [`Square`]
     /// until the token is found. It should be used judiciously (or not at all)
     /// in performance-sensitive situations.
+    #[allow(clippy::missing_inline_in_public_items)]
     #[must_use]
     pub fn search<I: IntoIterator<Item = Square>>(&self, squares: I, piece: Piece) -> Option<Square> {
         squares.into_iter().find(|s| self[*s] == Some(piece))
@@ -75,6 +77,7 @@ impl const IndexMut<Square> for Board {
 }
 
 impl core::fmt::Debug for Board {
+    #[allow(clippy::missing_inline_in_public_items)]
     #[cfg_attr(coverage, no_coverage)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         writeln!(f)?;

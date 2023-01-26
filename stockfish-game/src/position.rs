@@ -5,8 +5,8 @@ use stockfish_core::prelude::*;
 use core::ops::Index;
 
 #[allow(missing_copy_implementations)] // type is too large to want copying
-#[must_use]
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[must_use]
 pub struct Position {
     // basic board state
     ruleset:   Ruleset,
@@ -34,6 +34,7 @@ pub struct Position {
     en_passant:      Option<Square>,
 }
 
+#[allow(clippy::multiple_inherent_impl)]
 impl Position {
     pub fn empty(ruleset: Ruleset) -> Self {
         Self {

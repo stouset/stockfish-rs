@@ -39,30 +39,37 @@
 #![warn(clippy::correctness)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::perf)]
+#![warn(clippy::restriction)]
 #![warn(clippy::style)]
 #![warn(clippy::suspicious)]
 
 // Additional Clippy Lints
-#![warn(clippy::dbg_macro)]
-#![warn(clippy::empty_structs_with_brackets)]
-#![warn(clippy::exit)]
-#![warn(clippy::expect_used)]
-#![warn(clippy::get_unwrap)]
-#![warn(clippy::if_then_some_else_none)]
-#![warn(clippy::map_err_ignore)]
-#![warn(clippy::mem_forget)]
 #![warn(clippy::missing_const_for_fn)]
-#![warn(clippy::missing_docs_in_private_items)]
-#![warn(clippy::panic)]
-#![warn(clippy::panic_in_result_fn)]
-#![warn(clippy::string_slice)]
-#![warn(clippy::unseparated_literal_suffix)]
-#![warn(clippy::use_debug)]
 
 // Lint Exceptions
 #![allow(unstable_features)]
+#![allow(clippy::arithmetic_side_effects)]
+#![allow(clippy::as_conversions)]
+#![allow(clippy::as_underscore)]
+#![allow(clippy::blanket_clippy_restriction_lints)]
+#![allow(clippy::default_numeric_fallback)]
+#![allow(clippy::else_if_without_else)]
+#![allow(clippy::exhaustive_enums)]
+#![allow(clippy::exhaustive_structs)]
+#![allow(clippy::implicit_return)]
+#![allow(clippy::indexing_slicing)]
+#![allow(clippy::integer_arithmetic)]
+#![allow(clippy::let_underscore_must_use)]
+#![allow(clippy::missing_trait_methods)]
+#![allow(clippy::pub_use)]
+#![allow(clippy::self_named_module_files)]
+#![allow(clippy::separated_literal_suffix)]
+#![allow(clippy::shadow_reuse)]
+#![allow(clippy::std_instead_of_alloc)]
+#![allow(clippy::wildcard_enum_match_arm)]
 #![cfg_attr(test,             allow(clippy::missing_const_for_fn))]
 #![cfg_attr(debug_assertions, allow(clippy::missing_panics_doc))]
+#![cfg_attr(debug_assertions, allow(clippy::unwrap_used))]
 
 // TODO: remove
 #![allow(meta_variable_misuse)] // false positive with `count()`
@@ -92,6 +99,7 @@ use criterion as _;
 
 macro_rules! unsafe_optimization {
     ($safe:expr, $unsafe:expr $(,)?) => {{
+        #[allow(clippy::undocumented_unsafe_blocks)]
         #[allow(unsafe_code)]
         unsafe {
             ::core::debug_assert!($safe == $unsafe);

@@ -1,3 +1,6 @@
+// This module is for internal use and does not require inline consideration.
+#![allow(clippy::missing_inline_in_public_items)]
+
 use crate::prelude::*;
 
 /// Returns the number of moves a king would require to move from the origin

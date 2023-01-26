@@ -1,3 +1,5 @@
+#![allow(clippy::missing_inline_in_public_items)]
+
 use crate::prelude::*;
 use crate::accelerate::computed;
 use crate::misc::Prng;

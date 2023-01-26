@@ -231,6 +231,7 @@ impl Bitboard {
 }
 
 impl core::fmt::Debug for Bitboard {
+    #![allow(clippy::missing_inline_in_public_items)]
     #[cfg_attr(coverage, no_coverage)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let ranks = self.0.to_be_bytes();
@@ -701,7 +702,7 @@ mod tests {
         powerset.sort();
         expected.sort();
 
-        assert_eq!(expected, &powerset[..]);
+        assert_eq!(expected, *powerset);
     }
 
     #[test]
