@@ -63,7 +63,7 @@ impl<const N: usize> Magic<N> {
                 reference[i] = computed::sliding_attacks(token, square, bitboard);
 
                 #[cfg(use_pext)] {
-                    attacks[std::arch::x86_64::_pext_u64(b.0, mask.0)] = reference[i];
+                    attacks[core::arch::x86_64::_pext_u64(b.0, mask.0)] = reference[i];
                 }
             }
 
@@ -200,7 +200,7 @@ impl MagicSquare {
         // the result of multiplying by the magic number will put the set bits
         // in `mask` into the MSBs of the result, so they need to be shifted by
         // the size of the
-        (std::mem::size_of::<usize>() * 8) - mask.count()
+        (core::mem::size_of::<usize>() * 8) - mask.count()
     }
 
     #[inline]
@@ -213,7 +213,7 @@ impl MagicSquare {
     #[inline]
     #[must_use]
     const fn relative_index(&self, occupied: Bitboard) -> usize {
-        std::arch::x86_64::_pext_u64(occupied.0, self.mask.0)
+        core::arch::x86_64::_pext_u64(occupied.0, self.mask.0)
     }
 
     #[cfg(all(target_pointer_width = "64", not(use_pext)))]

@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
-use std::iter::IntoIterator;
-use std::ops::{Index, IndexMut};
+use core::iter::IntoIterator;
+use core::ops::{Index, IndexMut};
 
 /// A [`Board`] is an array of [`Square`]s (A1, B1, C1, ..., F8, G8, H8) that
 /// may optionally contain a [`Piece`].
@@ -74,9 +74,9 @@ impl const IndexMut<Square> for Board {
     }
 }
 
-impl std::fmt::Debug for Board {
+impl core::fmt::Debug for Board {
     #[cfg_attr(coverage, no_coverage)]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         writeln!(f)?;
         writeln!(f, "  +---+---+---+---+---+---+---+---+")?;
 

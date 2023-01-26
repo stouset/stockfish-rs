@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+use core::ops::Neg;
+
 /// The cardinal directions on a chessboard plus the other individual steps a
 /// token is capable of taking across a chess board.
 #[derive(Copy, Debug, Eq)]
@@ -132,7 +134,7 @@ impl const From<Direction> for i8 {
     }
 }
 
-impl const std::ops::Add<Direction> for Square {
+impl const core::ops::Add<Direction> for Square {
     type Output = Option<Self>;
 
     #[must_use]
@@ -150,7 +152,7 @@ impl const std::ops::Add<Direction> for Square {
     }
 }
 
-impl const std::ops::Neg for Direction {
+impl const Neg for Direction {
     type Output = Self;
 
     #[inline]

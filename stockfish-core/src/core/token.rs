@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::BitOr;
+use core::ops::BitOr;
 
 enumeration! {
     /// A file, A through H, on a chess board. The variants for this enum are

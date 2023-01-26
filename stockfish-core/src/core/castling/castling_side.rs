@@ -12,9 +12,9 @@ impl CastlingSide {
     #[must_use]
     pub const fn new(king: File, rook: File) -> Option<Self> {
         match king.cmp(&rook) {
-            std::cmp::Ordering::Less    => Some(Self::King),
-            std::cmp::Ordering::Equal   => None,
-            std::cmp::Ordering::Greater => Some(Self::Queen),
+            core::cmp::Ordering::Less    => Some(Self::King),
+            core::cmp::Ordering::Equal   => None,
+            core::cmp::Ordering::Greater => Some(Self::Queen),
         }
     }
 }

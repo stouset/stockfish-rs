@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{BitOr, Not};
+use core::ops::{BitOr, Not};
 
 enumeration! {
     /// A rank, 1 through 8, on a chess board. The variants for this enum are
@@ -35,7 +35,7 @@ impl Rank {
 
 impl IntoIterator for Rank {
     type Item     = Square;
-    type IntoIter = std::array::IntoIter<Square, 8>;
+    type IntoIter = core::array::IntoIter<Square, 8>;
 
     #[inline]
     #[must_use]

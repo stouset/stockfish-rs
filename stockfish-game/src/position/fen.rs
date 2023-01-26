@@ -223,7 +223,7 @@ fn parse_en_passant(fen: &[u8], turn: Color) -> Option<Square> {
 fn parse_move_number(fen: &[u8]) -> u8 {
     // TODO: this parses values like "08", which is not to spec
     str::parse(
-        std::str::from_utf8(fen).unwrap_or_default()
+        core::str::from_utf8(fen).unwrap_or_default()
     ).unwrap_or(0)
 }
 

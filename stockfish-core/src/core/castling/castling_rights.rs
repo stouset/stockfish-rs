@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::BitAnd;
+use core::ops::BitAnd;
 
 use bitflags::bitflags;
 
@@ -73,7 +73,7 @@ impl CastlingRights {
 
     /// An iterator over all possible types of castling rights.
     #[must_use]
-    pub fn iter() -> std::array::IntoIter<Self, 16> {
+    pub fn iter() -> core::array::IntoIter<Self, 16> {
         Self::VARIANTS.into_iter()
     }
 }

@@ -12,7 +12,7 @@ pub const fn square_distance(s1: Square, s2: Square) -> u8 {
     let file_diff = s1_file.abs_diff(s2_file);
     let rank_diff = s1_rank.abs_diff(s2_rank);
 
-    std::cmp::max(file_diff, rank_diff)
+    core::cmp::max(file_diff, rank_diff)
 }
 
 /// Returns a [`Bitboard`] containing all the [`Square`]s on the same file,

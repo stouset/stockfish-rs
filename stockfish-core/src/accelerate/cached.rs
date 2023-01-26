@@ -16,7 +16,7 @@ macro_rules! cached {
         // TODO: replace with a const version of bytemuck::from_bytes to better
         // ensure this is actually safe
         #[allow(unsafe_code)]
-        unsafe { std::mem::transmute(*include_bytes!(cached_filename!($name, $sep, $tag))) }
+        unsafe { core::mem::transmute(*include_bytes!(cached_filename!($name, $sep, $tag))) }
     }};
 }
 

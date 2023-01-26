@@ -2,7 +2,7 @@ mod fen;
 
 use stockfish_core::prelude::*;
 
-use std::ops::Index;
+use core::ops::Index;
 
 #[allow(missing_copy_implementations)] // type is too large to want copying
 #[must_use]

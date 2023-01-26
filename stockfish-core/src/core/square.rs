@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{BitAnd, BitOr, Not};
+use core::ops::{BitAnd, BitOr, Not};
 
 enumeration! {
     /// A square on a chess board.
@@ -277,7 +277,7 @@ mod tests {
     fn square_distance() {
         for s1 in Square::iter() {
             for s2 in Square::iter() {
-                assert_eq!(s1.distance(s2), std::cmp::max(
+                assert_eq!(s1.distance(s2), core::cmp::max(
                     s1.distance_files(s2),
                     s1.distance_ranks(s2),
                 ));

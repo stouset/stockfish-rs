@@ -5,8 +5,8 @@ pub mod magic;
 
 use crate::prelude::*;
 
-use std::iter::FusedIterator;
-use std::ops::{
+use core::iter::FusedIterator;
+use core::ops::{
     BitAnd, BitAndAssign,
     BitOr,  BitOrAssign,
     BitXor, BitXorAssign,
@@ -223,9 +223,9 @@ impl Bitboard {
     }
 }
 
-impl std::fmt::Debug for Bitboard {
+impl core::fmt::Debug for Bitboard {
     #[cfg_attr(coverage, no_coverage)]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let ranks = self.0.to_be_bytes();
 
         writeln!(f)?;
@@ -624,8 +624,8 @@ mod tests {
     #[test]
     fn derives() {
         assert_eq!(
-            std::cmp::Ord::cmp(&Bitboard::ALL, &Bitboard::ALL),
-            std::cmp::Ordering::Equal
+            core::cmp::Ord::cmp(&Bitboard::ALL, &Bitboard::ALL),
+            core::cmp::Ordering::Equal
         );
     }
 

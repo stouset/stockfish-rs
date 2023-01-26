@@ -5,7 +5,7 @@ mod zobrist;
 
 pub use zobrist::Zobrist;
 
-use std::ops::{BitXor, BitXorAssign};
+use core::ops::{BitXor, BitXorAssign};
 
 /// A precomputed table of Zobrist hashes.
 ///

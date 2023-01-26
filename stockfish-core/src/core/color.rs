@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use std::ops::{Not, BitOr};
+use core::ops::{Not, BitOr};
 
 enumeration! {
     /// A color of a chess token, white or black.
