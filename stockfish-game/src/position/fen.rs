@@ -199,7 +199,7 @@ fn parse_castling(bytes: &[u8], board: Board) -> [Option<CastlingPath>; 4] {
         let Some(r) = r_file else { continue };
 
         let Some(path) = CastlingPath::new(color, k, r) else { continue };
-        let variety    = path.variety;
+        let variety    = path.variety();
 
         paths[variety] = Some(path);
     }

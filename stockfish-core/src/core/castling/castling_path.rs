@@ -7,14 +7,14 @@ use crate::prelude::*;
 #[must_use]
 pub struct CastlingPath {
     /// The variety of castling to be performed.
-    pub variety: CastlingVariety,
+    variety: CastlingVariety,
 
     /// The path between the king and the rook. This is compatible with both
     /// standard chess as well as Fischer random chess (Chess960). Includes all
     /// squares both the king and rook must transit to reach their destination.
     /// This is *inclusive* of their final resting squares and *exclusive* of
     /// their starting squares.
-    pub path: Bitboard,
+    path: Bitboard,
 
     king: Square,
     rook: Square,
@@ -56,6 +56,14 @@ impl CastlingPath {
         self.variety.color()
     }
 
+    /// Returns a bitboard containing all squares transited by the king and
+    /// rook. This is inclusive of their destination squares but excludes their
+    /// starting squares (unless the other piece transits that square).
+    #[inline]
+    pub const fn path(self) -> Bitboard {
+        self.path
+    }
+
     /// Returns the side of the board this castling operation will occur
     /// towards.
     #[inline]
@@ -92,6 +100,12 @@ impl CastlingPath {
     #[inline]
     pub const fn rights(self) -> CastlingRights {
         self.variety.rights()
+    }
+
+    /// The variety of castling this path performs.
+    #[inline]
+    pub const fn variety(self) -> CastlingVariety {
+        self.variety
     }
 }
 
