@@ -137,6 +137,7 @@ impl const From<Direction> for i8 {
 impl const core::ops::Add<Direction> for Square {
     type Output = Option<Self>;
 
+    #[inline]
     #[must_use]
     fn add(self, rhs: Direction) -> Self::Output {
         let from   = self.as_u8();

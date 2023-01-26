@@ -72,6 +72,7 @@ impl CastlingRights {
     ];
 
     /// An iterator over all possible types of castling rights.
+    #[inline]
     #[must_use]
     pub fn iter() -> core::array::IntoIter<Self, 16> {
         Self::VARIANTS.into_iter()

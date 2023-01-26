@@ -75,6 +75,7 @@ impl const From<Square> for Rank {
 impl const BitOr<Self> for Rank {
     type Output = Bitboard;
 
+    #[inline]
     fn bitor(self, rhs: Self) -> Self::Output {
         Bitboard::from(self) | rhs
     }
@@ -83,6 +84,7 @@ impl const BitOr<Self> for Rank {
 impl const BitOr<File> for Rank {
     type Output = Square;
 
+    #[inline]
     fn bitor(self, rhs: File) -> Self::Output {
         Square::new(rhs, self)
     }
@@ -91,6 +93,7 @@ impl const BitOr<File> for Rank {
 impl const Not for Rank {
     type Output = Bitboard;
 
+    #[inline]
     fn not(self) -> Self::Output {
         ! Bitboard::from(self)
     }

@@ -189,6 +189,7 @@ impl const BitAnd for Square {
 impl const BitOr for Square {
     type Output = Bitboard;
 
+    #[inline]
     fn bitor(self, rhs: Self) -> Self::Output {
         Bitboard::from(self) | rhs
     }
@@ -197,6 +198,7 @@ impl const BitOr for Square {
 impl const Not for Square {
     type Output = Bitboard;
 
+    #[inline]
     fn not(self) -> Self::Output {
         ! Bitboard::from(self)
     }

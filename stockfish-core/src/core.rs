@@ -109,12 +109,14 @@ macro_rules! enumeration {
         impl<T> const ::core::ops::Index<$name> for [T; $name::COUNT] {
             type Output = T;
 
+            #[inline]
             fn index(&self, val: $name) -> &Self::Output {
                 self.index(val.as_usize())
             }
         }
 
         impl<T> ::core::ops::IndexMut<$name> for [T; $name::COUNT] {
+            #[inline]
             fn index_mut(&mut self, val: $name) -> &mut Self::Output {
                 self.index_mut(val.as_usize())
             }

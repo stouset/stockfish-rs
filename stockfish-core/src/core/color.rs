@@ -53,6 +53,7 @@ impl const Not for Color {
 impl const BitOr<Token> for Color {
     type Output = Piece;
 
+    #[inline]
     fn bitor(self, token: Token) -> Self::Output {
         Piece::new(self, token)
     }
