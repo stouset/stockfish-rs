@@ -11,7 +11,6 @@ use core::ops::{
     BitOr,  BitOrAssign,
     BitXor, BitXorAssign,
     Not,
-    Shl,
     Add,
 };
 
@@ -43,49 +42,49 @@ impl Bitboard {
     pub const FILE_A: Bitboard = 0x01_01_01_01_01_01_01_01.into();
 
     /// A board with all of the squares on the B file occupied.
-    pub const FILE_B: Bitboard = Self::FILE_A << 1;
+    pub const FILE_B: Bitboard = Self(Self::FILE_A.0 << 1);
 
     /// A board with all of the squares on the C file occupied.
-    pub const FILE_C: Bitboard = Self::FILE_A << 2;
+    pub const FILE_C: Bitboard = Self(Self::FILE_B.0 << 1);
 
     /// A board with all of the squares on the D file occupied.
-    pub const FILE_D: Bitboard = Self::FILE_A << 3;
+    pub const FILE_D: Bitboard = Self(Self::FILE_C.0 << 1);
 
     /// A board with all of the squares on the E file occupied.
-    pub const FILE_E: Bitboard = Self::FILE_A << 4;
+    pub const FILE_E: Bitboard = Self(Self::FILE_D.0 << 1);
 
     /// A board with all of the squares on the F file occupied.
-    pub const FILE_F: Bitboard = Self::FILE_A << 5;
+    pub const FILE_F: Bitboard = Self(Self::FILE_E.0 << 1);
 
     /// A board with all of the squares on the G file occupied.
-    pub const FILE_G: Bitboard = Self::FILE_A << 6;
+    pub const FILE_G: Bitboard = Self(Self::FILE_F.0 << 1);
 
     /// A board with all of the squares on the H file occupied.
-    pub const FILE_H: Bitboard = Self::FILE_A << 7;
+    pub const FILE_H: Bitboard = Self(Self::FILE_G.0 << 1);
 
     /// A board with all of the squares on the 1st rank occupied.
     pub const RANK_1: Bitboard = 0xFF.into();
 
     /// A board with all of the squares on the 2nd rank occupied.
-    pub const RANK_2: Bitboard = Self::RANK_1 << (8);
+    pub const RANK_2: Bitboard = Self(Self::RANK_1.0 << 8);
 
     /// A board with all of the squares on the 3rd rank occupied.
-    pub const RANK_3: Bitboard = Self::RANK_1 << (8 * 2);
+    pub const RANK_3: Bitboard = Self(Self::RANK_2.0 << 8);
 
     /// A board with all of the squares on the 4th rank occupied.
-    pub const RANK_4: Bitboard = Self::RANK_1 << (8 * 3);
+    pub const RANK_4: Bitboard = Self(Self::RANK_3.0 << 8);
 
     /// A board with all of the squares on the 5th rank occupied.
-    pub const RANK_5: Bitboard = Self::RANK_1 << (8 * 4);
+    pub const RANK_5: Bitboard = Self(Self::RANK_4.0 << 8);
 
     /// A board with all of the squares on the 6th rank occupied.
-    pub const RANK_6: Bitboard = Self::RANK_1 << (8 * 5);
+    pub const RANK_6: Bitboard = Self(Self::RANK_5.0 << 8);
 
     /// A board with all of the squares on the 7th rank occupied.
-    pub const RANK_7: Bitboard = Self::RANK_1 << (8 * 6);
+    pub const RANK_7: Bitboard = Self(Self::RANK_6.0 << 8);
 
     /// A board with all of the squares on the 8th rank occupied.
-    pub const RANK_8: Bitboard = Self::RANK_1 << (8 * 7);
+    pub const RANK_8: Bitboard = Self(Self::RANK_7.0 << 8);
 
     /// A board with all of the squares on the queenside occupied.
     pub const QUEEN_SIDE: Bitboard =
@@ -511,15 +510,6 @@ impl const Not for Bitboard {
     #[inline]
     fn not(self) -> Self::Output {
         (!self.0).into()
-    }
-}
-
-impl const Shl<u8> for Bitboard {
-    type Output = Self;
-
-    #[inline]
-    fn shl(self, rhs: u8) -> Self::Output {
-        (self.0 << rhs).into()
     }
 }
 
@@ -975,11 +965,5 @@ mod tests {
         assert_eq!(Bitboard::EMPTY,         !Bitboard::ALL);
         assert_eq!(Bitboard::LIGHT_SQUARES, !Bitboard::DARK_SQUARES);
         assert_eq!(Bitboard::FILE_C,        !!Bitboard::FILE_C);
-    }
-
-    #[test]
-    fn shl() {
-        assert_eq!(Bitboard::from(Square::E7), Bitboard::from(Square::D7) << 1);
-        assert_eq!(Bitboard::from(Square::C3), Bitboard::from(Square::C2) << 8);
     }
 }
